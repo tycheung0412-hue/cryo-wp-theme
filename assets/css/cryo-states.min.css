@@ -1,0 +1,1 @@
+:root{--cryo-focus-ring:2px solid #0A6EBD}a:focus-visible,button:focus-visible,input:focus-visible{outline:var(--cryo-focus-ring);outline-offset:2px}.wp-block-button__link:hover{filter:brightness(.95)}.is-style-outline .wp-block-button__link:hover{background:rgba(0,0,0,.04)}.wp-block-cover p{margin:0}

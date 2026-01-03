@@ -1,0 +1,115 @@
+<!-- Cryo Footer — desktop matches provided screenshot; mobile styles isolated in CSS -->
+
+<!-- wp:group {"align":"full","className":"cryo-footer","layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull cryo-footer">
+  <!-- wp:group {"align":"wide","className":"cryo-footer__inner","layout":{"type":"constrained"}} -->
+  <div class="wp-block-group alignwide cryo-footer__inner">
+    <!-- wp:columns {"className":"cryo-footer__cols"} -->
+    <div class="wp-block-columns cryo-footer__cols">
+      <!-- wp:column {"className":"cryo-footer__col cryo-footer__col--contact"} -->
+      <div class="wp-block-column cryo-footer__col cryo-footer__col--contact">
+        <!-- wp:html -->
+        <div class="cryo-footer__contact">
+          <div class="cryo-footer__line cryo-footer__line--phone">
+            <span>電話:</span>
+            <a href="tel:+85221102121">(852) 2110 2121</a>
+          </div>
+          <div class="cryo-footer__line cryo-footer__line--address">
+            <span>地址: Room 511-518, 5/F, Delta House, 3 On Yiu Street,<br/>Shatin, New Territories, Hong Kong, Sha Tin</span>
+          </div>
+          <div class="cryo-footer__line cryo-footer__line--email">
+            <span>電郵:</span>
+            <a href="mailto:csd@cryolife.com.hk">csd@cryolife.com.hk</a>
+          </div>
+        </div>
+        <!-- /wp:html -->
+
+        <!-- Desktop-only: social + legal under contact (mobile uses a different ordering) -->
+        <!-- wp:html -->
+        <div class="cryo-footer__desktopExtras">
+        <!-- /wp:html -->
+
+          <!-- White circles with Accent (orange) icons (prevents “white-on-white” invisibility) -->
+          <!-- wp:social-links {"className":"cryo-footer__social","iconColor":"accent","iconColorValue":"#C3572C","iconBackgroundColor":"surface","iconBackgroundColorValue":"#FFFFFF","openInNewTab":true} -->
+          <ul class="wp-block-social-links cryo-footer__social has-icon-color has-icon-background-color">
+            <!-- wp:social-link {"service":"facebook","url":"#"} /-->
+            <!-- wp:social-link {"service":"youtube","url":"#"} /-->
+            <!-- wp:social-link {"service":"instagram","url":"#"} /-->
+            <!-- wp:social-link {"service":"whatsapp","url":"#"} /-->
+          </ul>
+          <!-- /wp:social-links -->
+
+          <!-- Footer legal links under social (desktop design variant) -->
+          <!-- wp:shortcode -->
+          [cryo_footer_menu location="footer_legal" class="cryo-footer__legalBelow"]
+          <!-- /wp:shortcode -->
+
+        <!-- wp:html -->
+        </div>
+        <!-- /wp:html -->
+      </div>
+      <!-- /wp:column -->
+
+      <!-- wp:column {"className":"cryo-footer__col cryo-footer__col--menu"} -->
+      <div class="wp-block-column cryo-footer__col cryo-footer__col--menu">
+        <!-- Use shortcode → wp_nav_menu() so it respects Appearance → Menus locations (no fallback to header nav) -->
+        <!-- wp:shortcode -->
+        [cryo_footer_menu location="footer" class="cryo-footer__nav"]
+        <!-- /wp:shortcode -->
+
+        <!-- Mobile design: legal links appear under the footer menu list -->
+        <!-- wp:shortcode -->
+        [cryo_footer_menu location="footer_legal" class="cryo-footer__legalMobile"]
+        <!-- /wp:shortcode -->
+      </div>
+      <!-- /wp:column -->
+
+      <!-- wp:column {"className":"cryo-footer__col cryo-footer__col--newsletter"} -->
+      <div class="wp-block-column cryo-footer__col cryo-footer__col--newsletter">
+        <!-- wp:html -->
+        <div class="cryo-footer__newsletter">
+          <p class="cryo-footer__newsletterTitle">立即註冊，以獲取有關我們一系列的活動及最新資訊。</p>
+          <label class="cryo-footer__newsletterLabel" for="cryo-footer-email">你的電郵地址*</label>
+          <div class="cryo-footer__newsletterRow">
+            <input id="cryo-footer-email" class="cryo-footer__newsletterInput" type="email" placeholder="" />
+            <button class="cryo-footer__newsletterBtn" type="button" aria-label="提交"></button>
+          </div>
+        </div>
+        <!-- /wp:html -->
+
+        <!-- Mobile-only: social icons come after newsletter (per provided mobile design) -->
+        <!-- White circles with Accent (orange) icons -->
+        <!-- wp:social-links {"className":"cryo-footer__social cryo-footer__socialMobile","iconColor":"accent","iconColorValue":"#C3572C","iconBackgroundColor":"surface","iconBackgroundColorValue":"#FFFFFF","openInNewTab":true} -->
+        <ul class="wp-block-social-links cryo-footer__social cryo-footer__socialMobile has-icon-color has-icon-background-color">
+          <!-- wp:social-link {"service":"facebook","url":"#"} /-->
+          <!-- wp:social-link {"service":"youtube","url":"#"} /-->
+          <!-- wp:social-link {"service":"instagram","url":"#"} /-->
+          <!-- wp:social-link {"service":"whatsapp","url":"#"} /-->
+        </ul>
+        <!-- /wp:social-links -->
+      </div>
+      <!-- /wp:column -->
+    </div>
+    <!-- /wp:columns -->
+
+    <!-- wp:group {"className":"cryo-footer__bottom","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between"}} -->
+    <div class="wp-block-group cryo-footer__bottom">
+      <!-- wp:html -->
+      <div class="cryo-footer__copyright">© <span class="cryo-footer__year"></span> Cryolife All rights reserved</div>
+      <div class="cryo-footer__certs" aria-label="認證與標章">
+        <!-- wp:shortcode -->
+        [cryo_footer_certs filename="Website-Footer_2-1-2-300x41.png" alt="Accreditation logos"]
+        <!-- /wp:shortcode -->
+      </div>
+      <script>
+        (function(){var el=document.querySelector('.cryo-footer__year'); if(el) el.textContent=(new Date()).getFullYear();})();
+      </script>
+      <!-- /wp:html -->
+    </div>
+    <!-- /wp:group -->
+  </div>
+  <!-- /wp:group -->
+</div>
+<!-- /wp:group -->
+
+
