@@ -377,6 +377,55 @@ add_shortcode('cryo_page_header', function ($atts): string {
 });
 
 /**
+ * Single Post Header — renders date + title for single posts
+ *
+ * Usage:
+ * - [cryo_post_header]
+ *
+ * This shortcode renders the post date and title for single post pages.
+ * Date format:
+ * - Chinese (zh_TW, zh_HK, zh_CN): YYYY年MM月DD日
+ * - English: d M Y
+ */
+add_shortcode('cryo_post_header', function (): string {
+  $post_id = get_queried_object_id();
+  if (!$post_id) {
+    return '';
+  }
+
+  // Detect language and set date format
+  $locale = get_locale();
+  $is_chinese = in_array($locale, ['zh_TW', 'zh_HK', 'zh_CN', 'zh-hant', 'zh-hans'], true) 
+    || strpos($locale, 'zh') === 0;
+  
+  // WPML/Polylang support: check current language
+  if (function_exists('pll_current_language')) {
+    $lang = pll_current_language('slug');
+    $is_chinese = in_array($lang, ['zh', 'zh-hant', 'zh-hans', 'tc', 'sc'], true);
+  } elseif (defined('ICL_LANGUAGE_CODE')) {
+    $lang = ICL_LANGUAGE_CODE;
+    $is_chinese = in_array($lang, ['zh', 'zh-hant', 'zh-hans', 'tc', 'sc'], true);
+  }
+
+  if ($is_chinese) {
+    // Chinese format: YYYY年MM月DD日
+    $date = get_the_date('Y', $post_id) . '年' 
+      . get_the_date('m', $post_id) . '月' 
+      . get_the_date('d', $post_id) . '日';
+  } else {
+    // English format: d M Y
+    $date = get_the_date('d M Y', $post_id);
+  }
+
+  $title = get_the_title($post_id);
+
+  return '<div class="cryo-singlePost__header">'
+    . '<div class="cryo-singlePost__date">' . esc_html($date) . '</div>'
+    . '<h1 class="cryo-singlePost__title">' . esc_html($title) . '</h1>'
+    . '</div>';
+});
+
+/**
  * Hero media renderer.
  *
  * If the site still has Uncode2 header settings (metabox/options), prefer rendering the same banner:

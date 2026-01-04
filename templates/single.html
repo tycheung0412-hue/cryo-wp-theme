@@ -1,11 +1,25 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
-<!-- wp:group {"tagName":"main","layout":{"type":"constrained"}} -->
-<main class="wp-block-group">
-  <!-- wp:post-title {"level":1} /-->
-  <!-- wp:post-featured-image {"align":"wide"} /-->
-  <!-- wp:post-content /-->
+
+<!-- wp:group {"tagName":"main","className":"cryo-singlePost","layout":{"type":"constrained"}} -->
+<main class="wp-block-group cryo-singlePost">
+
+  <!-- wp:shortcode -->
+  [cryo_post_header]
+  <!-- /wp:shortcode -->
+
+  <!-- wp:group {"className":"cryo-singlePost__featured","layout":{"type":"constrained"}} -->
+  <div class="wp-block-group cryo-singlePost__featured">
+    <!-- wp:post-featured-image {"align":"wide","className":"cryo-singlePost__image"} /-->
+  </div>
+  <!-- /wp:group -->
+
+  <!-- wp:group {"className":"cryo-singlePost__content","layout":{"type":"constrained"}} -->
+  <div class="wp-block-group cryo-singlePost__content">
+    <!-- wp:post-content /-->
+  </div>
+  <!-- /wp:group -->
+
 </main>
 <!-- /wp:group -->
+
 <!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
-
-
