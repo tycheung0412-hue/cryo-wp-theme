@@ -336,6 +336,47 @@ add_shortcode('cryo_breadcrumbs', function (): string {
 });
 
 /**
+ * Page Header with Breadcrumbs — for pages without hero banner
+ *
+ * Usage:
+ * - [cryo_page_header] — auto-detects page title
+ * - [cryo_page_header title="自訂標題"] — custom title
+ *
+ * This provides a simple breadcrumb navigation bar for pages that don't use
+ * the hero/swiper banner. It renders the breadcrumb path on a subtle background.
+ */
+add_shortcode('cryo_page_header', function ($atts): string {
+  $atts = shortcode_atts([
+    'title' => '',
+  ], (array) $atts, 'cryo_page_header');
+
+  $post_id = get_queried_object_id();
+  $title = !empty($atts['title']) ? $atts['title'] : ($post_id ? get_the_title($post_id) : '');
+  
+  // Build breadcrumbs
+  $crumbs = [];
+  $crumbs[] = '<a href="' . esc_url(home_url('/')) . '">首頁</a>';
+
+  if ($post_id) {
+    $ancestors = array_reverse(get_post_ancestors($post_id));
+    foreach ($ancestors as $aid) {
+      $crumbs[] = '<a href="' . esc_url(get_permalink($aid)) . '">' . esc_html(get_the_title($aid)) . '</a>';
+    }
+    $crumbs[] = '<span aria-current="page">' . esc_html($title) . '</span>';
+  }
+
+  $breadcrumb_html = '<nav class="cryo-pageHeader__crumbs" aria-label="Breadcrumb">'
+    . implode('<span class="cryo-pageHeader__sep">/</span>', $crumbs)
+    . '</nav>';
+
+  return '<div class="cryo-pageHeader">'
+    . '<div class="cryo-pageHeader__inner">'
+    . $breadcrumb_html
+    . '</div>'
+    . '</div>';
+});
+
+/**
  * Hero media renderer.
  *
  * If the site still has Uncode2 header settings (metabox/options), prefer rendering the same banner:
@@ -2080,6 +2121,8 @@ add_shortcode('cryo_news_archive', function ($atts): string {
   
   ob_start();
   ?>
+  <?php echo do_shortcode('[cryo_page_header title="相關資訊及活動"]'); ?>
+  
   <section class="cryo-archiveHeader" aria-label="相關資訊及活動">
     <div class="cryo-archiveHeader__inner">
       <h1 class="cryo-archiveHeader__title">相關資訊及活動</h1>
