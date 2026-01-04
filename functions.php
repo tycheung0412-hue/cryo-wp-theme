@@ -2000,3 +2000,290 @@ add_shortcode('cryo_history_slide', function ($atts): string {
     . '</div>';
 });
 
+
+/**
+ * ============================================
+ * CRYO NEWS ARCHIVE — Blog/News listing page
+ * ============================================
+ *
+ * Usage:
+ * [cryo_news_archive posts_per_page="6" /]
+ *
+ * Parameters:
+ * - posts_per_page: Number of posts per page (default: 6)
+ * - categories: Comma-separated category slugs to show in filter (optional)
+ *
+ * Access the page:
+ * Create a new page, add the shortcode, and publish.
+ * Or use the default archive at /category/{slug}/ or /?cat=X
+ */
+add_shortcode('cryo_news_archive', function ($atts): string {
+  $atts = shortcode_atts([
+    'posts_per_page' => 6,
+    'categories' => '',
+  ], (array) $atts, 'cryo_news_archive');
+
+  $posts_per_page = (int) $atts['posts_per_page'];
+  
+  // Get filter parameters from URL (using custom param names to avoid WP conflicts)
+  // Note: 'cat' and 's' are reserved by WordPress and cause 404s, so we use 'filter_cat', 'filter_year', 'filter_search'
+  $current_cat = isset($_GET['filter_cat']) ? sanitize_text_field($_GET['filter_cat']) : '';
+  $current_year = isset($_GET['filter_year']) ? (int) $_GET['filter_year'] : 0;
+  $search_query = isset($_GET['filter_search']) ? sanitize_text_field($_GET['filter_search']) : '';
+  
+  // Build query args
+  $query_args = [
+    'post_type' => 'post',
+    'post_status' => 'publish',
+    'posts_per_page' => $posts_per_page,
+    'paged' => 1,
+  ];
+  
+  // Filter by category
+  if (!empty($current_cat) && $current_cat !== 'all') {
+    $query_args['category_name'] = $current_cat;
+  }
+  
+  // Filter by year
+  if ($current_year > 0) {
+    $query_args['year'] = $current_year;
+  }
+  
+  // Search
+  if (!empty($search_query)) {
+    $query_args['s'] = $search_query;
+  }
+  
+  $posts_query = new WP_Query($query_args);
+  
+  // Get all categories with counts
+  $categories = get_categories([
+    'orderby' => 'count',
+    'order' => 'DESC',
+    'hide_empty' => true,
+  ]);
+  
+  // Get total post count
+  $total_posts = wp_count_posts('post')->publish;
+  
+  // Get available years
+  global $wpdb;
+  $years = $wpdb->get_col("
+    SELECT DISTINCT YEAR(post_date) as year
+    FROM $wpdb->posts
+    WHERE post_status = 'publish' AND post_type = 'post'
+    ORDER BY year DESC
+  ");
+  
+  // Get current page URL without query params
+  $base_url = strtok($_SERVER['REQUEST_URI'], '?');
+  
+  ob_start();
+  ?>
+  <section class="cryo-archiveHeader" aria-label="相關資訊及活動">
+    <div class="cryo-archiveHeader__inner">
+      <h1 class="cryo-archiveHeader__title">相關資訊及活動</h1>
+    </div>
+  </section>
+
+  <section class="cryo-filterBar" aria-label="篩選" data-cryo-news-filter>
+    <div class="cryo-filterBar__inner">
+      <nav class="cryo-filterBar__tabs" aria-label="文章分類">
+        <a href="<?php echo esc_url($base_url); ?>" 
+           class="cryo-filterBar__tab <?php echo empty($current_cat) || $current_cat === 'all' ? 'cryo-filterBar__tab--active' : ''; ?>"
+           data-cat="all">
+          全部
+        </a>
+        <?php foreach ($categories as $cat) : ?>
+          <a href="<?php echo esc_url(add_query_arg('filter_cat', $cat->slug, $base_url)); ?>" 
+             class="cryo-filterBar__tab <?php echo $current_cat === $cat->slug ? 'cryo-filterBar__tab--active' : ''; ?>"
+             data-cat="<?php echo esc_attr($cat->slug); ?>">
+            <?php echo esc_html($cat->name); ?>
+            <span class="cryo-filterBar__count"><?php echo (int) $cat->count; ?></span>
+          </a>
+        <?php endforeach; ?>
+      </nav>
+
+      <div class="cryo-filterBar__yearFilter">
+        <select class="cryo-filterBar__select" aria-label="按年份篩選" data-cryo-year-filter>
+          <option value="">All Year</option>
+          <?php foreach ($years as $year) : ?>
+            <option value="<?php echo (int) $year; ?>" <?php selected($current_year, (int) $year); ?>>
+              <?php echo (int) $year; ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+    </div>
+
+    <div class="cryo-filterBar__search">
+      <svg class="cryo-filterBar__searchIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="M21 21l-4.35-4.35"/>
+      </svg>
+      <input type="search" 
+             class="cryo-filterBar__searchInput" 
+             placeholder="Search" 
+             aria-label="搜尋文章"
+             value="<?php echo esc_attr($search_query); ?>"
+             data-cryo-search-input />
+    </div>
+  </section>
+
+  <section class="cryo-postGrid" aria-label="文章列表">
+    <div class="cryo-postGrid__inner" data-cryo-posts-container>
+      <?php if ($posts_query->have_posts()) : ?>
+        <?php while ($posts_query->have_posts()) : $posts_query->the_post(); 
+          $post_categories = get_the_category();
+          $cat_name = !empty($post_categories) ? $post_categories[0]->name : '';
+          $cat_slug = !empty($post_categories) ? $post_categories[0]->slug : '';
+        ?>
+          <article class="cryo-postCard">
+            <a href="<?php the_permalink(); ?>" class="cryo-postCard__link">
+              <?php if (has_post_thumbnail()) : ?>
+                <div class="cryo-postCard__media">
+                  <?php the_post_thumbnail('medium_large', ['loading' => 'lazy']); ?>
+                </div>
+              <?php else : ?>
+                <div class="cryo-postCard__media">
+                  <img src="https://placehold.co/600x400/E8E4DE/666?text=<?php echo urlencode(get_the_title()); ?>" 
+                       alt="<?php echo esc_attr(get_the_title()); ?>" 
+                       loading="lazy" />
+                </div>
+              <?php endif; ?>
+              <div class="cryo-postCard__content">
+                <div class="cryo-postCard__meta">
+                  <?php if ($cat_name) : ?>
+                    <span class="cryo-postCard__category"><?php echo esc_html($cat_name); ?></span>
+                  <?php endif; ?>
+                  <time class="cryo-postCard__date" datetime="<?php echo get_the_date('Y-m-d'); ?>">
+                    <?php echo get_the_date('d-m-Y'); ?>
+                  </time>
+                </div>
+                <h2 class="cryo-postCard__title"><?php the_title(); ?></h2>
+              </div>
+            </a>
+          </article>
+        <?php endwhile; ?>
+        <?php wp_reset_postdata(); ?>
+      <?php else : ?>
+        <div class="cryo-postGrid__empty">
+          <p>暫無相關文章</p>
+        </div>
+      <?php endif; ?>
+    </div>
+
+    <?php if ($posts_query->max_num_pages > 1) : ?>
+      <div class="cryo-postGrid__loadMore">
+        <button type="button" 
+                class="cryo-postGrid__loadBtn" 
+                data-cryo-load-more
+                data-page="1"
+                data-max-pages="<?php echo (int) $posts_query->max_num_pages; ?>"
+                data-per-page="<?php echo (int) $posts_per_page; ?>"
+                data-cat="<?php echo esc_attr($current_cat); ?>"
+                data-year="<?php echo (int) $current_year; ?>"
+                data-search="<?php echo esc_attr($search_query); ?>">
+          Load More
+        </button>
+      </div>
+    <?php endif; ?>
+  </section>
+  <?php
+  return ob_get_clean();
+});
+
+/**
+ * AJAX handler for loading more posts
+ */
+add_action('wp_ajax_cryo_load_more_posts', 'cryo_load_more_posts_handler');
+add_action('wp_ajax_nopriv_cryo_load_more_posts', 'cryo_load_more_posts_handler');
+
+function cryo_load_more_posts_handler() {
+  check_ajax_referer('cryo_news_nonce', 'nonce');
+  
+  $page = isset($_POST['page']) ? (int) $_POST['page'] : 1;
+  $per_page = isset($_POST['per_page']) ? (int) $_POST['per_page'] : 6;
+  $cat = isset($_POST['cat']) ? sanitize_text_field($_POST['cat']) : '';
+  $year = isset($_POST['year']) ? (int) $_POST['year'] : 0;
+  $search = isset($_POST['search']) ? sanitize_text_field($_POST['search']) : '';
+  
+  $query_args = [
+    'post_type' => 'post',
+    'post_status' => 'publish',
+    'posts_per_page' => $per_page,
+    'paged' => $page,
+  ];
+  
+  if (!empty($cat) && $cat !== 'all') {
+    $query_args['category_name'] = $cat;
+  }
+  
+  if ($year > 0) {
+    $query_args['year'] = $year;
+  }
+  
+  if (!empty($search)) {
+    $query_args['s'] = $search;
+  }
+  
+  $query = new WP_Query($query_args);
+  
+  ob_start();
+  
+  if ($query->have_posts()) {
+    while ($query->have_posts()) {
+      $query->the_post();
+      $post_categories = get_the_category();
+      $cat_name = !empty($post_categories) ? $post_categories[0]->name : '';
+      ?>
+      <article class="cryo-postCard">
+        <a href="<?php the_permalink(); ?>" class="cryo-postCard__link">
+          <?php if (has_post_thumbnail()) : ?>
+            <div class="cryo-postCard__media">
+              <?php the_post_thumbnail('medium_large', ['loading' => 'lazy']); ?>
+            </div>
+          <?php else : ?>
+            <div class="cryo-postCard__media">
+              <img src="https://placehold.co/600x400/E8E4DE/666?text=<?php echo urlencode(get_the_title()); ?>" 
+                   alt="<?php echo esc_attr(get_the_title()); ?>" 
+                   loading="lazy" />
+            </div>
+          <?php endif; ?>
+          <div class="cryo-postCard__content">
+            <div class="cryo-postCard__meta">
+              <?php if ($cat_name) : ?>
+                <span class="cryo-postCard__category"><?php echo esc_html($cat_name); ?></span>
+              <?php endif; ?>
+              <time class="cryo-postCard__date" datetime="<?php echo get_the_date('Y-m-d'); ?>">
+                <?php echo get_the_date('d-m-Y'); ?>
+              </time>
+            </div>
+            <h2 class="cryo-postCard__title"><?php the_title(); ?></h2>
+          </div>
+        </a>
+      </article>
+      <?php
+    }
+    wp_reset_postdata();
+  }
+  
+  $html = ob_get_clean();
+  
+  wp_send_json_success([
+    'html' => $html,
+    'has_more' => $page < $query->max_num_pages,
+  ]);
+}
+
+/**
+ * Enqueue news archive scripts and localize AJAX URL
+ */
+add_action('wp_enqueue_scripts', function() {
+  // Localize AJAX data for news archive
+  wp_localize_script('cryo-main', 'cryoNewsArchive', [
+    'ajaxUrl' => admin_url('admin-ajax.php'),
+    'nonce' => wp_create_nonce('cryo_news_nonce'),
+  ]);
+});
+

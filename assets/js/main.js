@@ -667,3 +667,129 @@ document.addEventListener('DOMContentLoaded', () => {
     setActive(0);
   });
 });
+
+// News Archive behavior: category filter, year filter, search, load more
+document.addEventListener('DOMContentLoaded', () => {
+  const filterBar = document.querySelector('[data-cryo-news-filter]');
+  if (!filterBar) return;
+
+  const postsContainer = document.querySelector('[data-cryo-posts-container]');
+  const loadMoreBtn = document.querySelector('[data-cryo-load-more]');
+  const yearSelect = document.querySelector('[data-cryo-year-filter]');
+  const searchInput = document.querySelector('[data-cryo-search-input]');
+  const categoryTabs = filterBar.querySelectorAll('[data-cat]');
+
+  if (!postsContainer) return;
+
+  // Get AJAX config from localized script (set in functions.php)
+  const config = window.cryoNewsArchive || {};
+  const ajaxUrl = config.ajaxUrl || '/wp-admin/admin-ajax.php';
+  const nonce = config.nonce || '';
+
+  // Build current URL with filters (using custom param names to avoid WP conflicts)
+  const buildFilterUrl = (cat, year, search) => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('filter_cat');
+    url.searchParams.delete('filter_year');
+    url.searchParams.delete('filter_search');
+    
+    if (cat && cat !== 'all') url.searchParams.set('filter_cat', cat);
+    if (year) url.searchParams.set('filter_year', year);
+    if (search) url.searchParams.set('filter_search', search);
+    
+    return url.toString();
+  };
+
+  // Category tab clicks - navigate with filter
+  categoryTabs.forEach((tab) => {
+    tab.addEventListener('click', (e) => {
+      // Let the browser handle navigation naturally
+      // The PHP will handle filtering on page load
+    });
+  });
+
+  // Year filter change
+  if (yearSelect) {
+    yearSelect.addEventListener('change', () => {
+      const currentCat = new URLSearchParams(window.location.search).get('filter_cat') || '';
+      const currentSearch = new URLSearchParams(window.location.search).get('filter_search') || '';
+      const year = yearSelect.value;
+      window.location.href = buildFilterUrl(currentCat, year, currentSearch);
+    });
+  }
+
+  // Search input (on Enter key)
+  if (searchInput) {
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const currentCat = new URLSearchParams(window.location.search).get('filter_cat') || '';
+        const currentYear = new URLSearchParams(window.location.search).get('filter_year') || '';
+        const search = searchInput.value.trim();
+        window.location.href = buildFilterUrl(currentCat, currentYear, search);
+      }
+    });
+  }
+
+  // Load More button - AJAX pagination
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener('click', async () => {
+      const currentPage = parseInt(loadMoreBtn.dataset.page, 10) || 1;
+      const maxPages = parseInt(loadMoreBtn.dataset.maxPages, 10) || 1;
+      const perPage = parseInt(loadMoreBtn.dataset.perPage, 10) || 6;
+      const cat = loadMoreBtn.dataset.cat || '';
+      const year = loadMoreBtn.dataset.year || '';
+      const search = loadMoreBtn.dataset.search || '';
+
+      if (currentPage >= maxPages) {
+        loadMoreBtn.style.display = 'none';
+        return;
+      }
+
+      const nextPage = currentPage + 1;
+
+      // Show loading state
+      loadMoreBtn.disabled = true;
+      loadMoreBtn.textContent = 'Loading...';
+
+      try {
+        const formData = new FormData();
+        formData.append('action', 'cryo_load_more_posts');
+        formData.append('nonce', nonce);
+        formData.append('page', nextPage);
+        formData.append('per_page', perPage);
+        formData.append('cat', cat);
+        formData.append('year', year);
+        formData.append('search', search);
+
+        const response = await fetch(ajaxUrl, {
+          method: 'POST',
+          body: formData,
+        });
+
+        const result = await response.json();
+
+        if (result.success && result.data.html) {
+          // Append new posts
+          postsContainer.insertAdjacentHTML('beforeend', result.data.html);
+          
+          // Update button state
+          loadMoreBtn.dataset.page = nextPage;
+          
+          if (!result.data.has_more) {
+            loadMoreBtn.style.display = 'none';
+          } else {
+            loadMoreBtn.disabled = false;
+            loadMoreBtn.textContent = 'Load More';
+          }
+        } else {
+          loadMoreBtn.style.display = 'none';
+        }
+      } catch (error) {
+        console.error('Load more error:', error);
+        loadMoreBtn.disabled = false;
+        loadMoreBtn.textContent = 'Load More';
+      }
+    });
+  }
+});
