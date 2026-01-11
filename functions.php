@@ -1,4 +1,6 @@
 <?php
+// Include additional shortcodes
+require_once get_template_directory() . '/includes/news-archive-shortcode.php';
 // Enable common theme supports
 add_action('after_setup_theme', function (): void {
   add_theme_support('wp-block-styles');

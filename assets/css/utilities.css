@@ -1960,7 +1960,7 @@ html[lang^="zh"] .wp-site-blocks {
 }
 .cryo-advStat {
   padding: 24px 26px;
-  color: #333;
+  color: #FFF;
   position: relative;
 }
 .cryo-advStat + .cryo-advStat {
@@ -2699,7 +2699,7 @@ html[lang^="zh"] .wp-site-blocks {
 }
 
 .cryo-director__desc {
-  color: var(--wp--preset--color--accent, #C3572C);
+  color: #000;
   font-size: 18px;
   font-weight: 500;
   line-height: 1.5;
@@ -5409,7 +5409,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
 .cryo-researchCta__btn {
   display: inline-block;
   background: var(--wp--preset--color--accent, #C3572C);
-  color: #333;
+  color: #FFF;
   font-size: 16px;
   font-weight: 600;
   text-decoration: none;
@@ -5783,7 +5783,8 @@ a.cryo-techCard:hover .cryo-techCard__img {
 /* -------------------------------------------------------------------------- */
 
 .cryo-testimonialSection--single {
-  background: linear-gradient(135deg, #4A4A4A 0%, #2D2D2D 100%);
+  /* To be added with image for the background attribute below*/
+  /* background: linear-gradient(135deg, #4A4A4A 0%, #2D2D2D 100%); */
   padding: 64px 0;
 }
 
@@ -5918,7 +5919,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 /* Filter Bar */
 .cryo-filterBar {
-  background: var(--wp--preset--color--topbar);
+  background: var(--wp--preset--color--topbar, #f5ebe7);
   padding: 16px 24px;
   position: sticky;
   top: 0;
@@ -5929,18 +5930,25 @@ a.cryo-techCard:hover .cryo-techCard__img {
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 16px;
+}
+
+/* Left side: scrollable category tabs */
+.cryo-filterBar__left {
+  flex: 1;
+  min-width: 0; /* Allow shrinking */
+  overflow: hidden;
 }
 
 .cryo-filterBar__tabs {
   display: flex;
-  gap: 8px;
+  gap: 24px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding-bottom: 4px;
+  padding: 4px 0;
 }
 
 .cryo-filterBar__tabs::-webkit-scrollbar {
@@ -5949,70 +5957,93 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-filterBar__tab {
   display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #999;
+  align-items: baseline;
+  gap: 2px;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 400;
+  color: #666;
+  background: none;
+  border: none;
   text-decoration: none;
   white-space: nowrap;
-  border-radius: 4px;
-  transition: color 0.2s ease, background 0.2s ease;
+  cursor: pointer;
+  transition: color 0.2s ease;
 }
 
 .cryo-filterBar__tab:hover {
-  color: #666;
+  color: #333;
 }
 
 .cryo-filterBar__tab--active {
-  color: #000;
+  color: #333;
   font-weight: 700;
 }
 
 .cryo-filterBar__count {
   font-size: 11px;
   font-weight: 400;
-  color: #666;
+  color: #999;
   vertical-align: super;
+  margin-left: 1px;
 }
 
+/* Right side: year filter + search */
+.cryo-filterBar__right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.cryo-filterBar__form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Year Filter Dropdown */
 .cryo-filterBar__yearFilter {
-  display: none;
+  display: flex;
+  align-items: center;
 }
 
 .cryo-filterBar__select {
-  padding: 8px 32px 8px 16px;
+  padding: 8px 28px 8px 12px;
   font-size: 14px;
-  font-weight: 600;
-  color: var(--wp--preset--color--accent, #C3572C);
-  background: transparent;
-  border: none;
+  font-weight: 500;
+  color: #333;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23C3572C' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 8px center;
+  background-position: right 10px center;
+  min-width: 100px;
 }
 
 .cryo-filterBar__select:focus {
   outline: none;
+  border-color: var(--wp--preset--color--accent, #C3572C);
 }
 
-/* Mobile Search */
+/* Search Input */
 .cryo-filterBar__search {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
+  gap: 8px;
+  padding: 8px 12px;
   background: #fff;
-  border-radius: 8px;
-  margin-top: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  min-width: 180px;
 }
 
 .cryo-filterBar__searchIcon {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   color: #999;
   flex-shrink: 0;
 }
@@ -6020,9 +6051,10 @@ a.cryo-techCard:hover .cryo-techCard__img {
 .cryo-filterBar__searchInput {
   flex: 1;
   border: none;
-  font-size: 15px;
+  font-size: 14px;
   color: #333;
   background: transparent;
+  min-width: 0;
 }
 
 .cryo-filterBar__searchInput::placeholder {
@@ -6033,34 +6065,47 @@ a.cryo-techCard:hover .cryo-techCard__img {
   outline: none;
 }
 
+/* Mobile: Stack layout */
+@media (max-width: 767px) {
+  .cryo-filterBar__inner {
+    flex-wrap: wrap;
+  }
+
+  .cryo-filterBar__left {
+    width: 100%;
+    order: 1;
+  }
+
+  .cryo-filterBar__right {
+    width: 100%;
+    order: 2;
+    margin-top: 12px;
+  }
+
+  .cryo-filterBar__search {
+    flex: 1;
+  }
+
+  .cryo-filterBar__yearFilter {
+    flex-shrink: 0;
+  }
+}
+
 @media (min-width: 768px) {
   .cryo-filterBar {
     padding: 20px 40px;
   }
 
-  .cryo-filterBar__inner {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 24px;
-  }
-
   .cryo-filterBar__tabs {
-    gap: 12px;
-    padding-bottom: 0;
+    gap: 32px;
   }
 
   .cryo-filterBar__tab {
-    font-size: 15px;
-    padding: 10px 20px;
-  }
-
-  .cryo-filterBar__yearFilter {
-    display: block;
+    font-size: 16px;
   }
 
   .cryo-filterBar__search {
-    display: none;
+    min-width: 200px;
   }
 }
 
@@ -6069,9 +6114,12 @@ a.cryo-techCard:hover .cryo-techCard__img {
     padding: 24px 60px;
   }
 
-  .cryo-filterBar__tab {
-    font-size: 16px;
-    padding: 12px 24px;
+  .cryo-filterBar__tabs {
+    gap: 40px;
+  }
+
+  .cryo-filterBar__search {
+    min-width: 240px;
   }
 }
 
@@ -6148,7 +6196,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
   padding: 4px 12px;
   font-size: 12px;
   font-weight: 600;
-  color: #333;
+  color: #FFF;
   background: var(--wp--preset--color--accent, #C3572C);
   border-radius: 4px;
 }
@@ -6266,57 +6314,85 @@ a.cryo-techCard:hover .cryo-techCard__img {
   }
 }
 
-/* Load More Button */
-.cryo-postGrid__loadMore {
-  text-align: center;
+/* Pagination */
+.cryo-postGrid__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
   margin-top: 48px;
+  padding: 24px 0;
 }
 
-.cryo-postGrid__loadBtn {
+.cryo-postGrid__pageBtn {
   display: inline-block;
-  padding: 14px 48px;
-  font-size: 15px;
+  padding: 12px 32px;
+  font-size: 14px;
   font-weight: 600;
   color: #333;
   background: #fff;
-  border: 2px solid #333;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-.cryo-postGrid__loadBtn:hover {
-  background: #333;
-  color: #333;
+.cryo-postGrid__pageBtn:hover {
+  background: #f5f5f5;
+  border-color: #999;
+}
+
+.cryo-postGrid__pageInfo {
+  font-size: 14px;
+  color: #666;
 }
 
 @media (min-width: 768px) {
-  .cryo-postGrid__loadMore {
+  .cryo-postGrid__pagination {
     margin-top: 60px;
+    gap: 24px;
   }
 
-  .cryo-postGrid__loadBtn {
-    padding: 16px 56px;
-    font-size: 16px;
+  .cryo-postGrid__pageBtn {
+    padding: 14px 40px;
+    font-size: 15px;
   }
-}
-
-.cryo-postGrid__loadBtn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 /* Empty State */
-.cryo-postGrid__empty {
+.cryo-postGrid__empty,
+.cryo-postGrid__loading {
   grid-column: 1 / -1;
   text-align: center;
   padding: 60px 24px;
   color: #666;
 }
 
-.cryo-postGrid__empty p {
+.cryo-postGrid__empty p,
+.cryo-postGrid__loading {
   font-size: 18px;
   margin: 0;
+}
+
+.cryo-postGrid__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.cryo-postGrid__loading::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ddd;
+  border-top-color: var(--wp--preset--color--accent, #C3572C);
+  border-radius: 50%;
+  animation: cryo-spin 0.8s linear infinite;
+}
+
+@keyframes cryo-spin {
+  to { transform: rotate(360deg); }
 }
 
 
