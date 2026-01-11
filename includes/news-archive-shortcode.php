@@ -47,9 +47,16 @@ add_shortcode('cryo_news_archive', function ($atts): string {
     'order' => 'DESC',
   ];
 
-  // Category filter (using term_id)
+  // Category filter (using tax_query with include_children=false for consistency)
   if ($current_cat_id > 0) {
-    $query_args['cat'] = $current_cat_id;
+    $query_args['tax_query'] = [
+      [
+        'taxonomy' => 'category',
+        'field' => 'term_id',
+        'terms' => $current_cat_id,
+        'include_children' => false, // Only show posts DIRECTLY in this category
+      ],
+    ];
   }
 
   // Year filter
@@ -64,7 +71,8 @@ add_shortcode('cryo_news_archive', function ($atts): string {
 
   $query = new WP_Query($query_args);
 
-  // Get categories for filter tabs
+  // Get categories for filter tabs with accurate published post counts
+  // Using tax_query with include_children=false to count ONLY posts directly in that category
   $categories = [];
   if ($show_filter) {
     $terms = get_terms([
@@ -74,9 +82,38 @@ add_shortcode('cryo_news_archive', function ($atts): string {
       'order' => 'DESC',
     ]);
     if (!is_wp_error($terms) && !empty($terms)) {
-      $categories = $terms;
+      // Get accurate count of published posts per category (excluding child categories)
+      foreach ($terms as $term) {
+        $count_query = new WP_Query([
+          'post_type' => 'post',
+          'post_status' => 'publish',
+          'tax_query' => [
+            [
+              'taxonomy' => 'category',
+              'field' => 'term_id',
+              'terms' => $term->term_id,
+              'include_children' => false, // Only count posts DIRECTLY in this category
+            ],
+          ],
+          'posts_per_page' => 1,
+          'fields' => 'ids',
+          'no_found_rows' => false,
+        ]);
+        $term->published_count = (int) $count_query->found_posts;
+        wp_reset_postdata();
+      }
+      // Filter out categories with 0 published posts and re-sort
+      $categories = array_filter($terms, function($t) {
+        return $t->published_count > 0;
+      });
+      usort($categories, function($a, $b) {
+        return $b->published_count - $a->published_count;
+      });
     }
   }
+  
+  // Get total published posts count
+  $total_published = (int) wp_count_posts('post')->publish;
 
   // Get available years
   global $wpdb;
@@ -132,16 +169,16 @@ add_shortcode('cryo_news_archive', function ($atts): string {
     $all_url = $build_url(0, null, null, 1);
     $html .= '<a class="cryo-filterBar__tab' . $all_active . '" href="' . esc_url($all_url) . '">';
     $html .= '全部';
-    $html .= '<span class="cryo-filterBar__count">' . (int) wp_count_posts('post')->publish . '</span>';
+    $html .= '<span class="cryo-filterBar__count">' . $total_published . '</span>';
     $html .= '</a>';
 
-    // Category tabs (using term_id for URL, WordPress standard)
+    // Category tabs (using term_id for URL, with accurate published post counts)
     foreach ($categories as $cat) {
       $is_active = ($current_cat_id === (int) $cat->term_id) ? ' cryo-filterBar__tab--active' : '';
       $cat_url = $build_url((int) $cat->term_id, null, null, 1);
       $html .= '<a class="cryo-filterBar__tab' . $is_active . '" href="' . esc_url($cat_url) . '">';
       $html .= esc_html($cat->name);
-      $html .= '<span class="cryo-filterBar__count">' . (int) $cat->count . '</span>';
+      $html .= '<span class="cryo-filterBar__count">' . $cat->published_count . '</span>';
       $html .= '</a>';
     }
 
@@ -195,7 +232,8 @@ add_shortcode('cryo_news_archive', function ($atts): string {
   if ($query->have_posts()) {
     while ($query->have_posts()) {
       $query->the_post();
-      $html .= cryo_render_archive_post_card(get_post());
+      // Pass the current filter category ID so it can be highlighted/shown first
+      $html .= cryo_render_archive_post_card(get_post(), $current_cat_id);
     }
     wp_reset_postdata();
   } else {
@@ -233,9 +271,11 @@ add_shortcode('cryo_news_archive', function ($atts): string {
 
 /**
  * Helper: Render a post card for the archive grid
+ * @param WP_Post $post The post object
+ * @param int $highlight_cat_id Optional category ID to highlight/show first (the active filter)
  */
 if (!function_exists('cryo_render_archive_post_card')) {
-  function cryo_render_archive_post_card($post): string {
+  function cryo_render_archive_post_card($post, $highlight_cat_id = 0): string {
     if (!$post) return '';
 
     $title = get_the_title($post);
@@ -243,17 +283,39 @@ if (!function_exists('cryo_render_archive_post_card')) {
     $date = get_the_date('Y.m.d', $post);
     $excerpt = get_the_excerpt($post);
 
-    // Category
+    // Categories (render ALL assigned categories, with filtered category first)
     $category_html = '';
     $terms = get_the_terms($post, 'category');
     if (!is_wp_error($terms) && !empty($terms)) {
-      $term = $terms[0];
-      $tag_modifier = function_exists('cryo_get_tag_modifier') ? cryo_get_tag_modifier($term->name) : '';
-      $tag_class = 'cryo-postCard__category';
-      if ($tag_modifier !== '') {
-        $tag_class .= ' cryo-postCard__category--' . esc_attr($tag_modifier);
+      // If we have a highlight category, sort it to the front
+      if ($highlight_cat_id > 0) {
+        usort($terms, function($a, $b) use ($highlight_cat_id) {
+          if ((int)$a->term_id === $highlight_cat_id) return -1;
+          if ((int)$b->term_id === $highlight_cat_id) return 1;
+          return 0;
+        });
       }
-      $category_html = '<span class="' . $tag_class . '">' . esc_html($term->name) . '</span>';
+      
+      $category_tags = [];
+      foreach ($terms as $term) {
+        // Skip "Uncategorized" / "未分類" if there are other categories
+        if ($term->slug === 'uncategorized' && count($terms) > 1) {
+          continue;
+        }
+        $tag_modifier = function_exists('cryo_get_tag_modifier') ? cryo_get_tag_modifier($term->name) : '';
+        $tag_class = 'cryo-postCard__category';
+        
+        // Highlight the filtered category
+        if ($highlight_cat_id > 0 && (int)$term->term_id === $highlight_cat_id) {
+          $tag_class .= ' cryo-postCard__category--active';
+        }
+        
+        if ($tag_modifier !== '') {
+          $tag_class .= ' cryo-postCard__category--' . esc_attr($tag_modifier);
+        }
+        $category_tags[] = '<span class="' . $tag_class . '">' . esc_html($term->name) . '</span>';
+      }
+      $category_html = implode('', $category_tags);
     }
 
     // Featured image

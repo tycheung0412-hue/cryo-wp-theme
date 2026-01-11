@@ -6187,7 +6187,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
 .cryo-postCard__meta {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px 12px; /* row-gap for date, column-gap for categories */
   flex-wrap: wrap;
 }
 
@@ -6201,8 +6201,19 @@ a.cryo-techCard:hover .cryo-techCard__img {
   border-radius: 4px;
 }
 
+/* When multiple categories, add small gap between them */
+.cryo-postCard__category + .cryo-postCard__category {
+  margin-left: -4px; /* Tighter spacing between category tags */
+}
+
 .cryo-postCard__category--event {
   background: var(--wp--preset--color--accent, #C3572C);
+}
+
+/* Highlight the category that matches the current filter */
+.cryo-postCard__category--active {
+  background: var(--wp--preset--color--accent, #C3572C);
+  box-shadow: 0 0 0 2px rgba(195, 87, 44, 0.3);
 }
 
 .cryo-postCard__categorySecondary {
