@@ -79,13 +79,24 @@ if (!function_exists('cryo_seed_custom_logo_if_missing')) {
 add_action('after_switch_theme', 'cryo_seed_custom_logo_if_missing');
 add_action('init', 'cryo_seed_custom_logo_if_missing');
 
-// Attempt to auto-assign existing menus to theme locations if none are set.
+// Attempt to auto-assign existing menus to theme locations if none are set or stale.
 add_action('init', function (): void {
   $locations = get_theme_mod('nav_menu_locations', []);
   $menus = wp_get_nav_menus();
   if (empty($menus)) {
     return;
   }
+
+  // Build a set of valid menu IDs for quick lookup.
+  $valid_ids = [];
+  foreach ($menus as $menu) {
+    $valid_ids[(int) $menu->term_id] = true;
+  }
+
+  // Helper: check if a stored menu ID is still valid.
+  $is_valid = static function ($id) use ($valid_ids): bool {
+    return !empty($id) && isset($valid_ids[(int) $id]);
+  };
 
   $pick_menu_id = static function (array $needles) use ($menus): int {
     foreach ($menus as $menu) {
@@ -99,23 +110,23 @@ add_action('init', function (): void {
     return 0;
   };
 
-  // Primary
-  if (empty($locations['primary'])) {
+  // Primary — reassign if empty OR if stored ID no longer exists.
+  if (empty($locations['primary']) || !$is_valid($locations['primary'])) {
     $id = $pick_menu_id(['primary', 'main', '主', '主要']);
     if ($id === 0) $id = (int) $menus[0]->term_id;
     $locations['primary'] = $id;
   }
 
-  // Footer (middle column in Cryo footer)
-  if (empty($locations['footer'])) {
+  // Footer (middle column in Cryo footer) — reassign if empty OR stale.
+  if (empty($locations['footer']) || !$is_valid($locations['footer'])) {
     $id = $pick_menu_id(['footer', '頁尾', '底', 'footer menu']);
     if ($id > 0) {
       $locations['footer'] = $id;
     }
   }
 
-  // Footer legal (bottom row policy links)
-  if (empty($locations['footer_legal'])) {
+  // Footer legal (bottom row policy links) — reassign if empty OR stale.
+  if (empty($locations['footer_legal']) || !$is_valid($locations['footer_legal'])) {
     $id = $pick_menu_id(['policy', 'legal', 'privacy', 'refund', '退款', '隱私', '政策', '條款', 'reference', '參考']);
     if ($id === 0) {
       // If menu names aren't descriptive, scan menu items once to find a likely legal/policy menu.
@@ -216,6 +227,177 @@ add_shortcode('cryo_footer_menu', function ($atts): string {
 
   return is_string($menu_html) ? $menu_html : '';
 });
+
+/**
+ * Shortcode to render the primary header navigation using classic WP menus.
+ *
+ * Why:
+ * - The Navigation block's `__unstableLocation` attribute is unreliable
+ * - Database-stored template part overrides can interfere with the Navigation block
+ * - Using `wp_nav_menu()` ensures the menu respects Appearance → Menus assignments
+ *
+ * Usage:
+ * - [cryo_primary_menu class="cryo-nav__primaryNav"]
+ *
+ * This renders a proper block navigation structure that matches WordPress core styles.
+ */
+add_shortcode('cryo_primary_menu', function ($atts): string {
+  $atts = shortcode_atts([
+    'class' => 'cryo-nav__primaryNav',
+  ], (array) $atts, 'cryo_primary_menu');
+
+  $class = trim((string) ($atts['class'] ?? 'cryo-nav__primaryNav'));
+
+  $locations = get_theme_mod('nav_menu_locations', []);
+  $menu_id = (int) ($locations['primary'] ?? 0);
+  if ($menu_id <= 0) {
+    return '<!-- cryo_primary_menu: no menu assigned to "primary" location -->';
+  }
+
+  // Custom walker to output block-navigation compatible HTML structure.
+  $menu_html = wp_nav_menu([
+    'theme_location' => 'primary',
+    'container' => 'nav',
+    'container_class' => $class . ' wp-block-navigation is-layout-flex wp-block-navigation-is-layout-flex',
+    'menu_class' => 'wp-block-navigation__container ' . $class . ' wp-block-navigation',
+    'items_wrap' => '<ul id="%1$s" class="%2$s">%3$s</ul>',
+    'fallback_cb' => false,
+    'echo' => false,
+    'depth' => 3,
+    'walker' => new Cryo_Nav_Walker(),
+  ]);
+
+  return is_string($menu_html) ? $menu_html : '';
+});
+
+/**
+ * Custom Walker for primary navigation.
+ *
+ * Outputs menu items in a structure compatible with WordPress block navigation CSS,
+ * including proper submenu handling with interactive attributes.
+ */
+if (!class_exists('Cryo_Nav_Walker')) {
+  class Cryo_Nav_Walker extends Walker_Nav_Menu {
+    /**
+     * Starts the list before the elements are added.
+     */
+    public function start_lvl(&$output, $depth = 0, $args = null) {
+      $indent = str_repeat("\t", $depth);
+      $output .= "\n{$indent}<ul data-wp-on--focus=\"actions.openMenuOnFocus\" class=\"wp-block-navigation__submenu-container\">\n";
+    }
+
+    /**
+     * Ends the list after the elements are added.
+     */
+    public function end_lvl(&$output, $depth = 0, $args = null) {
+      $indent = str_repeat("\t", $depth);
+      $output .= "{$indent}</ul>\n";
+    }
+
+    /**
+     * Starts the element output.
+     */
+    public function start_el(&$output, $item, $depth = 0, $args = null, $id = 0) {
+      $indent = ($depth) ? str_repeat("\t", $depth) : '';
+      $classes = empty($item->classes) ? [] : (array) $item->classes;
+
+      // Add WordPress block navigation classes
+      $classes[] = 'wp-block-navigation-item';
+      $classes[] = 'menu-item';
+      $classes[] = 'menu-item-' . $item->ID;
+
+      // Check if this item has children
+      $has_children = in_array('menu-item-has-children', $classes, true);
+
+      if ($has_children) {
+        $classes[] = 'has-child';
+        $classes[] = 'open-on-hover-click';
+        $classes[] = 'wp-block-navigation-submenu';
+      } else {
+        $classes[] = 'wp-block-navigation-link';
+      }
+
+      // Filter and join classes
+      $classes = array_filter($classes);
+      $class_names = implode(' ', array_unique($classes));
+      $class_names = $class_names ? ' class="' . esc_attr($class_names) . '"' : '';
+
+      // Build the li opening tag
+      $li_attrs = '';
+      if ($has_children) {
+        // Add interactive attributes for submenu handling
+        $li_attrs = ' data-wp-context=\'{ "submenuOpenedBy": { "click": false, "hover": false, "focus": false }, "type": "submenu", "modal": null, "previousFocus": null }\''
+          . ' data-wp-interactive="core/navigation"'
+          . ' data-wp-on--focusout="actions.handleMenuFocusout"'
+          . ' data-wp-on--keydown="actions.handleMenuKeydown"'
+          . ' data-wp-on--mouseenter="actions.openMenuOnHover"'
+          . ' data-wp-on--mouseleave="actions.closeMenuOnHover"'
+          . ' data-wp-watch="callbacks.initMenu"'
+          . ' tabindex="-1"';
+      }
+
+      $output .= $indent . '<li' . $class_names . $li_attrs . '>';
+
+      // Build the anchor
+      $atts = [];
+      $atts['title'] = !empty($item->attr_title) ? $item->attr_title : '';
+      $atts['target'] = !empty($item->target) ? $item->target : '';
+      $atts['rel'] = !empty($item->xfn) ? $item->xfn : '';
+      $atts['href'] = !empty($item->url) ? $item->url : '';
+      $atts['class'] = 'wp-block-navigation-item__content';
+
+      // Filter for plugins
+      $atts = apply_filters('nav_menu_link_attributes', $atts, $item, $args, $depth);
+
+      $attributes = '';
+      foreach ($atts as $attr => $value) {
+        if (!empty($value)) {
+          $value = ('href' === $attr) ? esc_url($value) : esc_attr($value);
+          $attributes .= ' ' . $attr . '="' . $value . '"';
+        }
+      }
+
+      $title = apply_filters('the_title', $item->title, $item->ID);
+      $title = apply_filters('nav_menu_item_title', $title, $item, $args, $depth);
+
+      $item_output = '';
+      if (isset($args->before)) {
+        $item_output .= $args->before;
+      }
+      $item_output .= '<a' . $attributes . '>';
+      $item_output .= '<span class="wp-block-navigation-item__label">';
+      if (isset($args->link_before)) {
+        $item_output .= $args->link_before;
+      }
+      $item_output .= $title;
+      if (isset($args->link_after)) {
+        $item_output .= $args->link_after;
+      }
+      $item_output .= '</span>';
+      $item_output .= '</a>';
+
+      // Add submenu toggle button if has children
+      if ($has_children) {
+        $item_output .= '<button data-wp-bind--aria-expanded="state.isMenuOpen" data-wp-on--click="actions.toggleMenuOnClick" aria-label="' . esc_attr($item->title) . ' submenu" class="wp-block-navigation__submenu-icon wp-block-navigation-submenu__toggle" aria-expanded="false">'
+          . '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true" focusable="false"><path d="M1.50002 4L6.00002 8L10.5 4" stroke-width="1.5"></path></svg>'
+          . '</button>';
+      }
+
+      if (isset($args->after)) {
+        $item_output .= $args->after;
+      }
+
+      $output .= apply_filters('walker_nav_menu_start_el', $item_output, $item, $depth, $args);
+    }
+
+    /**
+     * Ends the element output.
+     */
+    public function end_el(&$output, $item, $depth = 0, $args = null) {
+      $output .= "</li>\n";
+    }
+  }
+}
 
 /**
  * Render footer certification image by attachment filename (WordPress-driven).
@@ -333,96 +515,6 @@ add_shortcode('cryo_breadcrumbs', function (): string {
   $parts[] = '<span aria-current="page">' . esc_html(get_the_title($post_id)) . '</span>';
 
   return '<span class="cryo-breadcrumbs">' . implode('<span class="cryo-breadcrumbs__sep"> / </span>', $parts) . '</span>';
-});
-
-/**
- * Page Header with Breadcrumbs — for pages without hero banner
- *
- * Usage:
- * - [cryo_page_header] — auto-detects page title
- * - [cryo_page_header title="自訂標題"] — custom title
- *
- * This provides a simple breadcrumb navigation bar for pages that don't use
- * the hero/swiper banner. It renders the breadcrumb path on a subtle background.
- */
-add_shortcode('cryo_page_header', function ($atts): string {
-  $atts = shortcode_atts([
-    'title' => '',
-  ], (array) $atts, 'cryo_page_header');
-
-  $post_id = get_queried_object_id();
-  $title = !empty($atts['title']) ? $atts['title'] : ($post_id ? get_the_title($post_id) : '');
-  
-  // Build breadcrumbs
-  $crumbs = [];
-  $crumbs[] = '<a href="' . esc_url(home_url('/')) . '">首頁</a>';
-
-  if ($post_id) {
-    $ancestors = array_reverse(get_post_ancestors($post_id));
-    foreach ($ancestors as $aid) {
-      $crumbs[] = '<a href="' . esc_url(get_permalink($aid)) . '">' . esc_html(get_the_title($aid)) . '</a>';
-    }
-    $crumbs[] = '<span aria-current="page">' . esc_html($title) . '</span>';
-  }
-
-  $breadcrumb_html = '<nav class="cryo-pageHeader__crumbs" aria-label="Breadcrumb">'
-    . implode('<span class="cryo-pageHeader__sep">/</span>', $crumbs)
-    . '</nav>';
-
-  return '<div class="cryo-pageHeader">'
-    . '<div class="cryo-pageHeader__inner">'
-    . $breadcrumb_html
-    . '</div>'
-    . '</div>';
-});
-
-/**
- * Single Post Header — renders date + title for single posts
- *
- * Usage:
- * - [cryo_post_header]
- *
- * This shortcode renders the post date and title for single post pages.
- * Date format:
- * - Chinese (zh_TW, zh_HK, zh_CN): YYYY年MM月DD日
- * - English: d M Y
- */
-add_shortcode('cryo_post_header', function (): string {
-  $post_id = get_queried_object_id();
-  if (!$post_id) {
-    return '';
-  }
-
-  // Detect language and set date format
-  $locale = get_locale();
-  $is_chinese = in_array($locale, ['zh_TW', 'zh_HK', 'zh_CN', 'zh-hant', 'zh-hans'], true) 
-    || strpos($locale, 'zh') === 0;
-  
-  // WPML/Polylang support: check current language
-  if (function_exists('pll_current_language')) {
-    $lang = pll_current_language('slug');
-    $is_chinese = in_array($lang, ['zh', 'zh-hant', 'zh-hans', 'tc', 'sc'], true);
-  } elseif (defined('ICL_LANGUAGE_CODE')) {
-    $lang = ICL_LANGUAGE_CODE;
-    $is_chinese = in_array($lang, ['zh', 'zh-hant', 'zh-hans', 'tc', 'sc'], true);
-  }
-
-  if ($is_chinese) {
-    // Chinese format: YYYY年MM月DD日
-    $date = get_the_date('Y', $post_id) . '年' 
-      . get_the_date('m', $post_id) . '月' 
-      . get_the_date('d', $post_id) . '日';
-  } else {
-    // English format: d M Y
-    $date = get_the_date('d M Y', $post_id);
-  }
-
-  $title = get_the_title($post_id);
-
-  return '<div class="cryo-singlePost__header">'
-    . '<div class="cryo-singlePost__date">' . esc_html($date) . '</div>'
-    . '<h1 class="cryo-singlePost__title">' . esc_html($title) . '</h1>'
-    . '</div>';
 });
 
 /**
@@ -830,8 +922,25 @@ add_action('wp_enqueue_scripts', function (): void {
  * injected into the header — that only happens when the header template part is overridden in DB.
  *
  * We reset Cryo header/footer overrides once in dev/local so file-based template parts are used.
+ *
+ * To force a re-check, delete the option:
+ *   DELETE FROM wp_options WHERE option_name = 'cryo_reset_template_parts_overrides_done';
+ *
+ * Or add `?cryo_reset_templates=1` to any URL while logged in as admin.
  */
 add_action('init', function (): void {
+  // Allow admin to force-reset template part overrides via query param.
+  if (
+    isset($_GET['cryo_reset_templates']) &&
+    $_GET['cryo_reset_templates'] === '1' &&
+    current_user_can('manage_options')
+  ) {
+    delete_option('cryo_reset_template_parts_overrides_done');
+    // Redirect to remove the query param
+    wp_safe_redirect(remove_query_arg('cryo_reset_templates'));
+    exit;
+  }
+
   if (!post_type_exists('wp_template_part')) {
     return;
   }
@@ -2088,294 +2197,5 @@ add_shortcode('cryo_history_slide', function ($atts): string {
     . '</div>'
     . '</div>'
     . '</div>';
-});
-
-
-/**
- * ============================================
- * CRYO NEWS ARCHIVE — Blog/News listing page
- * ============================================
- *
- * Usage:
- * [cryo_news_archive posts_per_page="6" /]
- *
- * Parameters:
- * - posts_per_page: Number of posts per page (default: 6)
- * - categories: Comma-separated category slugs to show in filter (optional)
- *
- * Access the page:
- * Create a new page, add the shortcode, and publish.
- * Or use the default archive at /category/{slug}/ or /?cat=X
- */
-add_shortcode('cryo_news_archive', function ($atts): string {
-  $atts = shortcode_atts([
-    'posts_per_page' => 6,
-    'categories' => '',
-  ], (array) $atts, 'cryo_news_archive');
-
-  $posts_per_page = (int) $atts['posts_per_page'];
-  
-  // Get filter parameters from URL (using custom param names to avoid WP conflicts)
-  // Note: 'cat' and 's' are reserved by WordPress and cause 404s, so we use 'filter_cat', 'filter_year', 'filter_search'
-  $current_cat = isset($_GET['filter_cat']) ? sanitize_text_field($_GET['filter_cat']) : '';
-  $current_year = isset($_GET['filter_year']) ? (int) $_GET['filter_year'] : 0;
-  $search_query = isset($_GET['filter_search']) ? sanitize_text_field($_GET['filter_search']) : '';
-  
-  // Build query args
-  $query_args = [
-    'post_type' => 'post',
-    'post_status' => 'publish',
-    'posts_per_page' => $posts_per_page,
-    'paged' => 1,
-  ];
-  
-  // Filter by category
-  if (!empty($current_cat) && $current_cat !== 'all') {
-    $query_args['category_name'] = $current_cat;
-  }
-  
-  // Filter by year
-  if ($current_year > 0) {
-    $query_args['year'] = $current_year;
-  }
-  
-  // Search
-  if (!empty($search_query)) {
-    $query_args['s'] = $search_query;
-  }
-  
-  $posts_query = new WP_Query($query_args);
-  
-  // Get all categories with counts
-  $categories = get_categories([
-    'orderby' => 'count',
-    'order' => 'DESC',
-    'hide_empty' => true,
-  ]);
-  
-  // Get total post count
-  $total_posts = wp_count_posts('post')->publish;
-  
-  // Get available years
-  global $wpdb;
-  $years = $wpdb->get_col("
-    SELECT DISTINCT YEAR(post_date) as year
-    FROM $wpdb->posts
-    WHERE post_status = 'publish' AND post_type = 'post'
-    ORDER BY year DESC
-  ");
-  
-  // Get current page URL without query params
-  $base_url = strtok($_SERVER['REQUEST_URI'], '?');
-  
-  ob_start();
-  ?>
-  <?php echo do_shortcode('[cryo_page_header title="相關資訊及活動"]'); ?>
-  
-  <section class="cryo-archiveHeader" aria-label="相關資訊及活動">
-    <div class="cryo-archiveHeader__inner">
-      <h1 class="cryo-archiveHeader__title">相關資訊及活動</h1>
-    </div>
-  </section>
-
-  <section class="cryo-filterBar" aria-label="篩選" data-cryo-news-filter>
-    <div class="cryo-filterBar__inner">
-      <nav class="cryo-filterBar__tabs" aria-label="文章分類">
-        <a href="<?php echo esc_url($base_url); ?>" 
-           class="cryo-filterBar__tab <?php echo empty($current_cat) || $current_cat === 'all' ? 'cryo-filterBar__tab--active' : ''; ?>"
-           data-cat="all">
-          全部
-        </a>
-        <?php foreach ($categories as $cat) : ?>
-          <a href="<?php echo esc_url(add_query_arg('filter_cat', $cat->slug, $base_url)); ?>" 
-             class="cryo-filterBar__tab <?php echo $current_cat === $cat->slug ? 'cryo-filterBar__tab--active' : ''; ?>"
-             data-cat="<?php echo esc_attr($cat->slug); ?>">
-            <?php echo esc_html($cat->name); ?>
-            <span class="cryo-filterBar__count"><?php echo (int) $cat->count; ?></span>
-          </a>
-        <?php endforeach; ?>
-      </nav>
-
-      <div class="cryo-filterBar__yearFilter">
-        <select class="cryo-filterBar__select" aria-label="按年份篩選" data-cryo-year-filter>
-          <option value="">All Year</option>
-          <?php foreach ($years as $year) : ?>
-            <option value="<?php echo (int) $year; ?>" <?php selected($current_year, (int) $year); ?>>
-              <?php echo (int) $year; ?>
-            </option>
-          <?php endforeach; ?>
-        </select>
-      </div>
-    </div>
-
-    <div class="cryo-filterBar__search">
-      <svg class="cryo-filterBar__searchIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/>
-        <path d="M21 21l-4.35-4.35"/>
-      </svg>
-      <input type="search" 
-             class="cryo-filterBar__searchInput" 
-             placeholder="Search" 
-             aria-label="搜尋文章"
-             value="<?php echo esc_attr($search_query); ?>"
-             data-cryo-search-input />
-    </div>
-  </section>
-
-  <section class="cryo-postGrid" aria-label="文章列表">
-    <div class="cryo-postGrid__inner" data-cryo-posts-container>
-      <?php if ($posts_query->have_posts()) : ?>
-        <?php while ($posts_query->have_posts()) : $posts_query->the_post(); 
-          $post_categories = get_the_category();
-          $cat_name = !empty($post_categories) ? $post_categories[0]->name : '';
-          $cat_slug = !empty($post_categories) ? $post_categories[0]->slug : '';
-        ?>
-          <article class="cryo-postCard">
-            <a href="<?php the_permalink(); ?>" class="cryo-postCard__link">
-              <?php if (has_post_thumbnail()) : ?>
-                <div class="cryo-postCard__media">
-                  <?php the_post_thumbnail('medium_large', ['loading' => 'lazy']); ?>
-                </div>
-              <?php else : ?>
-                <div class="cryo-postCard__media">
-                  <img src="https://placehold.co/600x400/E8E4DE/666?text=<?php echo urlencode(get_the_title()); ?>" 
-                       alt="<?php echo esc_attr(get_the_title()); ?>" 
-                       loading="lazy" />
-                </div>
-              <?php endif; ?>
-              <div class="cryo-postCard__content">
-                <div class="cryo-postCard__meta">
-                  <?php if ($cat_name) : ?>
-                    <span class="cryo-postCard__category"><?php echo esc_html($cat_name); ?></span>
-                  <?php endif; ?>
-                  <time class="cryo-postCard__date" datetime="<?php echo get_the_date('Y-m-d'); ?>">
-                    <?php echo get_the_date('d-m-Y'); ?>
-                  </time>
-                </div>
-                <h2 class="cryo-postCard__title"><?php the_title(); ?></h2>
-              </div>
-            </a>
-          </article>
-        <?php endwhile; ?>
-        <?php wp_reset_postdata(); ?>
-      <?php else : ?>
-        <div class="cryo-postGrid__empty">
-          <p>暫無相關文章</p>
-        </div>
-      <?php endif; ?>
-    </div>
-
-    <?php if ($posts_query->max_num_pages > 1) : ?>
-      <div class="cryo-postGrid__loadMore">
-        <button type="button" 
-                class="cryo-postGrid__loadBtn" 
-                data-cryo-load-more
-                data-page="1"
-                data-max-pages="<?php echo (int) $posts_query->max_num_pages; ?>"
-                data-per-page="<?php echo (int) $posts_per_page; ?>"
-                data-cat="<?php echo esc_attr($current_cat); ?>"
-                data-year="<?php echo (int) $current_year; ?>"
-                data-search="<?php echo esc_attr($search_query); ?>">
-          Load More
-        </button>
-      </div>
-    <?php endif; ?>
-  </section>
-  <?php
-  return ob_get_clean();
-});
-
-/**
- * AJAX handler for loading more posts
- */
-add_action('wp_ajax_cryo_load_more_posts', 'cryo_load_more_posts_handler');
-add_action('wp_ajax_nopriv_cryo_load_more_posts', 'cryo_load_more_posts_handler');
-
-function cryo_load_more_posts_handler() {
-  check_ajax_referer('cryo_news_nonce', 'nonce');
-  
-  $page = isset($_POST['page']) ? (int) $_POST['page'] : 1;
-  $per_page = isset($_POST['per_page']) ? (int) $_POST['per_page'] : 6;
-  $cat = isset($_POST['cat']) ? sanitize_text_field($_POST['cat']) : '';
-  $year = isset($_POST['year']) ? (int) $_POST['year'] : 0;
-  $search = isset($_POST['search']) ? sanitize_text_field($_POST['search']) : '';
-  
-  $query_args = [
-    'post_type' => 'post',
-    'post_status' => 'publish',
-    'posts_per_page' => $per_page,
-    'paged' => $page,
-  ];
-  
-  if (!empty($cat) && $cat !== 'all') {
-    $query_args['category_name'] = $cat;
-  }
-  
-  if ($year > 0) {
-    $query_args['year'] = $year;
-  }
-  
-  if (!empty($search)) {
-    $query_args['s'] = $search;
-  }
-  
-  $query = new WP_Query($query_args);
-  
-  ob_start();
-  
-  if ($query->have_posts()) {
-    while ($query->have_posts()) {
-      $query->the_post();
-      $post_categories = get_the_category();
-      $cat_name = !empty($post_categories) ? $post_categories[0]->name : '';
-      ?>
-      <article class="cryo-postCard">
-        <a href="<?php the_permalink(); ?>" class="cryo-postCard__link">
-          <?php if (has_post_thumbnail()) : ?>
-            <div class="cryo-postCard__media">
-              <?php the_post_thumbnail('medium_large', ['loading' => 'lazy']); ?>
-            </div>
-          <?php else : ?>
-            <div class="cryo-postCard__media">
-              <img src="https://placehold.co/600x400/E8E4DE/666?text=<?php echo urlencode(get_the_title()); ?>" 
-                   alt="<?php echo esc_attr(get_the_title()); ?>" 
-                   loading="lazy" />
-            </div>
-          <?php endif; ?>
-          <div class="cryo-postCard__content">
-            <div class="cryo-postCard__meta">
-              <?php if ($cat_name) : ?>
-                <span class="cryo-postCard__category"><?php echo esc_html($cat_name); ?></span>
-              <?php endif; ?>
-              <time class="cryo-postCard__date" datetime="<?php echo get_the_date('Y-m-d'); ?>">
-                <?php echo get_the_date('d-m-Y'); ?>
-              </time>
-            </div>
-            <h2 class="cryo-postCard__title"><?php the_title(); ?></h2>
-          </div>
-        </a>
-      </article>
-      <?php
-    }
-    wp_reset_postdata();
-  }
-  
-  $html = ob_get_clean();
-  
-  wp_send_json_success([
-    'html' => $html,
-    'has_more' => $page < $query->max_num_pages,
-  ]);
-}
-
-/**
- * Enqueue news archive scripts and localize AJAX URL
- */
-add_action('wp_enqueue_scripts', function() {
-  // Localize AJAX data for news archive
-  wp_localize_script('cryo-main', 'cryoNewsArchive', [
-    'ajaxUrl' => admin_url('admin-ajax.php'),
-    'nonce' => wp_create_nonce('cryo_news_nonce'),
-  ]);
 });
 
