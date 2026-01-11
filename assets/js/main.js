@@ -745,3 +745,87 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// News Archive: Load More
+document.addEventListener('DOMContentLoaded', () => {
+  const loadMoreBtn = document.querySelector('[data-load-more]');
+  if (!loadMoreBtn) return;
+
+  const postsContainer = document.querySelector('.cryo-postGrid__inner');
+  if (!postsContainer) return;
+
+  const restUrl = (window.cryoLoadMore && window.cryoLoadMore.restUrl) || '/wp-json/cryo/v1/load-more-posts';
+
+  let isLoading = false;
+
+  async function handleLoadMore() {
+    if (isLoading) return;
+
+    const currentPage = parseInt(loadMoreBtn.dataset.page, 10) || 1;
+    const maxPages = parseInt(loadMoreBtn.dataset.maxPages, 10) || 1;
+    const perPage = parseInt(loadMoreBtn.dataset.perPage, 10) || 6;
+    const cat = loadMoreBtn.dataset.cat || '0';
+    const year = loadMoreBtn.dataset.year || '0';
+    const search = loadMoreBtn.dataset.search || '';
+
+    if (currentPage >= maxPages) {
+      loadMoreBtn.style.display = 'none';
+      return;
+    }
+
+    const nextPage = currentPage + 1;
+    isLoading = true;
+
+    // Show loading state
+    const originalText = loadMoreBtn.textContent;
+    loadMoreBtn.setAttribute('aria-disabled', 'true');
+    loadMoreBtn.textContent = 'Loading...';
+
+    try {
+      const params = new URLSearchParams({
+        page: nextPage,
+        per_page: perPage,
+        cat: cat,
+        year: year,
+        search: search,
+      });
+
+      const response = await fetch(`${restUrl}?${params.toString()}`);
+      const result = await response.json();
+
+      if (result.success && result.html) {
+        // Append new posts
+        postsContainer.insertAdjacentHTML('beforeend', result.html);
+        
+        // Update state
+        loadMoreBtn.dataset.page = nextPage;
+        
+        if (!result.has_more) {
+          loadMoreBtn.style.display = 'none';
+        } else {
+          loadMoreBtn.removeAttribute('aria-disabled');
+          loadMoreBtn.textContent = originalText;
+        }
+      } else {
+        loadMoreBtn.style.display = 'none';
+      }
+    } catch (error) {
+      console.error('Load more error:', error);
+      loadMoreBtn.removeAttribute('aria-disabled');
+      loadMoreBtn.textContent = originalText;
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  // Click handler
+  loadMoreBtn.addEventListener('click', handleLoadMore);
+
+  // Keyboard handler (Enter/Space for accessibility)
+  loadMoreBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleLoadMore();
+    }
+  });
+});
+

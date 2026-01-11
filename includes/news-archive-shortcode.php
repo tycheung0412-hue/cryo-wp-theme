@@ -242,25 +242,20 @@ add_shortcode('cryo_news_archive', function ($atts): string {
 
   $html .= '</div>';
 
-  // Pagination
+  // Load More (AJAX)
   if ($query->max_num_pages > 1) {
-    $html .= '<div class="cryo-postGrid__pagination">';
-    
-    // Previous page
-    if ($current_page > 1) {
-      $prev_url = $build_url(null, null, null, $current_page - 1);
-      $html .= '<a class="cryo-postGrid__pageBtn cryo-postGrid__pageBtn--prev" href="' . esc_url($prev_url) . '">上一頁</a>';
-    }
-    
-    // Page numbers
-    $html .= '<span class="cryo-postGrid__pageInfo">第 ' . $current_page . ' / ' . $query->max_num_pages . ' 頁</span>';
-    
-    // Next page
-    if ($current_page < $query->max_num_pages) {
-      $next_url = $build_url(null, null, null, $current_page + 1);
-      $html .= '<a class="cryo-postGrid__pageBtn cryo-postGrid__pageBtn--next" href="' . esc_url($next_url) . '">下一頁</a>';
-    }
-    
+    $html .= '<div style="display:flex;justify-content:center;margin-top:48px;padding:24px 0;">';
+    $html .= '<span role="button" tabindex="0" ';
+    $html .= 'style="display:inline-block;padding:20px 80px;font-size:16px;font-weight:400;color:#333;background:#fff;border:1px solid #d0d0d0;border-radius:999px;cursor:pointer;user-select:none;" ';
+    $html .= 'data-load-more ';
+    $html .= 'data-page="1" ';
+    $html .= 'data-max-pages="' . esc_attr($query->max_num_pages) . '" ';
+    $html .= 'data-per-page="' . esc_attr($posts_per_page) . '" ';
+    $html .= 'data-cat="' . esc_attr($current_cat_id) . '" ';
+    $html .= 'data-year="' . esc_attr($current_year) . '" ';
+    $html .= 'data-search="' . esc_attr($current_search) . '">';
+    $html .= 'Load More';
+    $html .= '</span>';
     $html .= '</div>';
   }
 
@@ -379,3 +374,89 @@ if (!function_exists('cryo_render_archive_post_card')) {
     return $html;
   }
 }
+
+/**
+ * REST API endpoint for "Load More" posts
+ */
+add_action('rest_api_init', function () {
+  register_rest_route('cryo/v1', '/load-more-posts', [
+    'methods' => 'GET',
+    'callback' => 'cryo_rest_load_more_posts',
+    'permission_callback' => '__return_true',
+    'args' => [
+      'page' => ['default' => 1, 'sanitize_callback' => 'absint'],
+      'per_page' => ['default' => 6, 'sanitize_callback' => 'absint'],
+      'cat' => ['default' => 0, 'sanitize_callback' => 'absint'],
+      'year' => ['default' => 0, 'sanitize_callback' => 'absint'],
+      'search' => ['default' => '', 'sanitize_callback' => 'sanitize_text_field'],
+    ],
+  ]);
+});
+
+function cryo_rest_load_more_posts($request) {
+  $page = max(1, (int) $request->get_param('page'));
+  $per_page = max(1, min(50, (int) $request->get_param('per_page')));
+  $cat_id = (int) $request->get_param('cat');
+  $year = (int) $request->get_param('year');
+  $search = trim((string) $request->get_param('search'));
+
+  $query_args = [
+    'post_type' => 'post',
+    'post_status' => 'publish',
+    'posts_per_page' => $per_page,
+    'paged' => $page,
+    'orderby' => 'date',
+    'order' => 'DESC',
+  ];
+
+  // Category filter
+  if ($cat_id > 0) {
+    $query_args['tax_query'] = [
+      [
+        'taxonomy' => 'category',
+        'field' => 'term_id',
+        'terms' => $cat_id,
+        'include_children' => false,
+      ],
+    ];
+  }
+
+  // Year filter
+  if ($year > 0) {
+    $query_args['year'] = $year;
+  }
+
+  // Search filter
+  if ($search !== '') {
+    $query_args['s'] = $search;
+  }
+
+  $query = new WP_Query($query_args);
+
+  $html = '';
+  if ($query->have_posts()) {
+    while ($query->have_posts()) {
+      $query->the_post();
+      $html .= cryo_render_archive_post_card(get_post(), $cat_id);
+    }
+    wp_reset_postdata();
+  }
+
+  return [
+    'success' => true,
+    'html' => $html,
+    'has_more' => $page < $query->max_num_pages,
+    'current_page' => $page,
+    'max_pages' => (int) $query->max_num_pages,
+  ];
+}
+
+/**
+ * Enqueue REST URL for Load More
+ */
+add_action('wp_enqueue_scripts', function () {
+  wp_localize_script('cryo-main', 'cryoLoadMore', [
+    'restUrl' => rest_url('cryo/v1/load-more-posts'),
+    'nonce' => wp_create_nonce('wp_rest'),
+  ]);
+}, 20);

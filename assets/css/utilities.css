@@ -3862,7 +3862,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
   justify-content: center;
   border-radius: 50%;
   background: var(--wp--preset--color--accent, #C3572C);
-  color: #333;
+  color: #FFF;
   font-size: 36px;
   font-weight: 900;
   z-index: 3;
@@ -6325,48 +6325,44 @@ a.cryo-techCard:hover .cryo-techCard__img {
   }
 }
 
-/* Pagination */
-.cryo-postGrid__pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 48px;
-  padding: 24px 0;
-}
+/* Load More Button */
 
-.cryo-postGrid__pageBtn {
+.cryo-postGrid__loadBtn {
   display: inline-block;
-  padding: 12px 32px;
-  font-size: 14px;
-  font-weight: 600;
+  padding: 20px 80px;
+  font-size: 16px;
+  font-weight: 400;
   color: #333;
   background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  text-decoration: none;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  border: 1px solid #d0d0d0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+  user-select: none;
 }
 
-.cryo-postGrid__pageBtn:hover {
-  background: #f5f5f5;
+.cryo-postGrid__loadBtn:hover {
   border-color: #999;
+  background: #fafafa;
 }
 
-.cryo-postGrid__pageInfo {
-  font-size: 14px;
-  color: #666;
+.cryo-postGrid__loadBtn:active {
+  transform: scale(0.98);
+}
+
+.cryo-postGrid__loadBtn[aria-disabled="true"] {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 @media (min-width: 768px) {
-  .cryo-postGrid__pagination {
+  .cryo-postGrid__loadMore {
     margin-top: 60px;
-    gap: 24px;
   }
 
-  .cryo-postGrid__pageBtn {
-    padding: 14px 40px;
-    font-size: 15px;
+  .cryo-postGrid__loadBtn {
+    padding: 22px 100px;
+    font-size: 17px;
   }
 }
 
