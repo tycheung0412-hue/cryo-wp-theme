@@ -108,10 +108,11 @@
 }
 
 .cryo-pricingProcess__title {
-  margin: 0 0 20px;
-  font-size: 28px;
-  font-weight: 700;
-  color: #333;
+  margin: 0;
+  color: var(--wp--preset--color--accent);
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 1.05;
 }
 
 .cryo-pricingProcess__desc {
@@ -127,7 +128,7 @@
   }
 
   .cryo-pricingProcess__title {
-    font-size: 32px;
+    font-size: 36px;
   }
 
   .cryo-pricingProcess__desc {
