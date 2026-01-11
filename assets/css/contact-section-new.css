@@ -1,0 +1,249 @@
+/* Contact Cards Section (plain gray background) */
+.cryo-contactCardsSection {
+  width: 100%;
+  background: #D5D0CA;
+  padding: 40px 16px 60px;
+}
+
+.cryo-contactCards {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+/* Contact Card - Main container (white) */
+.cryo-contactCard {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+}
+
+/* White upper section */
+.cryo-contactCard__upper {
+  padding: 28px 24px;
+  background: #fff;
+}
+
+.cryo-contactCard__title {
+  margin: 0 0 16px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--wp--preset--color--accent, #C3572C);
+  line-height: 1.2;
+}
+
+.cryo-contactCard__address {
+  margin: 0 0 8px;
+}
+
+.cryo-contactCard__address p {
+  margin: 0;
+  font-size: 15px;
+  color: #333;
+  line-height: 1.7;
+}
+
+.cryo-contactCard__note {
+  margin: 16px 0;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.cryo-contactCard__mapLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.cryo-contactCard__mapLink:hover {
+  color: var(--wp--preset--color--accent, #C3572C);
+}
+
+.cryo-contactCard__mapLink svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Dark section (embedded within card) */
+.cryo-contactCard__dark {
+  background: #4A4A4A;
+  padding: 24px;
+  color: #fff;
+}
+
+.cryo-contactCard__dark--small {
+  /* Smaller dark section for Macau card */
+}
+
+.cryo-contactCard__darkTitle {
+  margin: 0 0 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.cryo-contactCard__darkSubtitle {
+  margin: 20px 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Phone rows in dark section */
+.cryo-contactCard__phoneRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.cryo-contactCard__phoneRow:last-child {
+  margin-bottom: 0;
+}
+
+.cryo-contactCard__tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+.cryo-contactCard__phoneRow a,
+.cryo-contactCard__phoneRow > span:not(.cryo-contactCard__tag) {
+  font-size: 15px;
+  color: #fff;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.cryo-contactCard__phoneRow a:hover {
+  text-decoration: underline;
+}
+
+/* Business Enquiries (white section at bottom of Macau card) */
+.cryo-contactCard__business {
+  padding: 24px;
+  background: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.cryo-contactCard__businessTitle {
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+}
+
+.cryo-contactCard__businessRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.cryo-contactCard__businessRow:last-child {
+  margin-bottom: 0;
+}
+
+.cryo-contactCard__businessTag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 50px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--wp--preset--color--accent, #C3572C);
+  background: transparent;
+  border: 1px solid var(--wp--preset--color--accent, #C3572C);
+  border-radius: 20px;
+}
+
+.cryo-contactCard__businessRow a,
+.cryo-contactCard__businessRow span:not(.cryo-contactCard__businessTag) {
+  font-size: 14px;
+  color: #333;
+  text-decoration: none;
+}
+
+.cryo-contactCard__businessRow a:hover {
+  color: var(--wp--preset--color--accent, #C3572C);
+}
+
+@media (min-width: 768px) {
+  .cryo-contactCardsSection {
+    padding: 48px 40px 72px;
+  }
+
+  .cryo-contactCards {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  .cryo-contactCard__upper {
+    padding: 32px 28px;
+  }
+
+  .cryo-contactCard__title {
+    font-size: 26px;
+  }
+
+  .cryo-contactCard__dark {
+    padding: 28px;
+  }
+
+  .cryo-contactCard__business {
+    padding: 28px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cryo-contactCardsSection {
+    padding: 60px 60px 80px;
+  }
+
+  .cryo-contactCards {
+    gap: 40px;
+  }
+
+  .cryo-contactCard {
+    border-radius: 20px;
+  }
+
+  .cryo-contactCard__upper {
+    padding: 36px 32px;
+  }
+
+  .cryo-contactCard__title {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+
+  .cryo-contactCard__dark {
+    padding: 32px;
+  }
+
+  .cryo-contactCard__business {
+    padding: 32px;
+  }
+}

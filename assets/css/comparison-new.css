@@ -1,0 +1,217 @@
+/* ============================================
+   RESPONSIVE COMPARISON TABLE
+   Desktop: Traditional HTML table
+   Mobile: Accordion with details/summary
+   ============================================ */
+
+/* ========== DESKTOP TABLE ========== */
+.cryo-compDesktop {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .cryo-compDesktop {
+    display: block;
+  }
+
+  .cryo-compMobile {
+    display: none;
+  }
+}
+
+.cryo-compDesktop__table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 14px;
+}
+
+.cryo-compDesktop__table th,
+.cryo-compDesktop__table td {
+  padding: 20px 16px;
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: 1px solid #eee;
+}
+
+.cryo-compDesktop__th {
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  background: #f8f8f8;
+}
+
+.cryo-compDesktop__th:first-child {
+  width: 25%;
+  background: transparent;
+}
+
+.cryo-compDesktop__th--highlight {
+  color: var(--wp--preset--color--accent, #C3572C);
+  background: rgba(195, 87, 44, 0.08);
+  border-left: 2px solid var(--wp--preset--color--accent, #C3572C);
+  border-right: 2px solid var(--wp--preset--color--accent, #C3572C);
+  border-top: 2px solid var(--wp--preset--color--accent, #C3572C);
+}
+
+.cryo-compDesktop__label {
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  background: #fafafa;
+}
+
+.cryo-compDesktop__highlight {
+  background: rgba(195, 87, 44, 0.04);
+  color: var(--wp--preset--color--accent, #C3572C);
+  border-left: 2px solid var(--wp--preset--color--accent, #C3572C);
+  border-right: 2px solid var(--wp--preset--color--accent, #C3572C);
+}
+
+.cryo-compDesktop__table tbody tr:last-child .cryo-compDesktop__highlight {
+  border-bottom: 2px solid var(--wp--preset--color--accent, #C3572C);
+}
+
+@media (min-width: 1024px) {
+  .cryo-compDesktop__table {
+    font-size: 15px;
+  }
+
+  .cryo-compDesktop__table th,
+  .cryo-compDesktop__table td {
+    padding: 24px 20px;
+  }
+}
+
+/* ========== MOBILE ACCORDION ========== */
+.cryo-compMobile {
+  display: block;
+}
+
+.cryo-compMobile__header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.cryo-compMobile__headerItem {
+  padding: 16px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  color: #666;
+  line-height: 1.3;
+}
+
+.cryo-compMobile__headerItem--highlight {
+  color: var(--wp--preset--color--accent, #C3572C);
+  background: rgba(195, 87, 44, 0.06);
+}
+
+.cryo-compMobile__rows {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Accordion Row */
+.cryo-compRow {
+  border-bottom: 1px solid #eee;
+}
+
+.cryo-compRow__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 16px;
+  cursor: pointer;
+  list-style: none;
+  background: #fff;
+  transition: background 0.2s ease;
+}
+
+.cryo-compRow__header::-webkit-details-marker {
+  display: none;
+}
+
+.cryo-compRow__header:hover {
+  background: #fafafa;
+}
+
+.cryo-compRow__header--highlight {
+  background: rgba(195, 87, 44, 0.08);
+}
+
+.cryo-compRow__header--highlight:hover {
+  background: rgba(195, 87, 44, 0.12);
+}
+
+.cryo-compRow__label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+  padding-right: 16px;
+}
+
+.cryo-compRow__icon {
+  width: 20px;
+  height: 20px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.cryo-compRow__icon::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid #999;
+  border-bottom: 2px solid #999;
+  transform: translate(-50%, -70%) rotate(45deg);
+  transition: transform 0.2s ease;
+}
+
+.cryo-compRow[open] .cryo-compRow__icon::before {
+  transform: translate(-50%, -30%) rotate(-135deg);
+}
+
+/* Row Body (3 columns) */
+.cryo-compRow__body {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  background: #fafafa;
+  border-top: 1px solid #eee;
+}
+
+.cryo-compRow__cell {
+  padding: 16px 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #555;
+  text-align: center;
+  border-right: 1px solid #eee;
+}
+
+.cryo-compRow__cell:last-child {
+  border-right: none;
+}
+
+.cryo-compRow__cell--highlight {
+  background: rgba(195, 87, 44, 0.06);
+  color: var(--wp--preset--color--accent, #C3572C);
+  font-weight: 500;
+}
+
+@media (min-width: 768px) {
+  .cryo-compMobile {
+    display: none;
+  }
+}

@@ -1,0 +1,707 @@
+/* ============================================
+   PRICING PAGE STYLES
+   ============================================ */
+
+/* Pricing Hero */
+.cryo-pricingHero {
+  position: relative;
+  width: 100%;
+  min-height: 280px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cryo-pricingHero__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+}
+
+.cryo-pricingHero__content {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 16px;
+  text-align: center;
+  color: #fff;
+}
+
+.cryo-pricingHero__kicker {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.9;
+}
+
+.cryo-pricingHero__title {
+  margin: 0 0 16px;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.cryo-pricingHero__subtitle {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.7;
+  opacity: 0.9;
+}
+
+@media (min-width: 768px) {
+  .cryo-pricingHero {
+    min-height: 360px;
+  }
+
+  .cryo-pricingHero__content {
+    padding: 80px 40px;
+  }
+
+  .cryo-pricingHero__title {
+    font-size: 48px;
+  }
+
+  .cryo-pricingHero__subtitle {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cryo-pricingHero {
+    min-height: 400px;
+  }
+
+  .cryo-pricingHero__content {
+    padding: 100px 60px;
+  }
+
+  .cryo-pricingHero__title {
+    font-size: 56px;
+  }
+
+  .cryo-pricingHero__subtitle {
+    font-size: 17px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+}
+
+/* Pricing Process Section */
+.cryo-pricingProcess {
+  width: 100%;
+  background: #fff;
+  padding: 48px 16px;
+}
+
+.cryo-pricingProcess__inner {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.cryo-pricingProcess__title {
+  margin: 0 0 20px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+}
+
+.cryo-pricingProcess__desc {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.8;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+@media (min-width: 768px) {
+  .cryo-pricingProcess {
+    padding: 64px 40px;
+  }
+
+  .cryo-pricingProcess__title {
+    font-size: 32px;
+  }
+
+  .cryo-pricingProcess__desc {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cryo-pricingProcess {
+    padding: 80px 60px;
+  }
+
+  .cryo-pricingProcess__title {
+    font-size: 36px;
+  }
+}
+
+/* Pricing Cards Section */
+.cryo-pricingCards {
+  width: 100%;
+  background: #fff;
+  padding: 0 16px 48px;
+}
+
+.cryo-pricingCards__inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+/* Plan Card */
+.cryo-planCard {
+  background: #fff;
+  border: 2px solid #eee;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.cryo-planCard--featured {
+  border-color: var(--wp--preset--color--accent, #C3572C);
+}
+
+.cryo-planCard__header {
+  padding: 24px 24px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.cryo-planCard__title {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--wp--preset--color--accent, #C3572C);
+}
+
+.cryo-planCard__duration {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: #666;
+}
+
+.cryo-planCard__durationItem {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.cryo-planCard__durationItem--active {
+  background: var(--wp--preset--color--accent, #C3572C);
+  color: #fff;
+}
+
+.cryo-planCard__durationSep {
+  color: #ccc;
+}
+
+.cryo-planCard__durationLabel {
+  margin-left: 4px;
+}
+
+.cryo-planCard__body {
+  padding: 24px;
+  flex: 1;
+}
+
+.cryo-planCard__sectionTitle {
+  margin: 0 0 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cryo-planCard__features {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cryo-planCard__features li {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.cryo-planCard__features li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--wp--preset--color--accent, #C3572C);
+  font-weight: bold;
+}
+
+.cryo-planCard__footer {
+  padding: 24px;
+  border-top: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cryo-planCard__price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.cryo-planCard__priceAmount {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+}
+
+.cryo-planCard__priceSuffix {
+  font-size: 16px;
+  color: #666;
+}
+
+.cryo-planCard__cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--wp--preset--color--accent, #C3572C);
+  border-radius: 30px;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.cryo-planCard__cta:hover {
+  background: #B04A24;
+}
+
+@media (min-width: 768px) {
+  .cryo-pricingCards {
+    padding: 0 40px 64px;
+  }
+
+  .cryo-pricingCards__inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  .cryo-planCard__title {
+    font-size: 24px;
+  }
+
+  .cryo-planCard__priceAmount {
+    font-size: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cryo-pricingCards {
+    padding: 0 60px 80px;
+  }
+
+  .cryo-pricingCards__inner {
+    gap: 40px;
+  }
+
+  .cryo-planCard {
+    border-radius: 20px;
+  }
+
+  .cryo-planCard__header {
+    padding: 28px 28px 24px;
+  }
+
+  .cryo-planCard__body {
+    padding: 28px;
+  }
+
+  .cryo-planCard__footer {
+    padding: 28px;
+  }
+}
+
+/* Comparison Table Section */
+.cryo-comparison {
+  width: 100%;
+  background: #fff;
+  padding: 48px 16px 64px;
+}
+
+.cryo-comparison__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.cryo-comparison__title {
+  margin: 0 0 32px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+}
+
+.cryo-comparison__tableWrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.cryo-comparison__table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.cryo-comparison__table th,
+.cryo-comparison__table td {
+  padding: 16px 12px;
+  text-align: center;
+  vertical-align: top;
+  border-bottom: 1px solid #eee;
+}
+
+.cryo-comparison__headerEmpty {
+  width: 25%;
+}
+
+.cryo-comparison__headerCompetitor {
+  width: 18.75%;
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  background: #f8f8f8;
+}
+
+.cryo-comparison__headerHighlight {
+  width: 18.75%;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--wp--preset--color--accent, #C3572C);
+  background: rgba(195, 87, 44, 0.08);
+  border-left: 2px solid var(--wp--preset--color--accent, #C3572C);
+  border-right: 2px solid var(--wp--preset--color--accent, #C3572C);
+  border-top: 2px solid var(--wp--preset--color--accent, #C3572C);
+}
+
+.cryo-comparison__rowLabel {
+  text-align: left !important;
+  font-weight: 600;
+  color: #333;
+  background: #fafafa;
+}
+
+.cryo-comparison__cellHighlight {
+  background: rgba(195, 87, 44, 0.04);
+  border-left: 2px solid var(--wp--preset--color--accent, #C3572C);
+  border-right: 2px solid var(--wp--preset--color--accent, #C3572C);
+  color: #333;
+}
+
+.cryo-comparison__table tbody tr:last-child .cryo-comparison__cellHighlight {
+  border-bottom: 2px solid var(--wp--preset--color--accent, #C3572C);
+}
+
+@media (min-width: 768px) {
+  .cryo-comparison {
+    padding: 64px 40px 80px;
+  }
+
+  .cryo-comparison__title {
+    font-size: 32px;
+    margin-bottom: 40px;
+  }
+
+  .cryo-comparison__table {
+    font-size: 15px;
+  }
+
+  .cryo-comparison__table th,
+  .cryo-comparison__table td {
+    padding: 18px 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cryo-comparison {
+    padding: 80px 60px 100px;
+  }
+
+  .cryo-comparison__title {
+    font-size: 36px;
+  }
+}
+
+/* Pricing FAQ Section */
+.cryo-pricingFaq {
+  width: 100%;
+  background: #fff;
+  padding: 48px 16px 64px;
+}
+
+.cryo-pricingFaq__inner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.cryo-pricingFaq__title {
+  margin: 0 0 32px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+}
+
+/* Accordion (reusable) */
+.cryo-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cryo-accordion__item {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.cryo-accordion__item[open] {
+  border-color: var(--wp--preset--color--accent, #C3572C);
+}
+
+.cryo-accordion__header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  cursor: pointer;
+  list-style: none;
+  background: #fff;
+  transition: background 0.2s ease;
+}
+
+.cryo-accordion__header::-webkit-details-marker {
+  display: none;
+}
+
+.cryo-accordion__header:hover {
+  background: #fafafa;
+}
+
+.cryo-accordion__number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wp--preset--color--accent, #C3572C);
+  border: 2px solid var(--wp--preset--color--accent, #C3572C);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cryo-accordion__question {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.cryo-accordion__icon {
+  width: 20px;
+  height: 20px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.cryo-accordion__icon::before,
+.cryo-accordion__icon::after {
+  content: "";
+  position: absolute;
+  background: #666;
+  transition: transform 0.2s ease;
+}
+
+.cryo-accordion__icon::before {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+.cryo-accordion__icon::after {
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.cryo-accordion__item[open] .cryo-accordion__icon::after {
+  transform: translateX(-50%) rotate(90deg);
+  opacity: 0;
+}
+
+.cryo-accordion__content {
+  padding: 0 24px 24px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.cryo-accordion__content p {
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .cryo-pricingFaq {
+    padding: 64px 40px 80px;
+  }
+
+  .cryo-pricingFaq__title {
+    font-size: 32px;
+  }
+
+  .cryo-accordion__header {
+    padding: 24px 28px;
+  }
+
+  .cryo-accordion__question {
+    font-size: 17px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cryo-pricingFaq {
+    padding: 80px 60px 100px;
+  }
+
+  .cryo-pricingFaq__title {
+    font-size: 36px;
+  }
+}
+
+/* Pricing CTA Section */
+.cryo-pricingCta {
+  width: 100%;
+  background: #f8f6f4;
+  padding: 48px 16px 64px;
+}
+
+.cryo-pricingCta__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  align-items: center;
+}
+
+.cryo-pricingCta__media {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.cryo-pricingCta__media img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.cryo-pricingCta__content {
+  text-align: center;
+}
+
+.cryo-pricingCta__title {
+  margin: 0 0 20px;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--wp--preset--color--accent, #C3572C);
+  line-height: 1.3;
+}
+
+.cryo-pricingCta__desc {
+  margin: 0 0 16px;
+  font-size: 15px;
+  line-height: 1.8;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.cryo-pricingCta__button {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 8px;
+  padding: 14px 32px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--wp--preset--color--accent, #C3572C);
+  border-radius: 30px;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.cryo-pricingCta__button:hover {
+  background: #B04A24;
+}
+
+@media (min-width: 768px) {
+  .cryo-pricingCta {
+    padding: 64px 40px 80px;
+  }
+
+  .cryo-pricingCta__inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+  }
+
+  .cryo-pricingCta__content {
+    text-align: left;
+  }
+
+  .cryo-pricingCta__title {
+    font-size: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cryo-pricingCta {
+    padding: 80px 60px 100px;
+  }
+
+  .cryo-pricingCta__inner {
+    gap: 64px;
+  }
+
+  .cryo-pricingCta__media {
+    border-radius: 20px;
+  }
+
+  .cryo-pricingCta__title {
+    font-size: 40px;
+  }
+
+  .cryo-pricingCta__desc {
+    font-size: 16px;
+  }
+}

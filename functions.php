@@ -2199,3 +2199,286 @@ add_shortcode('cryo_history_slide', function ($atts): string {
     . '</div>';
 });
 
+/**
+ * Cryo Enquiry Form — Contact form with Salesforce integration
+ *
+ * Design reference:
+ * - Contact Us page form (聯絡我們 → 馬上查詢我們的服務)
+ * - Fields: first name, last name, phone, email, expected due date, doctor, hospital, notes
+ *
+ * Usage:
+ * - [cryo_enquiry_form /]
+ *
+ * Notes:
+ * - Integrates with legacy Salesforce endpoint from Uncode2 theme
+ * - Form data is submitted via REST API (/wp-json/api/enquiry)
+ * - Also supports abandoned form tracking (legacy feature)
+ */
+add_shortcode('cryo_enquiry_form', function ($atts): string {
+  $atts = shortcode_atts([
+    'class' => '',
+    'action' => '', // Custom form action URL (default: WP REST API)
+  ], (array) $atts, 'cryo_enquiry_form');
+
+  $class = trim((string) ($atts['class'] ?? ''));
+  $form_id = 'cryo-enquiry-form-' . wp_rand(1000, 9999);
+
+  // Build country code options
+  $country_codes = [
+    '+852' => '+852',
+    '+853' => '+853',
+    '+86' => '+86',
+    '+1' => '+1',
+    '+44' => '+44',
+    '+61' => '+61',
+    '+65' => '+65',
+  ];
+  $country_options = '';
+  foreach ($country_codes as $code => $label) {
+    $selected = ($code === '+852') ? ' selected' : '';
+    $country_options .= '<option value="' . esc_attr($code) . '"' . $selected . '>' . esc_html($label) . '</option>';
+  }
+
+  // Build doctor options (can be populated from WP options or hardcoded)
+  $doctor_options = '<option value="">婦產科醫生*</option>';
+  $doctors = apply_filters('cryo_enquiry_doctors', [
+    '陳醫生' => '陳醫生',
+    '李醫生' => '李醫生',
+    '黃醫生' => '黃醫生',
+    '其他' => '其他',
+  ]);
+  foreach ($doctors as $value => $label) {
+    $doctor_options .= '<option value="' . esc_attr($value) . '">' . esc_html($label) . '</option>';
+  }
+
+  // Build hospital options
+  $hospital_options = '<option value="">分娩醫院*</option>';
+  $hospitals = apply_filters('cryo_enquiry_hospitals', [
+    '養和醫院' => '養和醫院',
+    '聖保祿醫院' => '聖保祿醫院',
+    '浸會醫院' => '浸會醫院',
+    '港怡醫院' => '港怡醫院',
+    '仁安醫院' => '仁安醫院',
+    '明德醫院' => '明德醫院',
+    '嘉諾撒醫院' => '嘉諾撒醫院',
+    '瑪麗醫院' => '瑪麗醫院',
+    '伊利沙伯醫院' => '伊利沙伯醫院',
+    '威爾斯親王醫院' => '威爾斯親王醫院',
+    '屯門醫院' => '屯門醫院',
+    '將軍澳醫院' => '將軍澳醫院',
+    '其他' => '其他',
+  ]);
+  foreach ($hospitals as $value => $label) {
+    $hospital_options .= '<option value="' . esc_attr($value) . '">' . esc_html($label) . '</option>';
+  }
+
+  $nonce = wp_create_nonce('cryo_enquiry_form');
+
+  return '<form id="' . esc_attr($form_id) . '" class="cryo-form' . ($class !== '' ? ' ' . esc_attr($class) : '') . '" method="post" data-cryo-enquiry-form>
+  <input type="hidden" name="cryo_enquiry_nonce" value="' . esc_attr($nonce) . '" />
+
+  <!-- Personal Info Section -->
+  <div class="cryo-form__section">
+    <h3 class="cryo-form__sectionTitle">個人資料</h3>
+
+    <div class="cryo-form__row cryo-form__row--2col">
+      <div class="cryo-form__field">
+        <input type="text" name="first_name" class="cryo-form__input" placeholder="名字" />
+      </div>
+      <div class="cryo-form__field">
+        <input type="text" name="last_name" class="cryo-form__input" placeholder="姓氏" />
+      </div>
+    </div>
+
+    <div class="cryo-form__row cryo-form__row--phone">
+      <div class="cryo-form__field cryo-form__field--country">
+        <select name="country_code" class="cryo-form__select cryo-form__select--country">
+          ' . $country_options . '
+        </select>
+      </div>
+      <div class="cryo-form__field cryo-form__field--phone">
+        <input type="tel" name="phone" class="cryo-form__input" placeholder="電話號碼*" required />
+      </div>
+    </div>
+
+    <div class="cryo-form__row">
+      <div class="cryo-form__field">
+        <input type="tel" name="contact_phone" class="cryo-form__input" placeholder="聯絡電話*" required />
+      </div>
+    </div>
+
+    <div class="cryo-form__row">
+      <div class="cryo-form__field">
+        <input type="email" name="email" class="cryo-form__input" placeholder="電郵地址*" required />
+      </div>
+    </div>
+  </div>
+
+  <!-- Delivery Info Section -->
+  <div class="cryo-form__section">
+    <h3 class="cryo-form__sectionTitle">分娩資料</h3>
+
+    <div class="cryo-form__row">
+      <div class="cryo-form__field">
+        <input type="text" name="due_date" class="cryo-form__input cryo-form__input--date" placeholder="預產期*" onfocus="(this.type=\'date\')" onblur="(this.type=this.value?\'date\':\'text\')" required />
+      </div>
+    </div>
+
+    <div class="cryo-form__row">
+      <div class="cryo-form__field">
+        <select name="doctor" class="cryo-form__select" required>
+          ' . $doctor_options . '
+        </select>
+      </div>
+    </div>
+
+    <div class="cryo-form__row">
+      <div class="cryo-form__field">
+        <select name="hospital" class="cryo-form__select" required>
+          ' . $hospital_options . '
+        </select>
+      </div>
+    </div>
+
+    <div class="cryo-form__row">
+      <div class="cryo-form__field">
+        <textarea name="notes" class="cryo-form__textarea" placeholder="備註" rows="4"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Privacy Consent -->
+  <div class="cryo-form__consent">
+    <label class="cryo-form__checkbox">
+      <input type="checkbox" name="privacy_consent" required />
+      <span class="cryo-form__checkmark"></span>
+      <span class="cryo-form__consentText">本人已閱讀並同意<a href="/privacy-policy/" target="_blank">個人資料收集聲明</a>。</span>
+    </label>
+  </div>
+
+  <!-- Submit Button -->
+  <div class="cryo-form__actions">
+    <button type="submit" class="cryo-form__submit">
+      <span class="cryo-form__submitText">提交表格</span>
+      <span class="cryo-form__submitIcon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </span>
+    </button>
+  </div>
+
+  <!-- Success/Error Messages -->
+  <div class="cryo-form__message cryo-form__message--success" style="display:none;" role="alert">
+    感謝您的查詢！我們會盡快與您聯絡。
+  </div>
+  <div class="cryo-form__message cryo-form__message--error" style="display:none;" role="alert">
+    提交時發生錯誤，請稍後再試或直接致電聯絡我們。
+  </div>
+</form>';
+});
+
+/**
+ * REST API endpoint for enquiry form submission
+ * Mirrors legacy Salesforce integration from Uncode2 theme
+ */
+add_action('rest_api_init', function (): void {
+  register_rest_route('cryo/v1', '/enquiry', [
+    'methods' => 'POST',
+    'callback' => 'cryo_handle_enquiry_submission',
+    'permission_callback' => '__return_true',
+  ]);
+});
+
+if (!function_exists('cryo_handle_enquiry_submission')) {
+  function cryo_handle_enquiry_submission(WP_REST_Request $request): WP_REST_Response {
+    $nonce = $request->get_param('cryo_enquiry_nonce');
+    if (!wp_verify_nonce($nonce, 'cryo_enquiry_form')) {
+      return new WP_REST_Response(['success' => false, 'message' => 'Invalid nonce'], 403);
+    }
+
+    $data = [
+      'first_name' => sanitize_text_field($request->get_param('first_name') ?? ''),
+      'last_name' => sanitize_text_field($request->get_param('last_name') ?? ''),
+      'country_code' => sanitize_text_field($request->get_param('country_code') ?? '+852'),
+      'phone' => sanitize_text_field($request->get_param('phone') ?? ''),
+      'contact_phone' => sanitize_text_field($request->get_param('contact_phone') ?? ''),
+      'email' => sanitize_email($request->get_param('email') ?? ''),
+      'due_date' => sanitize_text_field($request->get_param('due_date') ?? ''),
+      'doctor' => sanitize_text_field($request->get_param('doctor') ?? ''),
+      'hospital' => sanitize_text_field($request->get_param('hospital') ?? ''),
+      'notes' => sanitize_textarea_field($request->get_param('notes') ?? ''),
+      'privacy_consent' => $request->get_param('privacy_consent') ? 'yes' : 'no',
+      'submitted_at' => current_time('mysql'),
+      'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '',
+    ];
+
+    // Required fields validation
+    if (empty($data['phone']) || empty($data['email'])) {
+      return new WP_REST_Response(['success' => false, 'message' => 'Phone and email are required'], 400);
+    }
+
+    // Store in WP database as a custom post type (for admin review)
+    $post_id = wp_insert_post([
+      'post_type' => 'cryo_enquiry',
+      'post_status' => 'private',
+      'post_title' => $data['first_name'] . ' ' . $data['last_name'] . ' - ' . $data['email'],
+      'post_content' => '',
+      'meta_input' => $data,
+    ]);
+
+    if (is_wp_error($post_id)) {
+      return new WP_REST_Response(['success' => false, 'message' => 'Failed to save enquiry'], 500);
+    }
+
+    // Send email notification
+    $admin_email = get_option('admin_email');
+    $subject = '[CryoLife] 新查詢: ' . $data['first_name'] . ' ' . $data['last_name'];
+    $body = "新查詢已提交:\n\n"
+      . "姓名: {$data['first_name']} {$data['last_name']}\n"
+      . "電話: {$data['country_code']} {$data['phone']}\n"
+      . "聯絡電話: {$data['contact_phone']}\n"
+      . "電郵: {$data['email']}\n"
+      . "預產期: {$data['due_date']}\n"
+      . "醫生: {$data['doctor']}\n"
+      . "醫院: {$data['hospital']}\n"
+      . "備註: {$data['notes']}\n"
+      . "提交時間: {$data['submitted_at']}\n";
+
+    wp_mail($admin_email, $subject, $body);
+
+    // Optionally forward to Salesforce (legacy integration)
+    $salesforce_url = apply_filters('cryo_salesforce_endpoint', '');
+    if (!empty($salesforce_url)) {
+      wp_remote_post($salesforce_url, [
+        'body' => $data,
+        'timeout' => 10,
+      ]);
+    }
+
+    return new WP_REST_Response(['success' => true, 'message' => 'Enquiry submitted successfully'], 200);
+  }
+}
+
+/**
+ * Register custom post type for enquiries
+ */
+add_action('init', function (): void {
+  register_post_type('cryo_enquiry', [
+    'labels' => [
+      'name' => '查詢記錄',
+      'singular_name' => '查詢',
+      'menu_name' => '查詢記錄',
+      'all_items' => '所有查詢',
+      'view_item' => '查看查詢',
+      'search_items' => '搜尋查詢',
+    ],
+    'public' => false,
+    'show_ui' => true,
+    'show_in_menu' => true,
+    'menu_icon' => 'dashicons-email-alt',
+    'capability_type' => 'post',
+    'hierarchical' => false,
+    'supports' => ['title', 'custom-fields'],
+    'has_archive' => false,
+    'rewrite' => false,
+  ]);
+});

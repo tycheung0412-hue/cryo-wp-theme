@@ -668,6 +668,71 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// Enquiry Form submission handler
+document.addEventListener('DOMContentLoaded', () => {
+  const forms = Array.from(document.querySelectorAll('[data-cryo-enquiry-form]'));
+  if (forms.length === 0) return;
+
+  forms.forEach((form) => {
+    const successMsg = form.querySelector('.cryo-form__message--success');
+    const errorMsg = form.querySelector('.cryo-form__message--error');
+    const submitBtn = form.querySelector('.cryo-form__submit');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Hide any previous messages
+      if (successMsg) successMsg.style.display = 'none';
+      if (errorMsg) errorMsg.style.display = 'none';
+
+      // Disable submit button
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        const textEl = submitBtn.querySelector('.cryo-form__submitText');
+        if (textEl) textEl.textContent = '提交中...';
+      }
+
+      try {
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((value, key) => {
+          data[key] = value;
+        });
+
+        const response = await fetch('/wp-json/cryo/v1/enquiry', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          // Show success message
+          if (successMsg) successMsg.style.display = 'block';
+          // Reset form
+          form.reset();
+        } else {
+          // Show error message
+          if (errorMsg) errorMsg.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Form submission error:', error);
+        if (errorMsg) errorMsg.style.display = 'block';
+      } finally {
+        // Re-enable submit button
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          const textEl = submitBtn.querySelector('.cryo-form__submitText');
+          if (textEl) textEl.textContent = '提交表格';
+        }
+      }
+    });
+  });
+});
+
 // News Archive behavior: category filter, year filter, search, load more
 document.addEventListener('DOMContentLoaded', () => {
   const filterBar = document.querySelector('[data-cryo-news-filter]');
@@ -793,3 +858,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
