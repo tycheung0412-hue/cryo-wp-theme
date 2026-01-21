@@ -6816,7 +6816,8 @@ a.cryo-techCard:hover .cryo-techCard__img {
 .cryo-contactHeader {
   width: 100%;
   background: #fff;
-  padding: 60px 16px 40px;
+  padding-left:0 !important;
+  padding-right:0 !important;
   text-align: center;
 }
 
@@ -6869,6 +6870,10 @@ a.cryo-techCard:hover .cryo-techCard__img {
 .cryo-contactSection {
   position: relative;
   width: 100%;
+  /* Constrain to content container instead of full-bleed */
+  max-width: var(--wp--style--global--wide-size, 1160px);
+  margin-left: auto;
+  margin-right: auto;
   min-height: 600px;
   overflow: hidden;
 }
@@ -6887,6 +6892,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
 .cryo-contactBlocks {
   position: relative;
   z-index: 1;
+  box-sizing: border-box; /* include padding inside max-width so it centers correctly */
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 16px 60px;
@@ -8331,6 +8337,13 @@ a.cryo-techCard:hover .cryo-techCard__img {
 .cryo-contactCta {
   position: relative;
   width: 100%;
+  /* Fit within the content container instead of stretching
+     beyond it on wide viewports */
+  max-width: var(--wp--style--global--wide-size, 1160px);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left:0!important;
+  padding-right:0!important;
   min-height: 420px;
   display: flex;
   align-items: flex-end;
@@ -8352,6 +8365,8 @@ a.cryo-techCard:hover .cryo-techCard__img {
 .cryo-contactCta__overlay {
   position: absolute;
   inset: 0;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
   background: linear-gradient(
     180deg,
     rgba(195, 87, 44, 0) 0%,
