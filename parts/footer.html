@@ -15,7 +15,8 @@
             <a href="tel:+85221102121">(852) 2110 2121</a>
           </div>
           <div class="cryo-footer__line cryo-footer__line--address">
-            <span>地址: Room 511-518, 5/F, Delta House, 3 On Yiu Street,<br/>Shatin, New Territories, Hong Kong, Sha Tin</span>
+            <span>地址:&nbsp;</span>
+            <span>Room 511-518, 5/F, Delta House, 3 On Yiu Street, Shatin, New Territories, Hong Kong, Sha Tin</span>
           </div>
           <div class="cryo-footer__line cryo-footer__line--email">
             <span>電郵:</span>
@@ -24,27 +25,31 @@
         </div>
         <!-- /wp:html -->
 
-        <!-- Desktop-only: social + legal under contact (mobile uses a different ordering) -->
+        <!-- Desktop+mobile social icons under contact (static images, no bullets) -->
         <!-- wp:html -->
         <div class="cryo-footer__desktopExtras">
-        <!-- /wp:html -->
+          <div class="cryo-footer__socialCustom" aria-label="Follow Cryolife">
+            <a class="cryo-footer__socialItem" href="#" target="_blank" rel="noopener">
+              <img src="/wp-content/themes/cryo/assets/images/facebook.png" alt="Facebook" />
+            </a>
+            <a class="cryo-footer__socialItem" href="#" target="_blank" rel="noopener">
+              <img src="/wp-content/themes/cryo/assets/images/mdi_youtube.png" alt="YouTube" />
+            </a>
+            <a class="cryo-footer__socialItem" href="#" target="_blank" rel="noopener">
+              <img src="/wp-content/themes/cryo/assets/images/ri_instagram-fill.png" alt="Instagram" />
+            </a>
+            <a class="cryo-footer__socialItem" href="#" target="_blank" rel="noopener">
+              <img src="/wp-content/themes/cryo/assets/images/ri_whatsapp-fill.png" alt="WhatsApp" />
+            </a>
+            <a class="cryo-footer__socialItem" href="#" target="_blank" rel="noopener">
+              <img src="/wp-content/themes/cryo/assets/images/XiaohongshuLOGO 1.png" alt="Xiaohongshu" />
+            </a>
+          </div>
 
-          <!-- White circles with Accent (orange) icons (prevents “white-on-white” invisibility) -->
-          <!-- wp:social-links {"className":"cryo-footer__social","iconColor":"accent","iconColorValue":"#C3572C","iconBackgroundColor":"surface","iconBackgroundColorValue":"#FFFFFF","openInNewTab":true} -->
-          <ul class="wp-block-social-links cryo-footer__social has-icon-color has-icon-background-color">
-            <!-- wp:social-link {"service":"facebook","url":"#"} /-->
-            <!-- wp:social-link {"service":"youtube","url":"#"} /-->
-            <!-- wp:social-link {"service":"instagram","url":"#"} /-->
-            <!-- wp:social-link {"service":"whatsapp","url":"#"} /-->
-          </ul>
-          <!-- /wp:social-links -->
-
-          <!-- Footer legal links under social (desktop design variant) -->
-          <!-- wp:shortcode -->
-          [cryo_footer_menu location="footer_legal" class="cryo-footer__legalBelow"]
-          <!-- /wp:shortcode -->
-
-        <!-- wp:html -->
+          <!-- Footer legal links under social -->
+          <div class="cryo-footer__legalBelow">
+            [cryo_footer_menu location="footer_legal" class="cryo-footer__legal"]
+          </div>
         </div>
         <!-- /wp:html -->
       </div>
@@ -72,21 +77,14 @@
           <label class="cryo-footer__newsletterLabel" for="cryo-footer-email">你的電郵地址*</label>
           <div class="cryo-footer__newsletterRow">
             <input id="cryo-footer-email" class="cryo-footer__newsletterInput" type="email" placeholder="" />
+          </div><br/>
+          <div class="cryo-footer__newsletterBtnRow">
             <button class="cryo-footer__newsletterBtn" type="button" aria-label="提交"></button>
           </div>
         </div>
         <!-- /wp:html -->
 
-        <!-- Mobile-only: social icons come after newsletter (per provided mobile design) -->
-        <!-- White circles with Accent (orange) icons -->
-        <!-- wp:social-links {"className":"cryo-footer__social cryo-footer__socialMobile","iconColor":"accent","iconColorValue":"#C3572C","iconBackgroundColor":"surface","iconBackgroundColorValue":"#FFFFFF","openInNewTab":true} -->
-        <ul class="wp-block-social-links cryo-footer__social cryo-footer__socialMobile has-icon-color has-icon-background-color">
-          <!-- wp:social-link {"service":"facebook","url":"#"} /-->
-          <!-- wp:social-link {"service":"youtube","url":"#"} /-->
-          <!-- wp:social-link {"service":"instagram","url":"#"} /-->
-          <!-- wp:social-link {"service":"whatsapp","url":"#"} /-->
-        </ul>
-        <!-- /wp:social-links -->
+        <!-- Mobile-specific social row was removed: use the single shared icon row under contact instead. -->
       </div>
       <!-- /wp:column -->
     </div>
@@ -113,3 +111,8 @@
 <!-- /wp:group -->
 
 
+<style>
+  .cryo-flexbox {
+    display: flex!important;
+  }
+</style>

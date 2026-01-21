@@ -27,6 +27,46 @@ html[lang^="zh"] .wp-site-blocks {
   --cryo-hero-placeholder: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%221600%22 height=%22900%22 viewBox=%220 0 1600 900%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop offset=%220%25%22 stop-color=%22%23f6f6f6%22/%3E%3Cstop offset=%22100%25%22 stop-color=%22%23d9d9d9%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%221600%22 height=%22900%22 fill=%22url(%23g)%22/%3E%3Ctext x=%22800%22 y=%22470%22 font-size=%2272%22 text-anchor=%22middle%22 font-family=%22Inter,Arial%22 fill=%22%23999%22%3ECryo Hero Placeholder%3C/text%3E%3C/svg%3E');
 }
 
+
+.cryo-flexbox {
+  display: flex!important;
+}
+
+/* Footer newsletter — base styles shared by desktop & mobile
+   (desktop media queries can refine layout but should not change
+   the visual language between breakpoints) */
+.cryo-footer__newsletterTitle {
+  margin: 0 0 22px;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.6;
+}
+.cryo-footer__newsletterLabel {
+  display: block;
+  margin: 0 0 10px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 16px;
+}
+.cryo-footer__newsletterRow {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  border-bottom: 2px solid rgba(255,255,255,.55)!important;
+}
+.cryo-footer__newsletterInput {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 16px;
+  padding: 10px 0;
+}
+.cryo-footer__newsletterInput::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
 /* -------------------------------------------------------------------------- */
 /* Hero banner (shared)                                                        */
 /* -------------------------------------------------------------------------- */
@@ -774,6 +814,17 @@ html[lang^="zh"] .wp-site-blocks {
     font-size: 16px;
     line-height: 1.65;
   }
+  .cryo-footer__line {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .cryo-footer__line--address {
+    display: flex!important;
+  }
+  .cryo-footer__line span:first-child {
+    min-width: 3.5em;
+  }
   .cryo-footer__line a {
     color: inherit;
     text-decoration: none;
@@ -783,38 +834,43 @@ html[lang^="zh"] .wp-site-blocks {
   }
   .cryo-footer__line::before {
     font-family: dashicons;
-    margin-right: 14px;
-    display: inline-block;
+    flex-shrink: 0;
+    width: 20px;
+    text-align: center;
     transform: translateY(2px);
     color: rgba(255, 255, 255, 0.92);
   }
   .cryo-footer__line--phone::before { content: "\f525"; }
-  .cryo-footer__line--address::before { content: "\f230"; }
+  .cryo-footer__line--address::before { content: "\f466"; }  /* envelope icon for address per design */
   .cryo-footer__line--email::before { content: "\f466"; }
 
-  .cryo-footer__social.wp-block-social-links {
-    gap: 18px;
-    margin-top: 22px;
+  /* Custom social icons row (used for both desktop & mobile) */
+  .cryo-footer__socialCustom {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 16px 0 0;
+    padding: 0;
   }
-  .cryo-footer__social .wp-social-link {
-    background: #fff;
-    border-radius: 999px;
+  .cryo-footer__socialItem {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    border: 0;
   }
-  .cryo-footer__social .wp-social-link a {
-    padding: 12px;
-  }
-  /* Some WP themes use `fill: currentColor` on SVG; make it deterministic. */
-  .cryo-footer__social .wp-social-link a {
-    color: var(--wp--preset--color--accent) !important;
-  }
-  .cryo-footer__social .wp-social-link svg {
-    fill: currentColor !important;
+  .cryo-footer__socialItem img {
+    display: block;
+    width: 32px;
+    height: 32px;
   }
 
   /* Mobile-only social icons live in the markup (newsletter column) — hide on desktop */
   .cryo-footer__socialMobile {
     display: none !important;
   }
+
+  /* (No longer use .cryo-footer__socialCustom / manual markup – Social Links block is styled above.) */
 
   .cryo-footer__nav .wp-block-navigation__container {
     display: flex;
@@ -866,22 +922,28 @@ html[lang^="zh"] .wp-site-blocks {
   }
   .cryo-footer__newsletterRow {
     display: flex;
-    align-items: center;
-    gap: 18px;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.55);
-    padding-bottom: 18px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    border-bottom: 2px solid rgba(255,255,255,.55)!important;
   }
   .cryo-footer__newsletterInput {
-    flex: 1 1 auto;
+    width: 100%;
     border: 0;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.55);
     outline: 0;
     background: transparent;
-    color: #333;
+    color: #fff;
     font-size: 16px;
     padding: 10px 0;
   }
   .cryo-footer__newsletterInput::placeholder {
     color: rgba(255, 255, 255, 0.35);
+  }
+  .cryo-footer__newsletterBtnRow {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
   }
   .cryo-footer__newsletterBtn {
     width: 52px;
@@ -906,7 +968,7 @@ html[lang^="zh"] .wp-site-blocks {
 
   .cryo-footer__bottom {
     margin-top: 46px;
-    padding-top: 26px;
+    padding-top: 0;
     border-top: 2px solid rgba(255, 255, 255, 0.30);
     align-items: center;
     gap: 18px;
@@ -1422,6 +1484,15 @@ html[lang^="zh"] .wp-site-blocks {
     font-size: 16px;
     line-height: 1.65;
   }
+  /* Keep the label (電話 / 地址 / 電郵) on a single line
+     and let the value span take the remaining width and wrap. */
+  .cryo-footer__line span:first-child {
+    min-width: 3.5em;
+    white-space: nowrap;
+  }
+  .cryo-footer__line--address span:last-child {
+    flex: 1 1 auto;
+  }
   .cryo-footer__line::before {
     font-family: dashicons;
     display: inline-block;
@@ -1430,8 +1501,14 @@ html[lang^="zh"] .wp-site-blocks {
     color: rgba(255, 255, 255, 0.92);
   }
   .cryo-footer__line--phone::before { content: "\f525"; }
-  .cryo-footer__line--address::before { content: "\f230"; }
+  .cryo-footer__line--address::before { content: "\f466"; }  /* envelope icon for address per design */
   .cryo-footer__line--email::before { content: "\f466"; }
+
+  /* Mobile contact order: Address → Phone → Email (per design) */
+  .cryo-footer__line--address { order: 1; }
+  .cryo-footer__line--phone { order: 2; }
+  .cryo-footer__line--email { order: 3; }
+
   .cryo-footer__cols {
     gap: 34px;
   }
@@ -1441,10 +1518,10 @@ html[lang^="zh"] .wp-site-blocks {
   .cryo-footer__col--newsletter { order: 2; }
   .cryo-footer__col--menu { order: 3; }
 
-  /* Hide desktop-only extras; show mobile-only social */
-  .cryo-footer__desktopExtras { display: none; }
-  .cryo-footer__socialMobile { display: flex; }
-  .cryo-footer__legalBelow { display: none; }
+  /* Show shared social row under contact on mobile as well */
+  .cryo-footer__desktopExtras { display: block; }
+  .cryo-footer__socialMobile { display: none; }
+  .cryo-footer__legalBelow { display: block; }
 
   /* Section dividers like the mobile design */
   .cryo-footer__col--contact {
@@ -1461,36 +1538,20 @@ html[lang^="zh"] .wp-site-blocks {
     border-bottom: 1px solid rgba(255, 255, 255, 0.35);
   }
 
-  /* Newsletter layout: arrow button sits below, left aligned */
-  .cryo-footer__newsletterRow {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-    border-bottom-width: 1px;
-    padding-bottom: 14px;
-  }
-  .cryo-footer__newsletterInput {
-    width: 100%;
-    border: 0;
-    outline: 0;
-    background: transparent;
-    color: #333;
-    font-size: 16px;
-    padding: 10px 0;
-  }
-  .cryo-footer__newsletterInput::placeholder {
-    color: rgba(255, 255, 255, 0.35);
+  /* Newsletter layout: arrow button sits below */
+  .cryo-footer__newsletterBtnRow {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
   }
   .cryo-footer__newsletterBtn {
-    width: 56px;
-    height: 56px;
-    border-width: 2px;
+    width: 52px;
+    height: 52px;
     border-radius: 999px;
-    border-style: solid;
-    border-color: rgba(255, 255, 255, 0.85);
+    border: 2px solid rgba(255, 255, 255, 0.85);
     background: transparent;
+    cursor: pointer;
     position: relative;
-    padding: 0;
   }
   .cryo-footer__newsletterBtn::before {
     content: "";
@@ -1504,13 +1565,16 @@ html[lang^="zh"] .wp-site-blocks {
     mask: var(--cryo-icon-arrow-right) no-repeat center / contain;
   }
 
-  /* Social icons row (mobile) */
-  .cryo-footer__socialMobile.wp-block-social-links {
-    margin-top: 22px;
-    gap: 18px;
+  /* Mobile social row uses same .cryo-footer__socialCustom styles as desktop,
+     but allow wrapping so icons can flow onto multiple rows. */
+  .cryo-footer__socialCustom {
+    display: flex;
+    justify-content: space-evenly;
+    width: 97%;
   }
-  .cryo-footer__socialMobile .wp-social-link a {
-    padding: 12px;
+  .cryo-footer .wp-block-social-links .wp-social-link svg {
+    width: 20px;
+    height: 20px;
   }
 
   /* Mobile footer menu row (2 lines if needed) */
@@ -6149,17 +6213,11 @@ a.cryo-techCard:hover .cryo-techCard__img {
   color: inherit;
 }
 
-/* Mobile: List layout - content above image */
-.cryo-postCard__link {
-  display: flex;
-  flex-direction: column;
-}
-
+/* Post card layout: Image → Tag+Date → Title */
 .cryo-postCard__content {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  order: 1;
 }
 
 .cryo-postCard__media {
@@ -6168,9 +6226,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
   aspect-ratio: 16 / 9;
   border-radius: 12px;
   overflow: hidden;
-  margin-top: 12px;
   margin-bottom: 16px;
-  order: 2;
 }
 
 .cryo-postCard__media img {
@@ -6266,7 +6322,6 @@ a.cryo-techCard:hover .cryo-techCard__img {
   }
 
   .cryo-postCard__content {
-    order: 2;
     padding: 0;
     gap: 12px;
   }
@@ -6276,9 +6331,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
     aspect-ratio: 4 / 3;
     border-radius: 16px;
     overflow: hidden;
-    margin-top: 0;
     margin-bottom: 16px;
-    order: 1;
   }
 
   .cryo-postCard__media img {
@@ -8268,5 +8321,169 @@ a.cryo-techCard:hover .cryo-techCard__img {
 @media (min-width: 768px) {
   .cryo-compMobile {
     display: none;
+  }
+}
+
+/* ============================================
+   CONTACT CTA SECTION (Team Photo with CTA)
+   ============================================ */
+
+.cryo-contactCta {
+  position: relative;
+  width: 100%;
+  min-height: 420px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 20px 36px;
+  overflow: hidden;
+}
+
+.cryo-contactCta__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  z-index: 1;
+}
+
+.cryo-contactCta__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(195, 87, 44, 0) 0%,
+    rgba(195, 87, 44, 0.2) 45%,
+    rgba(195, 87, 44, 0.75) 75%,
+    rgba(195, 87, 44, 0.9) 100%
+  );
+  z-index: 2;
+}
+
+.cryo-contactCta__content {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  max-width: 560px;
+}
+
+.cryo-contactCta__title {
+  margin: 0 0 14px;
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+}
+
+.cryo-contactCta__title-line {
+  display: block;
+}
+
+.cryo-contactCta__subtitle {
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+}
+
+.cryo-contactCta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 22px;
+  background: #fff;
+  color: var(--wp--preset--color--accent, #C3572C);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 9999px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cryo-contactCta__btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.cryo-contactCta__btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--wp--preset--color--accent, #C3572C);
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.cryo-contactCta__btn-icon svg {
+  width: 14px;
+  height: 14px;
+  stroke: #fff;
+}
+
+.cryo-contactCta__btn:hover .cryo-contactCta__btn-icon {
+  transform: translateX(4px);
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .cryo-contactCta {
+    min-height: 520px;
+    padding: 0 32px 56px;
+  }
+
+  .cryo-contactCta__overlay {
+    background: linear-gradient(
+      180deg,
+      rgba(195, 87, 44, 0) 0%,
+      rgba(195, 87, 44, 0.3) 40%,
+      rgba(195, 87, 44, 0.8) 72%,
+      rgba(195, 87, 44, 0.95) 100%
+    );
+  }
+
+  .cryo-contactCta__title {
+    font-size: 34px;
+  }
+
+  .cryo-contactCta__title-line {
+    display: inline;
+  }
+
+  .cryo-contactCta__subtitle {
+    font-size: 15px;
+    margin-bottom: 30px;
+  }
+
+  .cryo-contactCta__btn {
+    padding: 14px 28px;
+    font-size: 15px;
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1024px) {
+  .cryo-contactCta {
+    min-height: 600px;
+    padding: 0 32px 72px;
+  }
+
+  .cryo-contactCta__title {
+    font-size: 40px;
+    margin-bottom: 18px;
+  }
+
+  .cryo-contactCta__subtitle {
+    font-size: 16px;
+    margin-bottom: 34px;
+  }
+
+  .cryo-contactCta__btn {
+    padding: 16px 32px;
+    font-size: 16px;
   }
 }

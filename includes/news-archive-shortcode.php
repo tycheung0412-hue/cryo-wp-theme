@@ -347,11 +347,16 @@ if (!function_exists('cryo_render_archive_post_card')) {
       $img_html = '<div class="cryo-postCard__placeholder" role="img" aria-label="' . esc_attr($title) . '"></div>';
     }
 
-    // Build card HTML
+    // Build card HTML - Order: Image → Tag+Date → Title (matches design)
     $html = '<article class="cryo-postCard">';
     $html .= '<a class="cryo-postCard__link" href="' . esc_url($permalink) . '">';
 
-    // Content section
+    // Media section (image first)
+    $html .= '<div class="cryo-postCard__media">';
+    $html .= $img_html;
+    $html .= '</div>';
+
+    // Content section (meta + title after image)
     $html .= '<div class="cryo-postCard__content">';
     $html .= '<div class="cryo-postCard__meta">';
     $html .= $category_html;
@@ -361,11 +366,6 @@ if (!function_exists('cryo_render_archive_post_card')) {
     if ($excerpt) {
       $html .= '<p class="cryo-postCard__excerpt">' . esc_html(wp_trim_words($excerpt, 30, '...')) . '</p>';
     }
-    $html .= '</div>';
-
-    // Media section
-    $html .= '<div class="cryo-postCard__media">';
-    $html .= $img_html;
     $html .= '</div>';
 
     $html .= '</a>';
