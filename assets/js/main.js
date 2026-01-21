@@ -829,3 +829,173 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// IP Camera tab switching and auto-refresh
+document.addEventListener('DOMContentLoaded', () => {
+  const ipcamContainer = document.querySelector('.cryo-ipcam');
+  if (!ipcamContainer) return;
+
+  const tabs = Array.from(ipcamContainer.querySelectorAll('.cryo-ipcam__tab .wp-block-button__link'));
+  const viewer = ipcamContainer.querySelector('.cryo-ipcam__embed');
+  const img = viewer?.querySelector('.cryo-ipcam__img');
+  if (!tabs.length || !viewer || !img) return;
+
+  // Get base URL (current page URL without query params)
+  const baseUrl = window.location.href.split('?')[0];
+  
+  // Update image source based on tab
+  const updateCamera = (tab) => {
+    const url = new URL(baseUrl);
+    url.searchParams.set('tab', tab);
+    // Add timestamp to prevent caching
+    url.searchParams.set('_t', Date.now());
+    img.src = url.toString();
+    
+    // Update active tab state
+    tabs.forEach((btn) => {
+      const btnTab = btn.getAttribute('data-tab');
+      const isActive = btnTab === tab;
+      btn.classList.toggle('is-active', isActive);
+      btn.setAttribute('aria-current', isActive ? 'true' : 'false');
+    });
+  };
+
+  // Tab click handlers
+  tabs.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const tab = btn.getAttribute('data-tab');
+      if (tab) {
+        updateCamera(tab);
+      }
+    });
+  });
+
+  // Initialize with tab from URL or default to tab 1
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialTab = urlParams.get('tab') || '1';
+  updateCamera(initialTab);
+
+  // Auto-refresh functionality (if image has refresh interval)
+  let refreshTimer = null;
+  const startAutoRefresh = () => {
+    if (refreshTimer) clearInterval(refreshTimer);
+    // Refresh every 5 seconds (can be customized via data attribute)
+    const interval = parseInt(img.getAttribute('data-refresh-interval') || '5000', 10);
+    refreshTimer = setInterval(() => {
+      const currentUrl = new URL(img.src);
+      currentUrl.searchParams.set('_t', Date.now());
+      img.src = currentUrl.toString();
+    }, interval);
+  };
+
+  // Start auto-refresh when image loads
+  img.addEventListener('load', startAutoRefresh);
+  // Also start if image is already loaded
+  if (img.complete) {
+    startAutoRefresh();
+  }
+
+  // Clean up on page unload
+  window.addEventListener('beforeunload', () => {
+    if (refreshTimer) clearInterval(refreshTimer);
+  });
+});
+
+// Monitoring card play button - opens fullscreen modal
+document.addEventListener('DOMContentLoaded', () => {
+  const playButtons = Array.from(document.querySelectorAll('[data-cryo-monitoring-play]'));
+  if (playButtons.length === 0) return;
+
+  // Create modal element if it doesn't exist
+  let modal = document.querySelector('.cryo-monitoringModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.className = 'cryo-monitoringModal';
+    modal.innerHTML = `
+      <div class="cryo-monitoringModal__content">
+        <button class="cryo-monitoringModal__close" type="button" aria-label="關閉" data-cryo-monitoring-close>×</button>
+        <div class="cryo-monitoringModal__feed" data-cryo-monitoring-feed></div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  const modalContent = modal.querySelector('.cryo-monitoringModal__content');
+  const modalFeed = modal.querySelector('[data-cryo-monitoring-feed]');
+  const closeBtn = modal.querySelector('[data-cryo-monitoring-close]');
+
+  const openModal = (tab) => {
+    // Find the camera feed for this tab
+    const card = document.querySelector(`[data-camera-tab="${tab}"]`)?.closest('.cryo-monitoringCard');
+    const feedContainer = card?.querySelector('.cryo-ipcam__embed');
+    const img = feedContainer?.querySelector('.cryo-ipcam__img');
+    
+    if (!img || !img.src) return;
+
+    // Clone or create feed in modal
+    modalFeed.innerHTML = '';
+    const modalImg = document.createElement('img');
+    modalImg.className = 'cryo-monitoringModal__feed';
+    modalImg.src = img.src;
+    modalImg.alt = `攝影機 ${tab} 全螢幕畫面`;
+    modalFeed.appendChild(modalImg);
+
+    // Show modal
+    modal.classList.add('is-active');
+    document.body.style.overflow = 'hidden';
+
+    // Auto-refresh the modal feed
+    const refreshInterval = parseInt(img.getAttribute('data-refresh-interval') || '5000', 10);
+    const modalRefresh = setInterval(() => {
+      const currentUrl = new URL(modalImg.src);
+      currentUrl.searchParams.set('_t', Date.now());
+      modalImg.src = currentUrl.toString();
+    }, refreshInterval);
+
+    // Store interval ID for cleanup
+    modal.dataset.refreshInterval = refreshInterval;
+    modal._refreshTimer = modalRefresh;
+  };
+
+  const closeModal = () => {
+    modal.classList.remove('is-active');
+    document.body.style.overflow = '';
+    
+    // Clear refresh timer
+    if (modal._refreshTimer) {
+      clearInterval(modal._refreshTimer);
+      modal._refreshTimer = null;
+    }
+  };
+
+  // Play button handlers
+  playButtons.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const tab = btn.getAttribute('data-camera-tab');
+      if (tab) {
+        openModal(tab);
+      }
+    });
+  });
+
+  // Close button handler
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeModal);
+  }
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-active')) {
+      closeModal();
+    }
+  });
+
+  // Close on backdrop click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+});
+

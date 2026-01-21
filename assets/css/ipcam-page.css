@@ -1,0 +1,301 @@
+/* IP Camera Page Styles */
+
+.cryo-ipcam {
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.cryo-ipcam__container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.cryo-ipcam__title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+  text-align: center;
+  color: var(--wp--preset--color--foreground, #1a1a1a);
+}
+
+.cryo-ipcam__controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cryo-ipcam__tab {
+  margin: 0;
+}
+
+.cryo-ipcam__tab .wp-block-button__link {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.cryo-ipcam__tab .wp-block-button__link:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.cryo-ipcam__tab .wp-block-button__link.is-active,
+.cryo-ipcam__tab .wp-block-button__link[aria-current="true"] {
+  background-color: var(--wp--preset--color--primary, #ff6b35);
+  color: #fff;
+}
+
+.cryo-ipcam__viewer {
+  position: relative;
+  width: 100%;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  aspect-ratio: 16 / 9;
+  min-height: 400px;
+}
+
+.cryo-ipcam__embed {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+.cryo-ipcam__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.cryo-ipcam__note {
+  text-align: center;
+  color: var(--wp--preset--color--foreground, #666);
+  font-size: 0.875rem;
+  margin: 0;
+  padding: 0.5rem;
+}
+
+.cryo-ipcam__rtsp-note {
+  padding: 2rem;
+  text-align: center;
+  background: #f5f5f5;
+  border-radius: 8px;
+  color: var(--wp--preset--color--foreground, #666);
+}
+
+.cryo-ipcam__rtsp-note p {
+  margin: 0.5rem 0;
+}
+
+.cryo-ipcam__rtsp-note a {
+  color: var(--wp--preset--color--primary, #ff6b35);
+  text-decoration: underline;
+}
+
+.cryo-ipcam__rtsp-note a:hover {
+  text-decoration: none;
+}
+
+/* Loading state */
+.cryo-ipcam__img[src=""] {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Error state */
+.cryo-ipcam__img[src=""],
+.cryo-ipcam__img:not([src]) {
+  position: relative;
+}
+
+.cryo-ipcam__img:not([src])::after {
+  content: "無法載入畫面";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #999;
+  font-size: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .cryo-ipcam {
+    padding: 1rem 0.5rem;
+  }
+
+  .cryo-ipcam__title {
+    font-size: 1.5rem;
+  }
+
+  .cryo-ipcam__viewer {
+    min-height: 300px;
+  }
+
+  .cryo-ipcam__controls {
+    gap: 0.5rem;
+  }
+
+  .cryo-ipcam__tab .wp-block-button__link {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Fullscreen mode support */
+.cryo-ipcam__viewer:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+}
+
+.cryo-ipcam__viewer:-webkit-full-screen {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+}
+
+.cryo-ipcam__viewer:-moz-full-screen {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+}
+
+.cryo-ipcam__viewer:-ms-fullscreen {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+}
+
+/* Integration with monitoring cards */
+.cryo-monitoringCard__media {
+  position: relative;
+}
+
+.cryo-monitoringCard__media .cryo-ipcam__embed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.cryo-monitoringCard__media .cryo-ipcam__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+}
+
+/* Play button positioning - always on top */
+.cryo-monitoringCard__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Play button hover effect */
+.cryo-monitoringCard__play:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* Show play button overlay on hover */
+.cryo-monitoringCard__media:hover .cryo-monitoringCard__play {
+  opacity: 1;
+}
+
+.cryo-monitoringCard__media:not(:hover) .cryo-monitoringCard__play {
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+
+/* Fullscreen modal for camera feed */
+.cryo-monitoringModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.cryo-monitoringModal.is-active {
+  display: flex;
+}
+
+.cryo-monitoringModal__content {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  max-height: 90vh;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+
+.cryo-monitoringModal__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.cryo-monitoringModal__close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.cryo-monitoringModal__feed {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

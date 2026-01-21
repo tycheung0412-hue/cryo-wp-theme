@@ -905,6 +905,7 @@ add_action('wp_enqueue_scripts', function (): void {
 
   $states_css     = $theme_dir . '/assets/css/states.css';
   $utilities_css  = $theme_dir . '/assets/css/utilities.css';
+  $ipcam_css      = $theme_dir . '/assets/css/ipcam-page.css';
   $main_js        = $theme_dir . '/assets/js/main.js';
 
   if (file_exists($states_css)) {
@@ -913,6 +914,30 @@ add_action('wp_enqueue_scripts', function (): void {
   if (file_exists($utilities_css)) {
     wp_enqueue_style('cryo-utilities', $theme_uri . '/assets/css/utilities.css', [], (string) filemtime($utilities_css));
   }
+  
+  // Enqueue IP camera CSS only on IP camera pages
+  if (file_exists($ipcam_css)) {
+    $is_ipcam_page = false;
+    if (is_page()) {
+      $page_id = get_queried_object_id();
+      $template = get_page_template_slug($page_id);
+      if ($template === 'ipcam.php' || $template === 'page-ipcam.html') {
+        $is_ipcam_page = true;
+      }
+    }
+    // Also check if shortcode is used in content
+    if (!$is_ipcam_page && is_singular()) {
+      $content = get_post_field('post_content', get_queried_object_id());
+      if (strpos($content, '[cryo_ipcam') !== false) {
+        $is_ipcam_page = true;
+      }
+    }
+    
+    if ($is_ipcam_page) {
+      wp_enqueue_style('cryo-ipcam', $theme_uri . '/assets/css/ipcam-page.css', ['cryo-utilities'], (string) filemtime($ipcam_css));
+    }
+  }
+  
   if (file_exists($main_js)) {
     wp_enqueue_script('cryo-main', $theme_uri . '/assets/js/main.js', [], (string) filemtime($main_js), true);
   }
@@ -2484,3 +2509,305 @@ add_action('init', function (): void {
     'rewrite' => false,
   ]);
 });
+
+/**
+ * IP Camera Shortcode — embed camera feed in pages
+ *
+ * Usage:
+ * - [cryo_ipcam tab="1"] (camera 1, port 8001)
+ * - [cryo_ipcam tab="2"] (camera 2, port 8003)
+ * - [cryo_ipcam tab="1" width="800" height="600" autoplay="true"]
+ * - [cryo_ipcam tab="1" rtsp="true"] (RTSP stream mode - requires server setup)
+ *
+ * Parameters:
+ * - tab: Camera number (1 or 2, default: 1)
+ * - width: Image width in pixels (default: 800)
+ * - height: Image height in pixels (default: 600)
+ * - autoplay: Auto-refresh interval in seconds (default: 5, set to 0 to disable)
+ * - rtsp: Enable RTSP streaming mode (default: false, requires server-side processing)
+ * - class: Additional CSS classes
+ */
+add_shortcode('cryo_ipcam', function ($atts): string {
+  $atts = shortcode_atts([
+    'tab' => '1',
+    'width' => '800',
+    'height' => '600',
+    'autoplay' => '5',
+    'rtsp' => 'false',
+    'class' => '',
+  ], (array) $atts, 'cryo_ipcam');
+
+  $tab = (int) ($atts['tab'] ?? 1);
+  if ($tab !== 1 && $tab !== 2) {
+    $tab = 1;
+  }
+
+  $width = (int) ($atts['width'] ?? 800);
+  $height = (int) ($atts['height'] ?? 600);
+  $autoplay = (int) ($atts['autoplay'] ?? 5);
+  $rtsp = strtolower(trim((string) ($atts['rtsp'] ?? 'false'))) === 'true';
+  $class = trim((string) ($atts['class'] ?? ''));
+
+  // Get current page URL for the proxy
+  $page_id = get_queried_object_id();
+  $proxy_url = '';
+  
+  if ($page_id > 0) {
+    $page = get_post($page_id);
+    if ($page && get_page_template_slug($page_id) === 'ipcam.php') {
+      // Use the current page as proxy
+      $proxy_url = get_permalink($page_id);
+    }
+  }
+
+  // Fallback: find a page with ipcam.php template
+  if ($proxy_url === '') {
+    $pages = get_pages([
+      'meta_key' => '_wp_page_template',
+      'meta_value' => 'ipcam.php',
+      'number' => 1,
+      'post_status' => 'publish',
+    ]);
+    if (!empty($pages)) {
+      $proxy_url = get_permalink($pages[0]->ID);
+    }
+  }
+
+  // If no proxy page found, use direct theme file path (less ideal but works)
+  if ($proxy_url === '') {
+    $proxy_url = get_template_directory_uri() . '/ipcam.php';
+  }
+
+  // Build query parameters
+  $query_params = ['tab' => (string) $tab];
+  if ($rtsp) {
+    $query_params['rtsp'] = '1';
+  }
+
+  $image_url = add_query_arg($query_params, $proxy_url);
+  $image_url = esc_url($image_url);
+
+  // Build unique ID for this instance
+  $instance_id = 'cryo-ipcam-' . wp_rand(1000, 9999);
+
+  // Build CSS classes
+  $container_class = 'cryo-ipcam__embed';
+  if ($class !== '') {
+    $container_class .= ' ' . esc_attr($class);
+  }
+
+  // Auto-refresh JavaScript (if autoplay > 0)
+  $refresh_script = '';
+  if ($autoplay > 0) {
+    $refresh_script = '<script>
+      (function() {
+        var img = document.getElementById("' . esc_js($instance_id) . '");
+        if (img) {
+          var refreshInterval = ' . (int) $autoplay . ' * 1000;
+          var refreshTimer = setInterval(function() {
+            var src = img.src.split("?")[0] + "?" + new Date().getTime();
+            img.src = src;
+          }, refreshInterval);
+          // Clean up on page unload
+          window.addEventListener("beforeunload", function() {
+            clearInterval(refreshTimer);
+          });
+        }
+      })();
+    </script>';
+  }
+
+  // RTSP mode: show placeholder with note
+  if ($rtsp) {
+    return '<div class="' . $container_class . '">'
+      . '<div class="cryo-ipcam__rtsp-note">'
+      . '<p>RTSP 串流模式需要伺服器端處理。請使用快照模式或設定 RTSP 轉換服務。</p>'
+      . '<p><a href="' . esc_url(remove_query_arg('rtsp', $image_url)) . '">切換至快照模式</a></p>'
+      . '</div>'
+      . '</div>';
+  }
+
+  // JPEG snapshot mode
+  return '<div class="' . $container_class . '">'
+    . '<img id="' . esc_attr($instance_id) . '"'
+    . ' class="cryo-ipcam__img"'
+    . ' src="' . $image_url . '"'
+    . ' alt="攝影機 ' . esc_attr((string) $tab) . ' 即時畫面"'
+    . ' width="' . esc_attr((string) $width) . '"'
+    . ' height="' . esc_attr((string) $height) . '"'
+    . ' loading="lazy"'
+    . ' style="max-width: 100%; height: auto;"'
+    . ' />'
+    . $refresh_script
+    . '</div>';
+});
+
+/**
+ * RTSP Stream Helper Functions
+ *
+ * Note: Full RTSP streaming requires:
+ * - FFmpeg installed on server
+ * - Or use a media server (Wowza, Media Server, etc.)
+ * - Or convert RTSP to HLS/WebRTC on the fly
+ *
+ * These functions provide the foundation for RTSP support.
+ */
+
+if (!function_exists('cryo_get_rtsp_url')) {
+  /**
+   * Get RTSP stream URL for a camera
+   *
+   * @param int $tab Camera number (1 or 2)
+   * @return string RTSP URL
+   */
+  function cryo_get_rtsp_url(int $tab = 1): string {
+    $port = ($tab === 1) ? '8001' : '8003';
+    // RTSP URL format (adjust based on your camera's RTSP endpoint)
+    return "rtsp://root:cam#cttc@202.64.221.98:$port/stream";
+  }
+}
+
+if (!function_exists('cryo_convert_rtsp_to_hls')) {
+  /**
+   * Convert RTSP stream to HLS (HTTP Live Streaming)
+   *
+   * This requires FFmpeg to be installed and accessible via shell_exec
+   *
+   * @param string $rtsp_url RTSP stream URL
+   * @param string $output_dir Directory to store HLS segments
+   * @return string|false HLS playlist URL or false on failure
+   */
+  function cryo_convert_rtsp_to_hls(string $rtsp_url, string $output_dir = ''): string|false {
+    if (empty($output_dir)) {
+      $upload_dir = wp_upload_dir();
+      $output_dir = $upload_dir['basedir'] . '/rtsp-hls';
+      if (!file_exists($output_dir)) {
+        wp_mkdir_p($output_dir);
+      }
+    }
+
+    $playlist_file = $output_dir . '/playlist.m3u8';
+    $segment_pattern = $output_dir . '/segment_%03d.ts';
+
+    // Check if FFmpeg is available
+    $ffmpeg_path = apply_filters('cryo_ffmpeg_path', 'ffmpeg');
+    $ffmpeg_check = @shell_exec("which $ffmpeg_path 2>&1");
+    if (empty($ffmpeg_check)) {
+      return false;
+    }
+
+    // FFmpeg command to convert RTSP to HLS
+    // Note: This is a basic example - adjust parameters based on your needs
+    $command = sprintf(
+      '%s -rtsp_transport tcp -i %s -c:v libx264 -c:a aac -hls_time 2 -hls_list_size 3 -hls_flags delete_segments -f hls %s 2>&1',
+      escapeshellarg($ffmpeg_path),
+      escapeshellarg($rtsp_url),
+      escapeshellarg($segment_pattern)
+    );
+
+    // Run conversion in background (non-blocking)
+    if (PHP_OS_FAMILY === 'Windows') {
+      $command = "start /B " . $command;
+    } else {
+      $command = $command . " > /dev/null 2>&1 &";
+    }
+
+    @exec($command);
+
+    // Return HLS playlist URL
+    $upload_dir = wp_upload_dir();
+    return $upload_dir['baseurl'] . '/rtsp-hls/playlist.m3u8';
+  }
+}
+
+if (!function_exists('cryo_get_rtsp_stream_url')) {
+  /**
+   * Get RTSP stream URL with conversion support
+   *
+   * @param int $tab Camera number (1 or 2)
+   * @param string $format Output format: 'rtsp', 'hls', 'webrtc' (default: 'hls')
+   * @return string|false Stream URL or false on failure
+   */
+  function cryo_get_rtsp_stream_url(int $tab = 1, string $format = 'hls'): string|false {
+    $rtsp_url = cryo_get_rtsp_url($tab);
+
+    switch ($format) {
+      case 'rtsp':
+        return $rtsp_url;
+
+      case 'hls':
+        // Try to get or create HLS stream
+        $cache_key = 'cryo_rtsp_hls_' . $tab;
+        $hls_url = get_transient($cache_key);
+        
+        if ($hls_url === false) {
+          $hls_url = cryo_convert_rtsp_to_hls($rtsp_url);
+          if ($hls_url !== false) {
+            // Cache for 1 hour
+            set_transient($cache_key, $hls_url, HOUR_IN_SECONDS);
+          }
+        }
+        
+        return $hls_url;
+
+      case 'webrtc':
+        // WebRTC requires additional setup (e.g., Janus Gateway, Kurento)
+        // Return placeholder for now
+        return apply_filters('cryo_webrtc_stream_url', false, $tab);
+
+      default:
+        return false;
+    }
+  }
+}
+
+/**
+ * REST API endpoint for RTSP stream management
+ */
+add_action('rest_api_init', function (): void {
+  register_rest_route('cryo/v1', '/rtsp-stream', [
+    'methods' => 'GET',
+    'callback' => 'cryo_handle_rtsp_stream_request',
+    'permission_callback' => '__return_true',
+    'args' => [
+      'tab' => [
+        'type' => 'integer',
+        'default' => 1,
+        'validate_callback' => function ($param) {
+          return in_array((int) $param, [1, 2], true);
+        },
+      ],
+      'format' => [
+        'type' => 'string',
+        'default' => 'hls',
+        'enum' => ['rtsp', 'hls', 'webrtc'],
+      ],
+    ],
+  ]);
+});
+
+if (!function_exists('cryo_handle_rtsp_stream_request')) {
+  /**
+   * Handle RTSP stream API request
+   */
+  function cryo_handle_rtsp_stream_request(WP_REST_Request $request): WP_REST_Response {
+    $tab = (int) $request->get_param('tab');
+    $format = (string) $request->get_param('format');
+
+    $stream_url = cryo_get_rtsp_stream_url($tab, $format);
+
+    if ($stream_url === false) {
+      return new WP_REST_Response([
+        'success' => false,
+        'message' => 'Failed to get stream URL. Please check server configuration.',
+      ], 500);
+    }
+
+    return new WP_REST_Response([
+      'success' => true,
+      'stream_url' => $stream_url,
+      'format' => $format,
+      'tab' => $tab,
+    ], 200);
+  }
+}

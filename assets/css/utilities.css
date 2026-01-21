@@ -852,6 +852,11 @@ html[lang^="zh"] .wp-site-blocks {
     margin: 16px 0 0;
     padding: 0;
   }
+.cryo-footer__socialCustom:empty {
+  /* If icons fail to render (e.g. template stripped children),
+     collapse the row so it doesn't leave a visual gap. */
+  display: none;
+}
   .cryo-footer__socialItem {
     display: inline-flex;
     align-items: center;
@@ -1521,7 +1526,9 @@ html[lang^="zh"] .wp-site-blocks {
   /* Show shared social row under contact on mobile as well */
   .cryo-footer__desktopExtras { display: block; }
   .cryo-footer__socialMobile { display: none; }
-  .cryo-footer__legalBelow { display: block; }
+  /* Desktop-only legal row should be hidden on mobile;
+     mobile uses .cryo-footer__legalMobile under the menu column. */
+  .cryo-footer__legalBelow { display: none; }
 
   /* Section dividers like the mobile design */
   .cryo-footer__col--contact {
@@ -1607,7 +1614,11 @@ html[lang^="zh"] .wp-site-blocks {
     flex-wrap: wrap;
     justify-content: space-between;
   }
+  .cryo-footer__legalMobile .cryo-footerMenu__list > li {
+    flex: 0 0 auto; /* keep each item only as wide as its text */
+  }
   .cryo-footer__legalMobile .cryo-footerMenu__list a {
+    display: inline-block; /* prevent full‑width blocks so items can sit in a row */
     color: rgba(255, 255, 255, 0.85);
     text-decoration: underline;
     font-weight: 700;

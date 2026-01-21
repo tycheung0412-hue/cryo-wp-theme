@@ -1,0 +1,44 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","className":"cryo-ipcam","layout":{"type":"constrained"}} -->
+<main class="wp-block-group cryo-ipcam">
+  <!-- wp:group {"className":"cryo-ipcam__container","layout":{"type":"constrained"}} -->
+  <div class="wp-block-group cryo-ipcam__container">
+    
+    <!-- wp:heading {"level":2,"className":"cryo-ipcam__title"} -->
+    <h2 class="wp-block-heading cryo-ipcam__title">即時監控</h2>
+    <!-- /wp:heading -->
+
+    <!-- wp:group {"className":"cryo-ipcam__controls","layout":{"type":"flex","flexWrap":"wrap"}} -->
+    <div class="wp-block-group cryo-ipcam__controls">
+      <!-- wp:buttons -->
+      <div class="wp-block-buttons">
+        <!-- wp:button {"className":"cryo-ipcam__tab","data-tab":"1"} -->
+        <div class="wp-block-button cryo-ipcam__tab"><a class="wp-block-button__link wp-element-button" data-tab="1">攝影機 1</a></div>
+        <!-- /wp:button -->
+        <!-- wp:button {"className":"cryo-ipcam__tab","data-tab":"2"} -->
+        <div class="wp-block-button cryo-ipcam__tab"><a class="wp-block-button__link wp-element-button" data-tab="2">攝影機 2</a></div>
+        <!-- /wp:button -->
+      </div>
+      <!-- /wp:buttons -->
+    </div>
+    <!-- /wp:group -->
+
+    <!-- wp:group {"className":"cryo-ipcam__viewer","layout":{"type":"constrained"}} -->
+    <div class="wp-block-group cryo-ipcam__viewer">
+      <!-- wp:shortcode -->
+      [cryo_ipcam tab="1"]
+      <!-- /wp:shortcode -->
+    </div>
+    <!-- /wp:group -->
+
+    <!-- wp:paragraph {"className":"cryo-ipcam__note"} -->
+    <p class="cryo-ipcam__note">畫面每 5 秒自動更新</p>
+    <!-- /wp:paragraph -->
+
+  </div>
+  <!-- /wp:group -->
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
