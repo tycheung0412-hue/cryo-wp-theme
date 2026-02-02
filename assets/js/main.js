@@ -514,22 +514,35 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!track || slides.length === 0) return;
 
     let index = 0;
+    const n = slides.length;
+
+    // Get all prev/next buttons in the section
+    const prevBtns = Array.from(section.querySelectorAll('[data-cryo-testimonial-prev]'));
+    const nextBtns = Array.from(section.querySelectorAll('[data-cryo-testimonial-next]'));
+
+    const updateButtonStates = () => {
+      const isFirst = index === 0;
+      const isLast = index === n - 1;
+      prevBtns.forEach(btn => btn.disabled = isFirst);
+      nextBtns.forEach(btn => btn.disabled = isLast);
+    };
 
     const setActive = (next) => {
-      const n = slides.length;
-      index = ((next % n) + n) % n;
+      // Clamp to valid range (no wrap-around)
+      index = Math.max(0, Math.min(n - 1, next));
       track.style.transform = `translate3d(${-index * 100}%, 0, 0)`;
       slides.forEach((s, i) => s.classList.toggle('is-active', i === index));
+      updateButtonStates();
     };
 
     // Navigation buttons (inside each slide)
     section.addEventListener('click', (e) => {
       const prevBtn = e.target.closest('[data-cryo-testimonial-prev]');
       const nextBtn = e.target.closest('[data-cryo-testimonial-next]');
-      if (prevBtn) {
+      if (prevBtn && !prevBtn.disabled) {
         e.preventDefault();
         setActive(index - 1);
-      } else if (nextBtn) {
+      } else if (nextBtn && !nextBtn.disabled) {
         e.preventDefault();
         setActive(index + 1);
       }
@@ -544,8 +557,8 @@ document.addEventListener('DOMContentLoaded', () => {
       dragging = false;
       const dx = x - startX;
       const threshold = 50;
-      if (dx > threshold) setActive(index - 1);
-      else if (dx < -threshold) setActive(index + 1);
+      if (dx > threshold && index > 0) setActive(index - 1);
+      else if (dx < -threshold && index < n - 1) setActive(index + 1);
     };
     section.addEventListener('touchstart', (e) => onDown(e.touches?.[0]?.clientX ?? 0), { passive: true });
     section.addEventListener('touchend', (e) => onUp(e.changedTouches?.[0]?.clientX ?? 0), { passive: true });
