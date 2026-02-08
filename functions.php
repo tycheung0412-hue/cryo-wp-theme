@@ -2186,9 +2186,11 @@ add_shortcode('cryo_history_carousel', function ($atts, $content = ''): string {
  *
  * Usage:
  * - [cryo_history_slide image_id="123" heading="標題" content="內容..." /]
+ * - [cryo_history_slide image_url="/wp-content/themes/cryo/assets/images/about-us/history-lab.png" heading="標題" content="內容..." /]
  *
  * Parameters:
- * - image_id: Attachment ID for the left-side image
+ * - image_id: Attachment ID for the left-side image (preferred)
+ * - image_url: Direct URL for the image (fallback when image_id is not available)
  * - heading: Slide heading (orange title)
  * - content: Slide description text
  */
@@ -2197,21 +2199,26 @@ add_shortcode('cryo_history_slide', function ($atts): string {
 
   $atts = shortcode_atts([
     'image_id' => '',
+    'image_url' => '',
     'heading' => '',
     'content' => '',
   ], (array) $atts, 'cryo_history_slide');
 
   $image_id = (int) ($atts['image_id'] ?? 0);
+  $image_url = trim((string) ($atts['image_url'] ?? ''));
   $heading = trim((string) ($atts['heading'] ?? ''));
   $content = trim((string) ($atts['content'] ?? ''));
 
-  // Get image
+  // Get image — prefer attachment ID, fall back to direct URL
   $img_html = '';
   if ($image_id > 0) {
     $img_html = wp_get_attachment_image($image_id, 'large', false, [
       'class' => 'cryo-history__img',
       'loading' => 'lazy',
     ]);
+  }
+  if ($img_html === '' && $image_url !== '') {
+    $img_html = '<img class="cryo-history__img" src="' . esc_url($image_url) . '" alt="' . esc_attr($heading) . '" loading="lazy" />';
   }
   if ($img_html === '') {
     $img_html = '<img class="cryo-history__img" src="https://placehold.co/600x500/E8E4DE/666?text=Placeholder" alt="' . esc_attr($heading) . '" loading="lazy" />';
