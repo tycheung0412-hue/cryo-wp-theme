@@ -416,6 +416,12 @@
     text-decoration: underline;
   }
 
+  .cryo-intro__cta {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   /* ------------------------------------------------------------------------ */
   /* Footer (mobile) — stacked layout, isolated from desktop                   */
   /* ------------------------------------------------------------------------ */
@@ -854,6 +860,13 @@
 }
 
 @media (max-width: 1023px) {
+  /* For imgLeft variant, show text before image on mobile */
+  .cryo-intro--imgLeft .cryo-intro__content {
+    order: -1;
+  }
+}
+
+@media (max-width: 1023px) {
   .cryo-testimonialsSection {
     padding: 40px 0;
   }
@@ -942,6 +955,45 @@
   .cryo-testimonial__play {
     width: 64px;
     height: 64px;
+  }
+
+  /* ── Single / Featured testimonial — override the slider grid ── */
+  .cryo-testimonial--featured {
+    grid-template-columns: 110px 1fr;
+    grid-template-areas:
+      "quote quote"
+      "media author";
+    gap: 28px 16px;
+    align-items: start;
+  }
+
+  .cryo-testimonial--featured .cryo-testimonial__quoteWrap {
+    display: contents;
+  }
+
+  .cryo-testimonial--featured .cryo-testimonial__quote {
+    grid-area: quote;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    font-size: 18px;
+    line-height: 1.75;
+    aspect-ratio: auto;
+  }
+
+  .cryo-testimonial--featured .cryo-testimonial__author {
+    grid-area: author;
+    align-self: center;
+  }
+
+  .cryo-testimonial--featured .cryo-testimonial__media {
+    grid-area: media;
+    width: 110px;
+    height: 110px;
+    aspect-ratio: auto;
+    border-radius: 12px;
+    margin-bottom: 0;
+    align-self: center;
   }
 }
 

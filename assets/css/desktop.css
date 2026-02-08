@@ -1823,31 +1823,52 @@
 
 @media (min-width: 1024px) {
   .cryo-testimonialSection--single {
-    padding: 100px 0;
+    background: #F5EDE8;
+    padding: 80px 60px;
   }
 
   .cryo-testimonial--featured {
-    flex-direction: row;
+    grid-template-columns: 1fr 340px;
+    grid-template-areas: none;
     gap: 64px;
-    padding: 0 60px;
+    padding: 0 20px;
     align-items: center;
   }
 
   .cryo-testimonial--featured .cryo-testimonial__quoteWrap {
-    flex: 1;
+    display: block;
+    position: relative;
     text-align: left;
   }
 
   .cryo-testimonial--featured .cryo-testimonial__quote {
-    font-size: 22px;
+    padding: 0;
+    font-size: 24px;
     margin-bottom: 32px;
-    max-width: none;
+    line-height: 1.8;
+  }
+
+  .cryo-testimonial--featured .cryo-testimonial__author {
+    align-self: auto;
+  }
+
+  .cryo-testimonial--featured .cryo-testimonial__name {
+    font-size: 20px;
+  }
+
+  .cryo-testimonial--featured .cryo-testimonial__role {
+    font-size: 15px;
   }
 
   .cryo-testimonial--featured .cryo-testimonial__media {
-    width: 180px;
-    height: 180px;
-    flex-shrink: 0;
+    grid-area: auto;
+    width: 100%;
+    height: auto;
+    max-width: 340px;
+    aspect-ratio: 3 / 4;
+    border-radius: 16px;
+    margin: 0;
+    align-self: center;
   }
 }
 

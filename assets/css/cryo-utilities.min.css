@@ -6066,94 +6066,181 @@ a.cryo-techCard:hover .cryo-techCard__img {
 /* Testimonial Section - Featured single testimonial                           */
 /* -------------------------------------------------------------------------- */
 
+/* ---- Single Testimonial (Why-Choose-Us page) ---- */
+
+/* ── Mobile-first base (< 1024px) ── */
 .cryo-testimonialSection--single {
-  /* To be added with image for the background attribute below*/
-  /* background: linear-gradient(135deg, #4A4A4A 0%, #2D2D2D 100%); */
-  padding: 64px 0;
+  background: #fff;
+  padding: 40px 20px;
+  overflow: hidden;
 }
 
 .cryo-testimonial--featured {
   max-width: 1320px;
   margin: 0 auto;
-  padding: 0 16px;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  grid-template-areas:
+    "quote quote"
+    "media author";
+  gap: 28px 16px;
+  align-items: start;
+  position: relative;
 }
 
 .cryo-testimonial--featured .cryo-testimonial__quoteWrap {
-  text-align: center;
+  display: contents;
 }
 
 .cryo-testimonial--featured .cryo-testimonial__quote {
-  margin: 0 0 24px;
-  color: #333;
+  grid-area: quote;
+  position: relative;
+  margin: 0;
+  padding: 64px 0 56px;
+  border: 0;
+  color: #2D2D2D;
   font-size: 18px;
-  font-style: italic;
-  line-height: 1.8;
-  max-width: 700px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1.75;
+}
+
+.cryo-testimonial--featured .cryo-testimonial__quote::before {
+  content: "\201C";
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 90px;
+  line-height: 1;
+  font-family: Georgia, "Times New Roman", serif;
+  color: #B5B5B5;
+  opacity: 1;
+  pointer-events: none;
+}
+
+.cryo-testimonial--featured .cryo-testimonial__quote::after {
+  content: "\201D";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  font-size: 90px;
+  line-height: 1;
+  font-family: Georgia, "Times New Roman", serif;
+  color: #B5B5B5;
+  opacity: 1;
+  pointer-events: none;
+}
+
+.cryo-testimonial--featured .cryo-testimonial__quoteText {
+  font-weight: 700;
 }
 
 .cryo-testimonial--featured .cryo-testimonial__author {
+  grid-area: author;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  align-self: center;
 }
 
 .cryo-testimonial--featured .cryo-testimonial__name {
   color: var(--wp--preset--color--accent, #C3572C);
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 700;
+  line-height: 1.4;
 }
 
 .cryo-testimonial--featured .cryo-testimonial__role {
-  color: rgba(255,255,255,0.7);
+  color: var(--wp--preset--color--accent, #C3572C);
   font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  opacity: 0.85;
 }
 
 .cryo-testimonial--featured .cryo-testimonial__media {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
+  grid-area: media;
+  width: 110px;
+  height: 110px;
+  border-radius: 12px;
   overflow: hidden;
-  border: 4px solid rgba(255,255,255,0.2);
+  border: none;
+  align-self: center;
 }
 
 .cryo-testimonial--featured .cryo-testimonial__media img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
+/* ── Desktop layout (≥ 1024px) ── */
 @media (min-width: 1024px) {
   .cryo-testimonialSection--single {
-    padding: 100px 0;
+    background: #F5EDE8;
+    padding: 80px 60px;
   }
 
   .cryo-testimonial--featured {
-    flex-direction: row;
+    grid-template-columns: 1fr 340px;
+    grid-template-areas: none;
     gap: 64px;
-    padding: 0 60px;
+    padding: 0 20px;
     align-items: center;
   }
 
   .cryo-testimonial--featured .cryo-testimonial__quoteWrap {
-    flex: 1;
+    display: block;
+    position: relative;
     text-align: left;
   }
 
   .cryo-testimonial--featured .cryo-testimonial__quote {
-    font-size: 22px;
+    padding: 0;
+    font-size: 24px;
     margin-bottom: 32px;
-    max-width: none;
+    line-height: 1.8;
+  }
+
+  .cryo-testimonial--featured .cryo-testimonial__quote::before {
+    top: -40px;
+    left: -20px;
+    font-size: 180px;
+    color: var(--wp--preset--color--accent, #C3572C);
+    opacity: 0.25;
+  }
+
+  .cryo-testimonial--featured .cryo-testimonial__quote::after {
+    bottom: -60px;
+    right: -10px;
+    font-size: 180px;
+    color: var(--wp--preset--color--accent, #C3572C);
+    opacity: 0.18;
+  }
+
+  .cryo-testimonial--featured .cryo-testimonial__author {
+    align-self: auto;
+  }
+
+  .cryo-testimonial--featured .cryo-testimonial__name {
+    font-size: 20px;
+  }
+
+  .cryo-testimonial--featured .cryo-testimonial__role {
+    font-size: 15px;
   }
 
   .cryo-testimonial--featured .cryo-testimonial__media {
-    width: 180px;
-    height: 180px;
-    flex-shrink: 0;
+    grid-area: auto;
+    width: 100%;
+    height: auto;
+    max-width: 340px;
+    aspect-ratio: 3 / 4;
+    border-radius: 16px;
+    margin: 0;
+    align-self: center;
   }
 }
 
