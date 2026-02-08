@@ -1695,6 +1695,22 @@ html[lang^="zh"] .wp-site-blocks {
 
 .cryo-cards__copy {
   max-width: 520px;
+  position: relative;
+}
+
+/* Soft rounded gradient background - matches design */
+.cryo-cards__copy::before {
+  content: '';
+  position: absolute;
+  top: 120%;
+  left: 30%;
+  transform: translate(-50%, -50%);
+  width: 1000px;
+  height: 1000px;
+  background: radial-gradient(ellipse at center, rgba(255, 200, 180, 0.35) 0%, rgba(255, 220, 200, 0.15) 40%, transparent 70%);
+  border-radius: 50%;
+  z-index: -1;
+  pointer-events: none;
 }
 
 /* Generic typography: use standard tags (h6 kicker, h2 title, p body) */
@@ -3148,6 +3164,13 @@ html[lang^="zh"] .wp-site-blocks {
   overflow: hidden;
   background: #f0ede8;
 }
+
+.cryo-intro__media img, 
+.cryo-cb101__media img
+{
+  max-width: 100%!important;
+  object-fit: contain !important;
+} 
 
 .cryo-intro__img {
   display: block;
@@ -5679,7 +5702,6 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-promiseSection {
   width: 100%;
-  background: #fff;
   padding: 64px 0;
 }
 
@@ -5692,11 +5714,11 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-promise__title {
   margin: 0 0 16px;
-  color: #000;
+  color: var(--wp--preset--color--accent, #C3572C);
   font-size: 32px;
   font-weight: 900;
   line-height: 1.2;
-  text-align: center;
+  text-align: left;
 }
 
 .cryo-promise__subtitle {
@@ -5704,60 +5726,138 @@ a.cryo-techCard:hover .cryo-techCard__img {
   color: rgba(0,0,0,0.7);
   font-size: 15px;
   line-height: 1.6;
-  text-align: center;
-  max-width: 700px;
-  margin-left: auto;
-  margin-right: auto;
+  text-align: left;
+  max-width: none;
 }
 
 .cryo-promise__grid {
   display: grid;
   grid-template-columns: 1fr;
   align-items: start;
-  gap: 24px;
+  gap: 0;
 }
 
 .cryo-promiseCard {
-  text-align: center;
-  padding: 32px 24px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 16px;
+  text-align: left;
+  padding: 24px 0;
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.cryo-promiseCard:last-child {
+  border-bottom: 1px solid rgba(0,0,0,0.1);
 }
 
 .cryo-promiseCard__icon {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 16px;
-  color: var(--wp--preset--color--accent, #C3572C);
+  grid-column: 2;
+  grid-row: 1 / -1;
+  width: 72px;
+  height: 72px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
+/* Hide SVG icons — replaced by CSS background images */
 .cryo-promiseCard__icon svg {
-  width: 100%;
-  height: 100%;
+  display: none;
+}
+
+/* Icon images per card */
+.cryo-promiseCard:nth-child(1) .cryo-promiseCard__icon {
+  background-image: url('../images/promise-icon-1.png');
+}
+.cryo-promiseCard:nth-child(2) .cryo-promiseCard__icon {
+  background-image: url('../images/promise-icon-2.png');
+}
+.cryo-promiseCard:nth-child(3) .cryo-promiseCard__icon {
+  background-image: url('../images/promise-icon-3.png');
+}
+.cryo-promiseCard:nth-child(4) .cryo-promiseCard__icon {
+  background-image: url('../images/promise-icon-4.png');
 }
 
 .cryo-promiseCard__label {
+  grid-column: 1;
+  grid-row: 1;
   color: rgba(0,0,0,0.6);
   font-size: 14px;
   line-height: 1.5;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .cryo-promiseCard__value {
+  grid-column: 1;
+  grid-row: 2;
   color: var(--wp--preset--color--accent, #C3572C);
-  font-size: 48px;
+  font-size: 42px;
   font-weight: 900;
   line-height: 1.1;
 }
 
 .cryo-promiseCard__value span {
-  font-size: 18px;
-  font-weight: 600;
-  margin-left: 4px;
+  font-size: inherit;
+  font-weight: inherit;
+  margin-left: 0;
 }
 
 @media (min-width: 768px) {
   .cryo-promise__grid {
+    position: relative;
     grid-template-columns: repeat(2, 1fr);
-    gap: 32px;
+    gap: 0 48px;
+  }
+
+  /* Vertical separator line between columns */
+  .cryo-promise__grid::after {
+    content: '';
+    position: absolute;
+    top: 32px;
+    bottom: 32px;
+    left: 50%;
+    width: 1px;
+    background: rgba(0,0,0,0.1);
+  }
+
+  .cryo-promiseCard {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    justify-items: center;
+    text-align: center;
+    column-gap: 0;
+    padding: 40px 20px;
+    border-top: none;
+    border-bottom: none;
+  }
+
+  .cryo-promiseCard:last-child {
+    border-bottom: none;
+  }
+
+  .cryo-promiseCard__icon {
+    grid-column: 1;
+    grid-row: 1;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+  }
+
+  .cryo-promiseCard__label {
+    grid-column: 1;
+    grid-row: 2;
+    margin-bottom: 8px;
+    font-size: 15px;
+  }
+
+  .cryo-promiseCard__value {
+    grid-column: 1;
+    grid-row: 3;
+    font-size: 48px;
   }
 }
 
@@ -5772,30 +5872,30 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
   .cryo-promise__title {
     font-size: 42px;
+    margin-bottom: 12px;
+  }
+
+  .cryo-promise__subtitle {
     margin-bottom: 56px;
   }
 
   .cryo-promise__grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0 64px;
   }
 
   .cryo-promiseCard {
-    padding: 40px 20px;
+    padding: 48px 24px;
   }
 
   .cryo-promiseCard__icon {
-    width: 72px;
-    height: 72px;
-    margin-bottom: 20px;
+    width: 88px;
+    height: 88px;
+    margin-bottom: 24px;
   }
 
   .cryo-promiseCard__value {
     font-size: 56px;
-  }
-
-  .cryo-promiseCard__value span {
-    font-size: 20px;
   }
 }
 

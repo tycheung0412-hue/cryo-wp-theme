@@ -1,0 +1,1013 @@
+/* Cryo Theme — Mobile Styles
+   Styles for max-width breakpoints (≤1023px, ≤767px).
+   Common styles: see main.css
+   Desktop-specific: see desktop.css
+*/
+
+@media (max-width: 1023px) {
+  /* Hero (mobile) */
+  .cryo-hero__viewport {
+    height: 620px;
+  }
+  .cryo-hero__slide {
+    height: 100%;
+  }
+  .cryo-hero__overlay {
+    padding: 0 16px 34px;
+  }
+  .cryo-hero__crumbs {
+    padding-top: 14px;
+    font-size: 12px;
+  }
+  .cryo-hero__title {
+    font-size: 36px;
+  }
+  .cryo-hero__slideContent {
+    left: 16px;
+    right: 16px;
+    bottom: 90px;
+    max-width: none;
+  }
+  .cryo-hero__slideKicker {
+    font-size: 14px;
+  }
+  .cryo-hero__slideTitle {
+    font-size: 36px;
+  }
+  .cryo-hero__slideSubtitle {
+    font-size: 22px;
+  }
+  /* Dots on the left (vertical) like the old mobile hero */
+  .cryo-hero__dots {
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    flex-direction: column;
+  }
+
+  /* Breadcrumb on top (ignore phone pill; breadcrumb stays at top-left) */
+  .cryo-hero__overlay .cryo-breadcrumbs {
+    left: 16px;
+    top: 14px;
+    font-size: 12px;
+  }
+
+  /* Mobile actions: bottom blurred overlay bar with 2 buttons + subtle divider */
+  .cryo-hero__actions {
+    display: flex;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    position: absolute;
+    flex-direction: row;
+    justify-content: space-between;
+    /* Only top corners rounded (bottom corners square) */
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  .cryo-hero__action {
+    flex: 1 1 50%;
+    padding: 18px 12px;
+    gap: 12px;
+  }
+  .cryo-hero__action + .cryo-hero__action {
+    border-top: 0;
+    border-left: 1px solid rgba(255,255,255,0.18);
+  }
+  .cryo-hero__actionIcon {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+  }
+  .cryo-hero__actionText {
+    font-size: 14px;
+    line-height: 1.15;
+  }
+
+  /* Title text should sit above the action overlay bar */
+  .cryo-hero__slideContent {
+    bottom: 160px; /* above the bottom action bar */
+  }
+  .cryo-hero__slideTitle {
+    font-size: 46px;
+  }
+  .cryo-hero__slideSubtitle {
+    font-size: 22px;
+  }
+
+  /* Consistent icons across devices: use SVG masks (no font glyph differences). */
+  .cryo-mobileMenu {
+    /* NOTE: keep these as plain url('data:...') — escaping quotes breaks CSS parsing on some browsers. */
+    --cryo-icon-chevron-down: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22%3E%3Cpath d=%22M6 9l6 6 6-6%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E%3C/svg%3E');
+  }
+  /* Mobile scrolling model:
+     - Header/topbar fixed
+     - Scroll happens on BODY (not the document root) */
+  html {
+    height: 100%;
+    overflow: hidden;
+  }
+  body {
+    height: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Start content right after the fixed header (WP already offsets for admin bar when logged in). */
+    padding-top: calc(var(--cryo-topbar-height, 0px) + var(--cryo-header-height, 72px));
+  }
+
+  /* Fixed top controls (admin bar → topbar → header) */
+  .cryo-topbar {
+    position: fixed;
+    top: var(--cryo-adminbar-height, 0px);
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 10001;
+  }
+  .cryo-header {
+    position: fixed;
+    top: calc(var(--cryo-adminbar-height, 0px) + var(--cryo-topbar-height, 0px));
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 10000;
+  }
+
+  /* (Intentionally no extra position override here; they are fixed above.) */
+
+  /* Hide desktop nav on mobile */
+  .cryo-nav {
+    display: none !important;
+  }
+
+  .cryo-header__inner {
+    max-width: 100%;
+    margin: 0 auto;
+    height: 72px;
+    padding-left: 8px;
+    display: flex;
+    align-items: center;
+  }
+
+  .cryo-mnav {
+    display: flex !important;
+    width: 100%;
+    height: 72px;
+    align-items: center;
+    gap: 14px;
+    margin-block-start: 0px !important;
+  }
+
+  .cryo-mnav__brand {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+  .cryo-mnav__logo {
+    display: block;
+    width: auto;
+    height: auto;
+    max-height: 44px;
+    max-width: 170px;
+  }
+
+  .cryo-mnav__icons {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-left: auto;
+    margin-right: 8px;
+  }
+  .cryo-mnav__menuBtn {
+    margin-top:-16px;
+  }
+  .cryo-mnav__menuBtn,
+  .cryo-mnav__search {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+    color: var(--wp--preset--color--text);
+  }
+  .cryo-mnav__menuBtn::before {
+    content: "";
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: currentColor;
+    margin: 0 auto;
+    box-shadow: 0 6px 0 currentColor, 0 12px 0 currentColor;
+  }
+  .cryo-mnav__search::before {
+    content: "\f179";
+    font-family: dashicons;
+    font-size: 24px;
+    line-height: 1;
+    color: currentColor;
+  }
+
+  .cryo-mnav__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 72px;
+    padding: 0 18px;
+    background: var(--wp--preset--color--accent);
+    color: #FFF;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 18px;
+    white-space: nowrap;
+  }
+
+  /* Drawer overlay: start below topbar+header stack, slide in from left */
+  .cryo-mobileMenu {
+    display: flex !important;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 100dvh;
+    z-index: 9999;
+    background: rgba(183, 88, 46, 0.96);
+    box-sizing: border-box;
+    /* Drawer content begins under the full fixed stack (admin bar + topbar + header). */
+    padding-top: var(--cryo-header-stack-height, 72px);
+    transform: translateX(-100%);
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 260ms ease, visibility 0s linear 260ms;
+    display: flex;
+    flex-direction: column;
+  }
+  body.cryo-mobileMenu-open .cryo-mobileMenu {
+    transform: translateX(0);
+    visibility: visible;
+    pointer-events: auto;
+    transition: transform 260ms ease;
+  }
+  body.cryo-mobileMenu-open {
+    overflow: hidden;
+    touch-action: none;
+  }
+
+  .cryo-mobileMenu__scroll {
+    flex: 1 1 auto;
+    overflow: auto;
+    padding: 26px 22px 0;
+  }
+
+  .cryo-mobileMenu__section {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+  }
+  .cryo-mobileMenu__sectionHeader {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 0;
+    background: transparent;
+    padding: 0 0 14px;
+    margin: 0;
+    /* Default (no active): dimmed, matching the design */
+    color: rgba(255, 255, 255, 0.45);
+    font-weight: 800;
+    font-size: 28px;
+    line-height: 1.15;
+    text-align: left;
+    cursor: pointer;
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+  .cryo-mobileMenu__sectionChevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    color: rgba(255, 255, 255, 0.70);
+    opacity: 0.85;
+    transform: translateY(1px);
+  }
+  .cryo-mobileMenu__sectionChevron::before {
+    content: "";
+    display: block;
+    width: 18px;
+    height: 18px;
+    background: currentColor;
+    -webkit-mask: var(--cryo-icon-arrow-right) no-repeat center / contain;
+    mask: var(--cryo-icon-arrow-right) no-repeat center / contain;
+  }
+  .cryo-mobileMenu__sectionHeader[aria-expanded="true"] .cryo-mobileMenu__sectionChevron {
+    transform: translateY(1px) rotate(90deg);
+  }
+
+  .cryo-mobileMenu__subList {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 18px;
+  }
+  .cryo-mobileMenu__subLink {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 26px;
+    line-height: 1.15;
+  }
+  .cryo-mobileMenu__subLink::before {
+    content: "";
+    display: inline-block;
+    width: 32px;
+    height: 8px;
+    flex: 0 0 32px;
+    background: currentColor;
+    opacity: 0.95;
+    -webkit-mask: var(--cryo-icon-arrow-right-long) no-repeat center / contain;
+    mask: var(--cryo-icon-arrow-right-long) no-repeat center / contain;
+  }
+
+  .cryo-mobileMenu__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.45);
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 28px;
+    line-height: 1.15;
+  }
+
+  /* Active accordion state: only the active section is solid white, everything else is dimmed */
+  .cryo-mobileMenu.has-active .cryo-mobileMenu__row {
+    opacity: 0.35;
+  }
+  .cryo-mobileMenu.has-active .cryo-mobileMenu__section {
+    opacity: 0.35;
+  }
+  .cryo-mobileMenu.has-active .cryo-mobileMenu__section.is-active {
+    opacity: 1;
+  }
+  .cryo-mobileMenu__section.is-active .cryo-mobileMenu__sectionHeader {
+    color: #fff;
+  }
+  .cryo-mobileMenu__row::after {
+    content: "";
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    background: currentColor;
+    color: rgba(255, 255, 255, 0.70);
+    opacity: 0.85;
+    -webkit-mask: var(--cryo-icon-arrow-right) no-repeat center / contain;
+    mask: var(--cryo-icon-arrow-right) no-repeat center / contain;
+    transform: translateY(1px);
+  }
+  .cryo-mobileMenu__extra .cryo-mobileMenu__row {
+    color: rgba(255, 255, 255, 0.65);
+  }
+
+  .cryo-mobileMenu__bottom {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 22px;
+    background: rgba(0, 0, 0, 0.08);
+  }
+  .cryo-mobileMenu__phone {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .cryo-mobileMenu__phone::before {
+    content: "\f525";
+    font-family: dashicons;
+    margin-right: 10px;
+    text-decoration: none;
+    display: inline-block;
+    transform: scaleX(-1);
+  }
+  .cryo-mobileMenu__lang {
+    display: inline-flex;
+    gap: 18px;
+    align-items: center;
+  }
+  .cryo-mobileMenu__langLink {
+    color: rgba(255, 255, 255, 0.65);
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 14px;
+  }
+  .cryo-mobileMenu__langLink.is-active {
+    color: #fff;
+    text-decoration: underline;
+  }
+
+  /* ------------------------------------------------------------------------ */
+  /* Footer (mobile) — stacked layout, isolated from desktop                   */
+  /* ------------------------------------------------------------------------ */
+
+  .cryo-footer {
+    background: var(--wp--preset--color--accent);
+    color: rgba(255, 255, 255, 0.92);
+  }
+  .cryo-footer__inner {
+    padding: 44px 16px calc(22px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Prevent browser default blue links/bullets inside footer on mobile */
+  .cryo-footer a {
+    color: rgba(255, 255, 255, 0.92);
+  }
+  .cryo-footer a:visited {
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  /* Contact block (mobile): match design — icon + aligned rows */
+  .cryo-footer__contact {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .cryo-footer__line {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    font-size: 16px;
+    line-height: 1.65;
+  }
+  /* Keep the label (電話 / 地址 / 電郵) on a single line
+     and let the value span take the remaining width and wrap. */
+  .cryo-footer__line span:first-child {
+    min-width: 3.5em;
+    white-space: nowrap;
+  }
+  .cryo-footer__line--address span:last-child {
+    flex: 1 1 auto;
+  }
+  .cryo-footer__line::before {
+    font-family: dashicons;
+    display: inline-block;
+    flex: 0 0 auto;
+    transform: translateY(2px);
+    color: rgba(255, 255, 255, 0.92);
+  }
+  .cryo-footer__line--phone::before { content: "\f525"; }
+  .cryo-footer__line--address::before { content: "\f466"; }  /* envelope icon for address per design */
+  .cryo-footer__line--email::before { content: "\f466"; }
+
+  /* Mobile contact order: Address → Phone → Email (per design) */
+  .cryo-footer__line--address { order: 1; }
+  .cryo-footer__line--phone { order: 2; }
+  .cryo-footer__line--email { order: 3; }
+
+  .cryo-footer__cols {
+    gap: 34px;
+  }
+
+  /* Column order per mobile design: contact → newsletter → social → menus → legal → bottom */
+  .cryo-footer__col--contact { order: 1; }
+  .cryo-footer__col--newsletter { order: 2; }
+  .cryo-footer__col--menu { order: 3; }
+
+  /* Show shared social row under contact on mobile as well */
+  .cryo-footer__desktopExtras { display: block; }
+  .cryo-footer__socialMobile { display: none; }
+  /* Desktop-only legal row should be hidden on mobile;
+     mobile uses .cryo-footer__legalMobile under the menu column. */
+  .cryo-footer__legalBelow { display: none; }
+
+  /* Section dividers like the mobile design */
+  .cryo-footer__col--contact {
+    padding-bottom: 22px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  }
+  .cryo-footer__col--newsletter {
+    padding-bottom: 22px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  }
+  .cryo-footer__col--menu {
+    padding-top: 10px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  }
+
+  /* Newsletter layout: arrow button sits below */
+  .cryo-footer__newsletterBtnRow {
+    margin-top: 16px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  .cryo-footer__newsletterBtn {
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+  }
+  .cryo-footer__newsletterBtn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    -webkit-mask: var(--cryo-icon-arrow-right) no-repeat center / contain;
+    mask: var(--cryo-icon-arrow-right) no-repeat center / contain;
+  }
+
+  /* Mobile social row uses same .cryo-footer__socialCustom styles as desktop,
+     but allow wrapping so icons can flow onto multiple rows. */
+  .cryo-footer__socialCustom {
+    display: flex;
+    justify-content: space-evenly;
+    width: 97%;
+  }
+  .cryo-footer .wp-block-social-links .wp-social-link svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Mobile footer menu row (2 lines if needed) */
+  .cryo-footerMenu__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .cryo-footer__nav .cryo-footerMenu__list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    row-gap: 14px;
+    column-gap: 22px;
+    justify-content: space-between;
+  }
+  .cryo-footer__nav .cryo-footerMenu__list a {
+    color: rgba(255, 255, 255, 0.92);
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 14px;
+  }
+
+  /* Mobile legal row under menu */
+  .cryo-footer__legalMobile .cryo-footerMenu__list {
+    margin-top: 14px;
+    display: flex;
+    row-gap: 10px;
+    column-gap: 22px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .cryo-footer__legalMobile .cryo-footerMenu__list > li {
+    flex: 0 0 auto; /* keep each item only as wide as its text */
+  }
+  .cryo-footer__legalMobile .cryo-footerMenu__list a {
+    display: inline-block; /* prevent full‑width blocks so items can sit in a row */
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: underline;
+    font-weight: 700;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  /* Bottom bar (mobile): single row — copyright left, certs right */
+  /* NOTE: the section divider above is provided by `.cryo-footer__col--menu` border-bottom.
+     Do not add another border here, or it becomes a double line. */
+  .cryo-footer__bottom {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 18px;
+    padding-top: 0;
+    border-top: 0;
+  }
+  .cryo-footer__copyright {
+    margin-left: 0;
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  .cryo-footer__certs {
+    margin-left: 0;
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .cryo-footer__certImg {
+    display: block;
+    width: auto;
+    max-height: 22px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .cryo-cards {
+    padding: 54px 16px 34px;
+  }
+  .cryo-cards__copy {
+    max-width: none;
+  }
+  .cryo-cardsSection h2,
+  .cryo-statsSection h2,
+  .cryo-advSection h2 {
+    font-size: 36px;
+  }
+  .cryo-cards__stage {
+    min-height: 0;
+    margin-top: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .cryo-cardPos {
+    width: 92.5%;
+    margin-left: auto;
+    margin-right: auto;
+    transform: none !important;
+    position: relative !important;
+  }
+  .cryo-card {
+    width: 100%;
+    border-radius: 24px;
+  }
+  .cryo-cardPos {
+    --cryo-card-height: 660px; /* mobile card is taller in design */
+  }
+  .cryo-card__heading {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .cryo-adv {
+    padding: 0 16px 26px;
+  }
+  .cryo-adv__header {
+    text-align: left;
+    padding: 34px 0 10px;
+  }
+  .cryo-adv__cta {
+    margin-top: 16px;
+    padding: 0;
+    border: 0;
+    font-size: 18px;
+    gap: 14px;
+    background: transparent;
+  }
+  .cryo-adv__cta:hover {
+    background: transparent;
+    color: var(--wp--preset--color--accent);
+  }
+  .cryo-adv__cta::after {
+    content: "";
+    width: 56px;
+    height: 56px;
+    flex: 0 0 56px;
+    border-radius: 999px;
+    border: 2px solid var(--wp--preset--color--accent);
+    background-color: transparent;
+    -webkit-mask: none;
+    mask: none;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, border-color 0.2s;
+  }
+  /* Use a separate pseudo-element approach for the arrow on mobile */
+  .cryo-adv__cta {
+    position: relative;
+  }
+  .cryo-adv__cta::after {
+    background-image: none;
+  }
+  .cryo-adv__cta::before {
+    content: "";
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background: var(--wp--preset--color--accent);
+    -webkit-mask: var(--cryo-icon-arrow-right) no-repeat center / contain;
+    mask: var(--cryo-icon-arrow-right) no-repeat center / contain;
+    z-index: 1;
+    transition: background 0.2s;
+  }
+  .cryo-adv__cta:hover::after {
+    background-color: var(--wp--preset--color--accent);
+  }
+  .cryo-adv__cta:hover::before {
+    background: #fff;
+  }
+  .cryo-adv__media {
+    height: 640px;
+    border-radius: 0;
+  }
+  .cryo-adv__fade {
+    height: 110px;
+  }
+  .cryo-adv__panel {
+    top: 70px;
+    left: 16px;
+    right: 16px;
+    transform: none;
+    width: auto;
+    grid-template-columns: 1fr;
+  align-items: start;
+    border-radius: 22px;
+  }
+  .cryo-advStat {
+    padding: 24px 22px;
+  }
+  .cryo-advStat + .cryo-advStat {
+    border-left: 0;
+    border-top: 1px solid rgba(255,255,255,0.28);
+  }
+  .cryo-advStat__title {
+    font-size: 26px;
+    white-space: normal;
+  }
+  .cryo-advStat__desc {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .cryo-stats {
+    padding: 34px 0 0;
+  }
+  .cryo-stats__header {
+    padding: 0 16px 26px;
+  }
+  .cryo-stats__header p {
+    margin-top: 18px;
+  }
+
+  .cryo-statsGrid {
+    grid-template-columns: 1fr;
+  align-items: start;
+    border-top: 1px solid rgba(0,0,0,0.12);
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+  }
+  .cryo-stat {
+    flex-direction: row-reverse; /* icon on the right like the mobile design */
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 22px 16px;
+    border-top: 1px solid rgba(0,0,0,0.12);
+    text-align: left;
+  }
+  .cryo-stat:first-child {
+    border-top: 0;
+  }
+  .cryo-stat__meta {
+    min-width: 0;
+  }
+  .cryo-stat__label {
+    margin: 0 0 10px;
+    font-size: 20px;
+  }
+  .cryo-stat__value {
+    font-size: 44px;
+  }
+  .cryo-stat__icon {
+    width: 86px;
+    height: 86px;
+    flex: 0 0 86px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .cryo-directorSection {
+    padding: 40px 0;
+  }
+
+  .cryo-director {
+    padding: 0 16px;
+    grid-template-columns: 1fr;
+  align-items: start;
+    gap: 24px;
+  }
+
+  /* Reorder: title first, then media, then name/desc */
+  .cryo-director__content {
+    display: contents;
+  }
+
+  .cryo-director__title {
+    order: 1;
+    font-size: 36px;
+    margin-bottom: 16px;
+  }
+
+  .cryo-director__media {
+    order: 2;
+    margin-bottom: 8px;
+  }
+
+  .cryo-director__name {
+    order: 3;
+    font-size: 26px;
+  }
+
+  .cryo-director__desc {
+    order: 4;
+    font-size: 16px;
+  }
+
+  .cryo-director__corner {
+    top: -30px;
+    right: -30px;
+    width: 120px;
+    height: 120px;
+  }
+
+  .cryo-director__play {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .cryo-testimonialsSection {
+    padding: 40px 0;
+  }
+
+  .cryo-testimonials {
+    padding: 0 16px;
+  }
+
+  /* Keep track horizontal for slider to work */
+  .cryo-testimonials__track {
+    display: flex;
+    flex-direction: row;
+  }
+
+  /* Each slide uses CSS Grid to reorder elements */
+  .cryo-testimonial {
+    flex: 0 0 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "title nav"
+      "media media"
+      "quote quote"
+      "author author";
+    gap: 0;
+    align-items: start;
+  }
+
+  /* Break out children from content wrapper */
+  .cryo-testimonial__content {
+    display: contents;
+  }
+
+  .cryo-testimonial__title {
+    grid-area: title;
+    font-size: 32px;
+    margin: 0 0 16px 0;
+  }
+
+  .cryo-testimonial__nav {
+    grid-area: nav;
+    margin: 0;
+    gap: 10px;
+  }
+
+  .cryo-testimonial__media {
+    grid-area: media;
+    margin-bottom: 20px;
+    aspect-ratio: 4 / 3;
+  }
+
+  .cryo-testimonial__quote {
+    grid-area: quote;
+    font-size: 18px;
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+
+  .cryo-testimonial__author {
+    grid-area: author;
+  }
+
+  .cryo-testimonial__name {
+    font-size: 22px;
+  }
+
+  .cryo-testimonial__remark {
+    font-size: 15px;
+  }
+
+  .cryo-testimonial__arrow {
+    width: 40px;
+    height: 40px;
+  }
+
+  .cryo-testimonial__arrow::before {
+    width: 20px;
+    height: 6px;
+  }
+
+  .cryo-testimonial__arrow svg {
+    display: none;
+  }
+
+  .cryo-testimonial__play {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .cryo-postsSection {
+    padding: 40px 0 32px;
+  }
+
+  .cryo-posts__header {
+    padding: 0 16px 24px;
+  }
+
+  .cryo-posts__title {
+    font-size: 36px;
+  }
+
+  /* Stack vertically on mobile */
+  .cryo-carousel__track {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 0 16px 16px;
+    overflow-x: visible;
+    overflow-y: visible;
+    scroll-snap-type: none;
+  }
+
+  .cryo-postCard {
+    flex: none;
+    width: 100%;
+  }
+
+  .cryo-postCard:hover {
+    transform: none;
+  }
+
+  .cryo-postCard__media {
+    border-radius: 12px;
+  }
+
+  .cryo-postCard__title {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 767px) {
+  .cryo-filterBar__inner {
+    flex-wrap: wrap;
+  }
+
+  .cryo-filterBar__left {
+    width: 100%;
+    order: 1;
+  }
+
+  .cryo-filterBar__right {
+    width: 100%;
+    order: 2;
+    margin-top: 12px;
+  }
+
+  .cryo-filterBar__search {
+    flex: 1;
+  }
+
+  .cryo-filterBar__yearFilter {
+    flex-shrink: 0;
+  }
+}

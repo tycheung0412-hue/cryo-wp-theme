@@ -904,15 +904,23 @@ add_action('wp_enqueue_scripts', function (): void {
   wp_enqueue_style('dashicons');
 
   $states_css     = $theme_dir . '/assets/css/states.css';
-  $utilities_css  = $theme_dir . '/assets/css/utilities.css';
+  $main_css       = $theme_dir . '/assets/css/main.css';
+  $desktop_css    = $theme_dir . '/assets/css/desktop.css';
+  $mobile_css     = $theme_dir . '/assets/css/mobile.css';
   $ipcam_css      = $theme_dir . '/assets/css/ipcam-page.css';
   $main_js        = $theme_dir . '/assets/js/main.js';
 
   if (file_exists($states_css)) {
     wp_enqueue_style('cryo-states', $theme_uri . '/assets/css/states.css', [], (string) filemtime($states_css));
   }
-  if (file_exists($utilities_css)) {
-    wp_enqueue_style('cryo-utilities', $theme_uri . '/assets/css/utilities.css', [], (string) filemtime($utilities_css));
+  if (file_exists($main_css)) {
+    wp_enqueue_style('cryo-main-css', $theme_uri . '/assets/css/main.css', [], (string) filemtime($main_css));
+  }
+  if (file_exists($desktop_css)) {
+    wp_enqueue_style('cryo-desktop', $theme_uri . '/assets/css/desktop.css', ['cryo-main-css'], (string) filemtime($desktop_css));
+  }
+  if (file_exists($mobile_css)) {
+    wp_enqueue_style('cryo-mobile', $theme_uri . '/assets/css/mobile.css', ['cryo-main-css'], (string) filemtime($mobile_css));
   }
   
   // Enqueue IP camera CSS only on IP camera pages
@@ -934,7 +942,7 @@ add_action('wp_enqueue_scripts', function (): void {
     }
     
     if ($is_ipcam_page) {
-      wp_enqueue_style('cryo-ipcam', $theme_uri . '/assets/css/ipcam-page.css', ['cryo-utilities'], (string) filemtime($ipcam_css));
+      wp_enqueue_style('cryo-ipcam', $theme_uri . '/assets/css/ipcam-page.css', ['cryo-main-css'], (string) filemtime($ipcam_css));
     }
   }
   
