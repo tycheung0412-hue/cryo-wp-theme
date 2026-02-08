@@ -5214,7 +5214,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
   align-items: center;
   margin: 24px -24px -24px -24px;
   padding: 16px 24px;
-  background: var(--wp--preset--color--accent, #C3572C);
+  background: #F5F1EC;
   border-radius: 0 0 8px 0;
 }
 
@@ -5242,12 +5242,12 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 /* Left arrow (prev) - chevron pointing left */
 .cryo-history__arrow--prev::before {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 18l-6-6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23C3572C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='19' y1='12' x2='5' y2='12'/%3E%3Cpolyline points='12 19 5 12 12 5'/%3E%3C/svg%3E");
 }
 
 /* Right arrow (next) - chevron pointing right */
 .cryo-history__arrow--next::before {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18l6-6-6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23C3572C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3Cpolyline points='12 5 19 12 12 19'/%3E%3C/svg%3E");
 }
 
 .cryo-history__arrow:hover {
