@@ -26,6 +26,7 @@
   .cryo-hero__viewport {
     /* Figma design size: 1440 × 816 → ratio 30/17, but DO NOT grow taller than 816px on ultra-wide screens */
     height: calc(var(--wp--style--global--content-size) * 0.5);
+    max-height: 50vh;
   }
   .cryo-hero__slide {
     height: 100%;
@@ -44,6 +45,7 @@
     bottom: 44px;
   }
   .cryo-hero__actions {
+    width:93px;
     display: flex;
   }
 
@@ -83,6 +85,7 @@
     text-decoration: none;
   }
   .cryo-nav__logo {
+    margin-left: 36px;
     display: block;
     height: auto;
     max-height: 64px;
@@ -475,7 +478,7 @@
     color: #FFF;
     text-decoration: none;
     font-weight: 800;
-    font-size: 32px;
+    font-size: 24px;
   }
 
   /* ------------------------------------------------------------------------ */
@@ -489,7 +492,7 @@
   .cryo-footer__inner {
     max-width: 1320px;
     margin: 0 auto;
-    padding: 64px 0 28px;
+    padding: 64px 36px 28px 36px;
   }
   .cryo-footer__cols {
     gap: 80px;
@@ -813,7 +816,8 @@
 
 @media (min-width: 1024px) {
   .cryo-postsSection {
-    padding: 80px 0 64px;
+    padding: 80px 40px 64px 40px;
+    width: auto;
   }
 
   .cryo-posts__title {
@@ -884,6 +888,11 @@
     font-size: 18px;
   }
 
+  .tissue-wrapper-m400 {
+    max-width: 400px;
+    text-align: justify;
+  }
+
   .cryo-intro__img {
     aspect-ratio: 5 / 4;
   }
@@ -899,7 +908,7 @@
   }
 
   .cryo-cb101__header {
-    grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
     gap: 60px;
     align-items: start;
     margin-bottom: 48px;

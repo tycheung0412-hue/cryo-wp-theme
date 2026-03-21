@@ -1060,7 +1060,7 @@ html[lang^="zh"] .wp-site-blocks {
 @media (max-width: 1023px) {
   /* Hero (mobile) */
   .cryo-hero__viewport {
-    height: 620px;
+    height: 670px;
   }
   .cryo-hero__slide {
     height: 100%;

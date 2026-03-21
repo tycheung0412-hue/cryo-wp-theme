@@ -25,6 +25,9 @@ html:lang(zh) .wp-site-blocks,
 html[lang^="zh"] .wp-site-blocks {
   font-family: "Noto Sans TC", Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif !important;
 }
+body {
+  background: #fffcfb;
+}
 
 :root {
   /* Shared icon(s) used across components (SVG masks) */
@@ -411,7 +414,7 @@ html[lang^="zh"] .wp-site-blocks {
 .cryo-cardPos {
   --cryo-card-x: 0px;
   --cryo-card-y: 0px;
-  --cryo-card-lines: 3;
+  --cryo-card-lines: 2;
   --cryo-card-height: 620px; /* card total height; image takes 50% via flex */
 }
 
@@ -432,7 +435,7 @@ html[lang^="zh"] .wp-site-blocks {
   outline-offset: 6px;
 }
 .cryo-card__media {
-  flex: 0 0 50%;
+  flex: 0 0 45%;
   min-height: 0;
   display: block;
 }
@@ -475,17 +478,17 @@ html[lang^="zh"] .wp-site-blocks {
 }
 .cryo-card__heading {
   margin: 0;
-  font-size: 24px;
+  font-size: 40px;
   font-weight: 900;
   line-height: 1.12;
   letter-spacing: 0.01em;
   /* Title clamp (2 lines) + fixed block height so excerpt starts at a consistent position */
   display: -webkit-box;
-  line-clamp: 2;
-  -webkit-line-clamp: 2;
+  line-clamp: 1;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: calc(2 * 1.12em);
+  min-height: calc(1 * 1.12em);
 }
 .cryo-card:hover .cryo-card__heading {
   text-decoration: underline;
@@ -493,7 +496,7 @@ html[lang^="zh"] .wp-site-blocks {
   text-underline-offset: 6px;
 }
 .cryo-card__excerpt {
-  margin: 14px 0 18px;
+  margin: 14px 0 18px!important;
   color: rgba(0,0,0,0.72);
   font-size: 16px;
   line-height: 1.85;
@@ -550,7 +553,6 @@ html[lang^="zh"] .wp-site-blocks {
 
 .cryo-advSection {
   width: 100%;
-  background: #fff;
 }
 .cryo-adv {
   max-width: 1320px;
@@ -698,7 +700,6 @@ html[lang^="zh"] .wp-site-blocks {
 
 .cryo-statsSection {
   width: 100%;
-  background: #fff;
 }
 
 .cryo-stats {
@@ -794,7 +795,6 @@ html[lang^="zh"] .wp-site-blocks {
 
 .cryo-postsSection {
   width: 100%;
-  background: #fff;
   padding: 64px 0 48px;
 }
 
@@ -924,7 +924,8 @@ html[lang^="zh"] .wp-site-blocks {
 
 /* Tag color variants */
 .cryo-postCard__tag--news {
-  background: rgba(195, 87, 44, 0.12);
+  /* background: rgba(195, 87, 44, 0.12); */
+  background: none;
   color: var(--wp--preset--color--accent, #C3572C);
   border-color: var(--wp--preset--color--accent, #C3572C);
 }
@@ -978,7 +979,6 @@ html[lang^="zh"] .wp-site-blocks {
 
 .cryo-testimonialsSection {
   width: 100%;
-  background: #fff;
   padding: 64px 0;
   overflow: hidden;
 }
@@ -1168,7 +1168,6 @@ html[lang^="zh"] .wp-site-blocks {
 
 .cryo-directorSection {
   width: 100%;
-  background: #fff;
   padding: 64px 0;
   overflow: hidden;
 }
@@ -1278,7 +1277,6 @@ html[lang^="zh"] .wp-site-blocks {
 
 .cryo-introSection {
   width: 100%;
-  background: #fff;
   padding: 64px 0;
 }
 
@@ -2087,7 +2085,6 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-faqSection {
   width: 100%;
-  background: #fff;
   padding: 64px 0;
 }
 
@@ -2504,7 +2501,6 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-videoSection {
   width: 100%;
-  background: #fff;
   padding: 64px 0;
 }
 
@@ -2565,7 +2561,6 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-featuresGridSection {
   width: 100%;
-  background: #fff;
   padding: 64px 0;
 }
 
@@ -2667,7 +2662,6 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-partnersSection {
   width: 100%;
-  background: #fff;
   padding: 64px 0;
 }
 
@@ -2734,7 +2728,6 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-historySection {
   width: 100%;
-  background: #fff;
   padding: 64px 0;
 }
 
@@ -2877,7 +2870,6 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-teamSection {
   width: 100%;
-  background: #fff;
   padding: 64px 0;
 }
 
@@ -2975,7 +2967,6 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-logosSection {
   width: 100%;
-  background: #fff;
   padding: 64px 0;
 }
 
@@ -3445,7 +3436,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
 }
 
 .cryo-filterBar__tab {
-  display: inline-flex;
+  display: inline;
   align-items: baseline;
   gap: 2px;
   padding: 0;
@@ -3871,7 +3862,6 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-pageHeaderSection {
   width: 100%;
-  background: #fff;
   padding: 40px 16px 32px;
 }
 
@@ -3894,7 +3884,6 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-monitoringSection {
   width: 100%;
-  background: #fff;
   padding: 0 16px 64px;
 }
 
@@ -4033,6 +4022,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
   grid-template-columns: 1fr;
   align-items: start;
   gap: 24px;
+  color: #FFF !important;
 }
 
 /* Base block styles */
@@ -4068,7 +4058,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
 /* Blurred dark block (lower left - hotline) */
 .cryo-contactBlock--blur {
   /* Light grey blur for both bottom blocks */
-  background: rgba(180, 180, 180, 0.65);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .22) 0%, rgba(255, 255, 255, .18) 42%, rgba(255, 255, 255, .1) 70%, rgba(255, 255, 255, .3) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   color: #333;
@@ -4126,7 +4116,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
   margin: 20px 0 12px;
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: #FFF;
 }
 
 /* Phone rows (dark blur block) */
@@ -4146,21 +4136,24 @@ a.cryo-techCard:hover .cryo-techCard__img {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 56px;
+  min-width: 24px;
   padding: 5px 14px;
   font-size: 12px;
   font-weight: 500;
-  color: #333;
-  background: rgba(80, 80, 80, 0.15);
-  border: 1px solid rgba(80, 80, 80, 0.4);
+  color: #FFF;
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 20px;
   flex-shrink: 0;
+}
+
+.contactBlock__tag .contact {
+  min-width: 48px;
 }
 
 .cryo-contactBlock__phoneRow a,
 .cryo-contactBlock__phoneRow > span:not(.cryo-contactBlock__tag) {
   font-size: 15px;
-  color: #333;
+  color: #FFF;
   text-decoration: none;
   font-style: italic;
 }
