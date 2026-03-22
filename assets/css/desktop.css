@@ -26,7 +26,7 @@
   .cryo-hero__viewport {
     /* Figma design size: 1440 × 816 → ratio 30/17, but DO NOT grow taller than 816px on ultra-wide screens */
     height: calc(var(--wp--style--global--content-size) * 0.5);
-    max-height: 50vh;
+    max-height: 796px;
   }
   .cryo-hero__slide {
     height: 100%;

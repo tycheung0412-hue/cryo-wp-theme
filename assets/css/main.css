@@ -107,6 +107,7 @@ body {
   filter: saturate(0.95);
   height: 100%;
   position: relative; /* for per-slide text */
+  background: inset 0 -200px 40px -20px rgba(0, 0, 0, 0.3);
 }
 
 /* Per-slide text (rendered inside each slide so it can differ per image) */
