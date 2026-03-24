@@ -1698,20 +1698,7 @@ html[lang^="zh"] .wp-site-blocks {
   position: relative;
 }
 
-/* Soft rounded gradient background - matches design */
-.cryo-cards__copy::before {
-  content: '';
-  position: absolute;
-  top: 120%;
-  left: 30%;
-  transform: translate(-50%, -50%);
-  width: 1000px;
-  height: 1000px;
-  background: radial-gradient(ellipse at center, rgba(255, 200, 180, 0.35) 0%, rgba(255, 220, 200, 0.15) 40%, transparent 70%);
-  border-radius: 50%;
-  z-index: -1;
-  pointer-events: none;
-}
+/* Section-specific gradient removed — now applied globally via body::before */
 
 /* Generic typography: use standard tags (h6 kicker, h2 title, p body) */
 .cryo-cardsSection h6,
@@ -3271,6 +3258,7 @@ html[lang^="zh"] .wp-site-blocks {
 /* Mobile: natural order is title -> image -> accordion (correct!) */
 
 .cryo-cb101__media {
+  position: relative;
   border-radius: 20px;
   overflow: hidden;
 }
@@ -3280,7 +3268,18 @@ html[lang^="zh"] .wp-site-blocks {
   width: 100%;
   height: auto;
   object-fit: cover;
-  aspect-ratio: 4 / 5;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.cryo-cb101__img.is-active {
+  opacity: 1;
+  position: relative;
+  pointer-events: auto;
 }
 
 .cryo-cb101__accordion {
@@ -4249,11 +4248,27 @@ a.cryo-techCard:hover .cryo-techCard__img {
 }
 
 .cryo-faqItem__icon {
-  flex: 0 0 24px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--wp--preset--color--accent, #C3572C);
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  background: transparent no-repeat center / contain;
+  display: block;
+}
+
+.cryo-faqItem:nth-child(1) .cryo-faqItem__icon {
+  background-image: url('../images/blood-footer-1.png');
+}
+
+.cryo-faqItem:nth-child(2) .cryo-faqItem__icon {
+  background-image: url('../images/blood-footer-2.png');
+}
+
+.cryo-faqItem:nth-child(3) .cryo-faqItem__icon {
+  background-image: url('../images/blood-footer-3.png');
+}
+
+.cryo-faqItem:nth-child(4) .cryo-faqItem__icon {
+  background-image: url('../images/blood-footer-4.png');
 }
 
 .cryo-faqItem__question > span:nth-child(2) {
@@ -4274,7 +4289,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
 }
 
 .cryo-faqItem__answer {
-  padding: 0 0 24px 40px;
+  padding: 0 0 24px 56px;
 }
 
 .cryo-faqItem__answer p {
@@ -4303,7 +4318,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
   }
 
   .cryo-faqItem__answer {
-    padding: 0 0 28px 40px;
+    padding: 0 0 28px 56px;
   }
 
   .cryo-faqItem__answer p {
@@ -4694,37 +4709,43 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-download__row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 24px;
-  background: #fff;
-}
-
-/* Alternating row colors */
-.cryo-download__row:nth-child(odd) {
-  background: rgba(195, 87, 44, 0.06);
+  align-items: stretch;
 }
 
 .cryo-download__date {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
   color: #333;
   font-size: 15px;
   font-weight: 500;
 }
 
+.cryo-download__row:nth-child(odd) .cryo-download__date {
+  background: rgba(195, 87, 44, 0.08);
+}
+
 .cryo-download__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+  padding: 16px 24px;
+  background: rgba(195, 87, 44, 0.06);
   color: var(--wp--preset--color--accent, #C3572C);
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
-  padding: 8px 20px;
-  background: rgba(195, 87, 44, 0.1);
-  border-radius: 4px;
   transition: all 0.2s ease;
 }
 
+.cryo-download__row:nth-child(odd) .cryo-download__link {
+  background: rgba(195, 87, 44, 0.12);
+}
+
 .cryo-download__link:hover {
-  background: var(--wp--preset--color--accent, #C3572C);
-  color: #333;
+  background: rgba(195, 87, 44, 0.2);
 }
 
 @media (min-width: 1024px) {
@@ -4742,16 +4763,15 @@ a.cryo-techCard:hover .cryo-techCard__img {
     font-size: 16px;
   }
 
-  .cryo-download__row {
-    padding: 18px 32px;
-  }
-
   .cryo-download__date {
     font-size: 16px;
+    padding: 18px 24px 18px 32px;
   }
 
   .cryo-download__link {
     font-size: 15px;
+    min-width: 120px;
+    padding: 18px 24px;
   }
 }
 
@@ -4834,6 +4854,23 @@ a.cryo-techCard:hover .cryo-techCard__img {
     width: 80px;
     height: 80px;
   }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Storage Post Image (single image replacing cb101 + features grid)          */
+/* -------------------------------------------------------------------------- */
+
+.cryo-storagePostImg {
+  width: 100%;
+  background: #1a1a1a;
+}
+
+.cryo-storagePostImg__img {
+  display: block;
+  width: 100%;
+  max-width: 900px;
+  height: auto;
+  margin: 0 auto;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -5395,8 +5432,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
   width: 180px;
   height: 180px;
   margin: 0 auto 24px;
-  background: linear-gradient(135deg, rgba(235, 180, 145, 1) 0%, rgba(245, 215, 195, 0.6) 50%, rgba(255, 255, 255, 0.3) 100%);
-  border-radius: 50%;
+  background: url('/wp-content/themes/cryo/assets/images/Ellipse 879.png') center / contain no-repeat;
   padding: 8px;
   box-sizing: border-box;
 }
@@ -6413,32 +6449,33 @@ a.cryo-techCard:hover .cryo-techCard__img {
 .cryo-filterBar__search {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  min-width: 180px;
+  gap: 10px;
+  padding: 12px 20px;
+  background: #FBF3EE;
+  border: 1.5px solid #C9A08A;
+  border-radius: 50px;
+  min-width: 220px;
 }
 
 .cryo-filterBar__searchIcon {
-  width: 16px;
-  height: 16px;
-  color: #999;
+  width: 18px;
+  height: 18px;
+  color: var(--wp--preset--color--accent, #C3572C);
   flex-shrink: 0;
 }
 
 .cryo-filterBar__searchInput {
   flex: 1;
   border: none;
-  font-size: 14px;
-  color: #333;
+  font-size: 15px;
+  color: var(--wp--preset--color--accent, #C3572C);
   background: transparent;
   min-width: 0;
 }
 
 .cryo-filterBar__searchInput::placeholder {
-  color: #999;
+  color: var(--wp--preset--color--accent, #C3572C);
+  opacity: 0.85;
 }
 
 .cryo-filterBar__searchInput:focus {
@@ -6462,8 +6499,16 @@ a.cryo-techCard:hover .cryo-techCard__img {
     margin-top: 12px;
   }
 
+  .cryo-filterBar__form {
+    width: 100%;
+  }
+
   .cryo-filterBar__search {
-    flex: 1;
+    width: 100%;
+    justify-content: center;
+    border: none;
+    border-radius: 0;
+    padding: 14px 20px;
   }
 
   .cryo-filterBar__yearFilter {
@@ -8225,17 +8270,25 @@ a.cryo-techCard:hover .cryo-techCard__img {
 }
 
 .cryo-accordion__number {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--wp--preset--color--accent, #C3572C);
-  border: 2px solid var(--wp--preset--color--accent, #C3572C);
-  border-radius: 50%;
+  display: block;
+  width: 36px;
+  height: 36px;
+  font-size: 0;
+  color: transparent;
+  border: none;
+  border-radius: 0;
   flex-shrink: 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.cryo-accordion__item:nth-child(1) .cryo-accordion__number {
+  background-image: url('../images/blood-footer-1.png');
+}
+
+.cryo-accordion__item:nth-child(2) .cryo-accordion__number {
+  background-image: url('../images/blood-footer-2.png');
 }
 
 .cryo-accordion__question {

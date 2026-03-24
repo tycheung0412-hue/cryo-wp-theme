@@ -507,17 +507,25 @@
 }
 
 .cryo-accordion__number {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--wp--preset--color--accent, #C3572C);
-  border: 2px solid var(--wp--preset--color--accent, #C3572C);
-  border-radius: 50%;
+  display: block;
+  width: 36px;
+  height: 36px;
+  font-size: 0;
+  color: transparent;
+  border: none;
+  border-radius: 0;
   flex-shrink: 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.cryo-accordion__item:nth-child(1) .cryo-accordion__number {
+  background-image: url('../images/blood-footer-1.png');
+}
+
+.cryo-accordion__item:nth-child(2) .cryo-accordion__number {
+  background-image: url('../images/blood-footer-2.png');
 }
 
 .cryo-accordion__question {

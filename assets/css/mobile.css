@@ -846,11 +846,12 @@
     font-size: 16px;
   }
 
-  .cryo-director__corner {
-    top: -30px;
-    right: -30px;
-    width: 120px;
-    height: 120px;
+  .cryo-director__media::before {
+    width: 85%;
+    right: -15%;
+    top: -100%;
+    rotate: 180deg;
+    left:auto;
   }
 
   .cryo-director__play {
@@ -867,6 +868,14 @@
 }
 
 @media (max-width: 1023px) {
+  .cryo-relatedPosts__grid {
+    display: flex;
+    overflow-x:auto;
+    flex-direction: row;
+  }
+  .cryo-relatedPosts__item{
+    min-width: 80%;
+  }
   .cryo-testimonialsSection {
     padding: 40px 0;
   }
@@ -1047,16 +1056,33 @@
   .cryo-filterBar__left {
     width: 100%;
     order: 1;
+    padding: 8px 24px;
   }
 
   .cryo-filterBar__right {
     width: 100%;
     order: 2;
-    margin-top: 12px;
+    margin-top: 0;
+    height:48px;
+    background-color: #FBF3EE;
+  }
+
+  .cryo-filterBar {
+    padding: 0;
+  }
+
+  .cryo-filterBar__form {
+    width: 50%;
+    margin-left:auto;
+    margin-right:auto;
   }
 
   .cryo-filterBar__search {
-    flex: 1;
+    width: 100%;
+    justify-content: center;
+    border: none;
+    border-radius: 0;
+    padding: 0 0;
   }
 
   .cryo-filterBar__yearFilter {

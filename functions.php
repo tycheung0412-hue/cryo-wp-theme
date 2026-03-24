@@ -1,6 +1,93 @@
 <?php
 // Include additional shortcodes
 require_once get_template_directory() . '/includes/news-archive-shortcode.php';
+
+/**
+ * qTranslate language-aware post filtering.
+ *
+ * Exclude posts from front-end queries when they have no content in the active
+ * qTranslate language. Without this filter the template shows the plugin's
+ * "Sorry, this entry is only available in …" placeholder on listing pages.
+ *
+ * Content tag formats recognised by qTranslate:
+ *   b-tags  [:lang]…[:]
+ *   c-tags  <!--:lang-->…<!--:-->
+ *   s-tags  {:lang}…{:}
+ */
+if (!function_exists('cryo_qtranslate_language_filter')) {
+
+  /**
+   * Return the current front-end qTranslate language code, or '' when the
+   * plugin is inactive.
+   */
+  function cryo_qtranslate_current_lang(): string {
+    $q = $GLOBALS['q_config'] ?? null;
+    return is_array($q) ? (string) ($q['language'] ?? '') : '';
+  }
+
+  /**
+   * Return the qTranslate default language code, or '' when the plugin is
+   * inactive.
+   */
+  function cryo_qtranslate_default_lang(): string {
+    $q = $GLOBALS['q_config'] ?? null;
+    return is_array($q) ? (string) ($q['default_language'] ?? '') : '';
+  }
+
+  /**
+   * Build the SQL WHERE fragment that keeps only posts with content in $lang.
+   *
+   * - If the post uses qTranslate tags the requested language tag must be present.
+   * - If the post has NO qTranslate tags at all it is treated as monolingual
+   *   in the default language (only kept when $lang equals the default).
+   */
+  function cryo_qtranslate_lang_where(string $lang): string {
+    global $wpdb;
+    $default = cryo_qtranslate_default_lang();
+    $esc     = esc_sql($lang);
+
+    // Posts that explicitly carry the requested language tag.
+    $has_lang = "(
+      {$wpdb->posts}.post_content LIKE '%[:{$esc}]%'
+      OR {$wpdb->posts}.post_content LIKE '%<!--:{$esc}-->%'
+      OR {$wpdb->posts}.post_content LIKE '%{:{$esc}}%'
+    )";
+
+    // Posts with NO qTranslate tags (monolingual, assumed default language).
+    // SQL `_` matches any single character — `__` matches any 2-char lang code.
+    $no_tags = "(
+      {$wpdb->posts}.post_content NOT LIKE '%[:__]%'
+      AND {$wpdb->posts}.post_content NOT LIKE '%<!--:__-->%'
+      AND {$wpdb->posts}.post_content NOT LIKE '%{:__}%'
+    )";
+
+    if ($lang === $default) {
+      return " AND ({$has_lang} OR {$no_tags})";
+    }
+
+    return " AND {$has_lang}";
+  }
+
+  /**
+   * Filter: posts_where — applied only on the public front-end.
+   */
+  function cryo_qtranslate_language_filter(string $where, WP_Query $query): string {
+    if (is_admin()) {
+      return $where;
+    }
+    $lang = cryo_qtranslate_current_lang();
+    if ($lang === '') {
+      return $where;
+    }
+    // Only filter 'post' queries (not pages, attachments, nav_menu_item, etc.).
+    $post_type = $query->get('post_type');
+    if ($post_type !== '' && $post_type !== 'post' && $post_type !== ['post']) {
+      return $where;
+    }
+    return $where . cryo_qtranslate_lang_where($lang);
+  }
+  add_filter('posts_where', 'cryo_qtranslate_language_filter', 10, 2);
+}
 // Enable common theme supports
 add_action('after_setup_theme', function (): void {
   add_theme_support('wp-block-styles');
@@ -2799,6 +2886,140 @@ add_action('rest_api_init', function (): void {
       ],
     ],
   ]);
+});
+
+/**
+ * Related Posts — shows top N posts from the same category as the current post.
+ *
+ * Usage (in single.html or post content):
+ *   [cryo_related_posts]
+ *   [cryo_related_posts count="3" title="相關文章" view_all_text="查看全部" post_list_url="/en/en-cryo_v2-post-list/"]
+ *
+ * Attributes:
+ *   title          — section heading (default "相關文章")
+ *   count          — number of posts to show (default 2)
+ *   view_all_text  — button label (default "查看全部")
+ *   post_list_url  — URL the "view all" button links to (default "/en/en-cryo_v2-post-list/")
+ *   date_format    — PHP date format for each card (default "j M Y")
+ */
+add_shortcode('cryo_related_posts', function ($atts): string {
+  $atts = shortcode_atts([
+    'title'         => '相關文章',
+    'count'         => 2,
+    'view_all_text' => '查看全部',
+    'post_list_url' => '/en/en-cryo_v2-post-list/',
+    'date_format'   => 'j M Y',
+  ], (array) $atts, 'cryo_related_posts');
+
+  $current_id    = get_the_ID();
+  $count         = max(1, (int) $atts['count']);
+  $title         = (string) $atts['title'];
+  $view_all_text = (string) $atts['view_all_text'];
+  $post_list_url = (string) $atts['post_list_url'];
+  $date_format   = (string) $atts['date_format'];
+
+  if (!$current_id) {
+    return '<!-- cryo_related_posts: no current post -->';
+  }
+
+  $categories = get_the_category($current_id);
+  if (empty($categories)) {
+    return '<!-- cryo_related_posts: no categories on this post -->';
+  }
+
+  $cat_ids = wp_list_pluck($categories, 'term_id');
+
+  $query = new WP_Query([
+    'post_type'           => 'post',
+    'post_status'         => 'publish',
+    'posts_per_page'      => $count,
+    'post__not_in'        => [$current_id],
+    'category__in'        => $cat_ids,
+    'orderby'             => 'date',
+    'order'               => 'DESC',
+    'no_found_rows'       => true,
+    'ignore_sticky_posts' => true,
+  ]);
+
+  if (!$query->have_posts()) {
+    wp_reset_postdata();
+    return '<!-- cryo_related_posts: no related posts found -->';
+  }
+
+  $cards_html = '';
+  while ($query->have_posts()) {
+    $query->the_post();
+    $pid       = get_the_ID();
+    $p_title   = (string) get_the_title($pid);
+    $p_link    = (string) get_permalink($pid);
+    $p_date    = get_the_date($date_format, $pid);
+
+    $p_tag_label = '';
+    $p_tag_mod   = '';
+    $p_terms     = get_the_terms($pid, 'category');
+    if (!is_wp_error($p_terms) && !empty($p_terms)) {
+      $p_tag_label = (string) ($p_terms[0]->name ?? '');
+      $p_tag_mod   = cryo_get_tag_modifier($p_tag_label);
+    }
+
+    $p_thumb_id = (int) get_post_thumbnail_id($pid);
+    if ($p_thumb_id <= 0) {
+      $uf = trim((string) get_post_meta($pid, '_uncode_featured_media', true));
+      if ($uf !== '') {
+        foreach (array_filter(array_map('trim', explode(',', $uf))) as $uf_id) {
+          $uf_id = (int) $uf_id;
+          if ($uf_id > 0 && wp_attachment_is_image($uf_id)) { $p_thumb_id = $uf_id; break; }
+        }
+      }
+    }
+
+    $p_img = '';
+    if ($p_thumb_id > 0 && wp_attachment_is_image($p_thumb_id)) {
+      $src = wp_get_attachment_image_url($p_thumb_id, 'medium_large');
+      $alt = (string) get_post_meta($p_thumb_id, '_wp_attachment_image_alt', true);
+      if ($alt === '') $alt = $p_title;
+      if ($src) {
+        $p_img = '<img class="cryo-postCard__img" src="' . esc_url($src) . '" alt="' . esc_attr($alt) . '" loading="lazy" decoding="async" />';
+      }
+    }
+    if ($p_img === '') {
+      $p_img = '<div class="cryo-postCard__img cryo-postCard__img--placeholder" role="img" aria-label="' . esc_attr($p_title) . '"></div>';
+    }
+
+    $p_tag_html = '';
+    if ($p_tag_label !== '') {
+      $tc = 'cryo-postCard__tag' . ($p_tag_mod !== '' ? ' cryo-postCard__tag--' . esc_attr($p_tag_mod) : '');
+      $p_tag_html = '<span class="' . $tc . '">' . esc_html($p_tag_label) . '</span>';
+    }
+
+    $cards_html .= '<div class="cryo-relatedPosts__item">'
+      . '<a class="cryo-postCard" href="' . esc_url($p_link) . '">'
+      . '<div class="cryo-postCard__media">' . $p_img . '</div>'
+      . '<div class="cryo-postCard__meta">' . $p_tag_html
+      . ($p_date !== '' ? '<span class="cryo-postCard__date">' . esc_html($p_date) . '</span>' : '')
+      . '</div>'
+      . '<h3 class="cryo-postCard__title">' . esc_html($p_title) . '</h3>'
+      . '</a>'
+      . '</div>';
+  }
+  wp_reset_postdata();
+
+  $view_all_btn = '';
+  if ($post_list_url !== '' && $view_all_text !== '') {
+    $view_all_btn = '<a class="cryo-relatedPosts__viewAll" href="' . esc_url($post_list_url) . '">' . esc_html($view_all_text) . '</a>';
+  }
+
+  return '<section class="cryo-relatedPostsSection" aria-label="' . esc_attr($title) . '">'
+    . '<div class="cryo-relatedPosts">'
+    . '<div class="cryo-relatedPosts__header">'
+    . '<h2 class="cryo-relatedPosts__title">' . esc_html($title) . '</h2>'
+    . $view_all_btn
+    . '</div>'
+    . '<div class="cryo-relatedPosts__grid">'
+    . $cards_html
+    . '</div>'
+    . '</div>'
+    . '</section>';
 });
 
 if (!function_exists('cryo_handle_rtsp_stream_request')) {

@@ -914,6 +914,30 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// cb101 accordion: single-select + image swap by index
+document.addEventListener('DOMContentLoaded', () => {
+  const accordions = Array.from(document.querySelectorAll('.cryo-cb101__accordion'));
+  if (accordions.length === 0) return;
+
+  accordions.forEach((accordion) => {
+    const content = accordion.closest('.cryo-cb101__content');
+    const images = content
+      ? Array.from(content.querySelectorAll('.cryo-cb101__media .cryo-cb101__img'))
+      : [];
+    const items = Array.from(accordion.querySelectorAll('details.cryo-cb101__item'));
+
+    items.forEach((detail, idx) => {
+      detail.addEventListener('toggle', () => {
+        if (!detail.open) return;
+        items.forEach((other) => {
+          if (other !== detail && other.open) other.open = false;
+        });
+        images.forEach((img, i) => img.classList.toggle('is-active', i === idx));
+      });
+    });
+  });
+});
+
 // Monitoring card play button - opens fullscreen modal
 document.addEventListener('DOMContentLoaded', () => {
   const playButtons = Array.from(document.querySelectorAll('[data-cryo-monitoring-play]'));

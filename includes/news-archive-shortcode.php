@@ -112,15 +112,33 @@ add_shortcode('cryo_news_archive', function ($atts): string {
     }
   }
   
-  // Get total published posts count
-  $total_published = (int) wp_count_posts('post')->publish;
+  // Get total published posts count (language-aware).
+  // wp_count_posts() uses direct SQL that bypasses WP_Query filters, so we
+  // run a lightweight WP_Query instead. The global posts_where filter
+  // automatically excludes posts without content in the active language.
+  $count_all_query = new WP_Query([
+    'post_type'      => 'post',
+    'post_status'    => 'publish',
+    'posts_per_page' => 1,
+    'fields'         => 'ids',
+    'no_found_rows'  => false,
+  ]);
+  $total_published = (int) $count_all_query->found_posts;
+  wp_reset_postdata();
 
-  // Get available years
+  // Get available years (language-aware).
   global $wpdb;
+  $lang_where = '';
+  if (function_exists('cryo_qtranslate_current_lang')) {
+    $lang = cryo_qtranslate_current_lang();
+    if ($lang !== '') {
+      $lang_where = cryo_qtranslate_lang_where($lang);
+    }
+  }
   $years = $wpdb->get_col("
     SELECT DISTINCT YEAR(post_date) as year 
     FROM $wpdb->posts 
-    WHERE post_type = 'post' AND post_status = 'publish' 
+    WHERE post_type = 'post' AND post_status = 'publish' {$lang_where}
     ORDER BY year DESC
   ");
 
