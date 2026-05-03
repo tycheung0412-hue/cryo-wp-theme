@@ -111,7 +111,7 @@
     overflow: hidden;
   }
   body {
-    height: 100%;
+    height: calc(100% - 124px);
     overflow: auto;
     -webkit-overflow-scrolling: touch;
     /* Start content right after the fixed header (WP already offsets for admin bar when logged in). */
@@ -563,7 +563,7 @@
     flex-wrap: wrap;
     row-gap: 14px;
     column-gap: 22px;
-    justify-content: space-between;
+    justify-content: flex-start;
   }
   .cryo-footer__nav .cryo-footerMenu__list a {
     color: rgba(255, 255, 255, 0.92);
@@ -869,12 +869,15 @@
 
 @media (max-width: 1023px) {
   .cryo-relatedPosts__grid {
-    display: flex;
-    overflow-x:auto;
-    flex-direction: row;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 16px;
+    padding-bottom: 8px;
   }
-  .cryo-relatedPosts__item{
-    min-width: 80%;
+  .cryo-relatedPosts__item {
+    flex: 0 0 calc(100% - 40px);
+    scroll-snap-align: start;
   }
   .cryo-testimonialsSection {
     padding: 40px 0;
@@ -1049,6 +1052,16 @@
 }
 
 @media (max-width: 767px) {
+  /* Flatten the two contact rows so all 4 blocks become siblings for reordering.
+     Desired mobile order: 實驗室 → 24小時熱線 → 澳門 → Business Enquiries */
+  .cryo-contactBlocks__row {
+    display: contents;
+  }
+  .cryo-contactBlocks__row:nth-child(1) > .cryo-contactBlock:nth-child(1) { order: 1; }
+  .cryo-contactBlocks__row:nth-child(2) > .cryo-contactBlock:nth-child(1) { order: 2; }
+  .cryo-contactBlocks__row:nth-child(1) > .cryo-contactBlock:nth-child(2) { order: 3; }
+  .cryo-contactBlocks__row:nth-child(2) > .cryo-contactBlock:nth-child(2) { order: 4; }
+
   .cryo-filterBar__inner {
     flex-wrap: wrap;
   }
@@ -1087,5 +1100,20 @@
 
   .cryo-filterBar__yearFilter {
     flex-shrink: 0;
+  }
+  .cryo-contactSection__bg  {
+    border-radius: 0;
+  }
+
+  /* Swap the CTA banner to a portrait-oriented image on mobile */
+  .full-width-section img {
+    content: url('../images/contact-cta-mobile.png');
+  }
+  .full-width-section > div {
+    margin-top: 0 !important;
+  }
+  .cryo-comparison, .cryo-pricingFaq {
+    margin-top:0;
+    padding-top:0;
   }
 }

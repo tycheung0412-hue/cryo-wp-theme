@@ -468,7 +468,7 @@ if (!class_exists('Cryo_Nav_Walker')) {
       // Add submenu toggle button if has children
       if ($has_children) {
         $item_output .= '<button data-wp-bind--aria-expanded="state.isMenuOpen" data-wp-on--click="actions.toggleMenuOnClick" aria-label="' . esc_attr($item->title) . ' submenu" class="wp-block-navigation__submenu-icon wp-block-navigation-submenu__toggle" aria-expanded="false">'
-          . '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true" focusable="false"><path d="M1.50002 4L6.00002 8L10.5 4" stroke-width="1.5"></path></svg>'
+          . '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true" focusable="false"><path d="M6 1V8.5M2.5 5.5L6 9L9.5 5.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>'
           . '</button>';
       }
 
@@ -590,6 +590,9 @@ add_shortcode('cryo_footer_certs', function ($atts): string {
  * - 首頁 / 我們的服務 / 臍帶血保存
  */
 add_shortcode('cryo_breadcrumbs', function (): string {
+  if (is_front_page()) {
+    return '';
+  }
   $post_id = get_queried_object_id();
   if (!$post_id) {
     return '';
@@ -2889,6 +2892,24 @@ add_action('rest_api_init', function (): void {
 });
 
 /**
+ * Single-post header — renders the post date and title.
+ */
+add_shortcode('cryo_post_header', function (): string {
+  $post_id = get_the_ID();
+  if (!$post_id) {
+    return '';
+  }
+
+  $date  = get_the_date('Y年 n月 j日', $post_id);
+  $title = get_the_title($post_id);
+
+  return '<div class="cryo-singlePost__header">'
+    . '<p class="cryo-singlePost__date">' . esc_html($date) . '</p>'
+    . '<h1 class="cryo-singlePost__title">' . esc_html($title) . '</h1>'
+    . '</div>';
+});
+
+/**
  * Related Posts — shows top N posts from the same category as the current post.
  *
  * Usage (in single.html or post content):
@@ -3020,6 +3041,61 @@ add_shortcode('cryo_related_posts', function ($atts): string {
     . '</div>'
     . '</div>'
     . '</section>';
+});
+
+/**
+ * [cryo_video_popup] — Cover image that opens a YouTube video in a centered modal.
+ *
+ * Attributes:
+ *   video_url  — Full YouTube URL (watch or embed). Required.
+ *   image_id   — WP attachment ID for the cover image. Required.
+ *   alt        — Alt text for the cover image.
+ *   class      — Extra CSS class(es) on the wrapper.
+ *
+ * Usage inside the Director section (replaces the bare <img>):
+ *   [cryo_video_popup video_url="https://www.youtube.com/watch?v=XXXXX" image_id="123" alt="麥耀光醫生分享" /]
+ */
+add_shortcode('cryo_video_popup', function ($atts): string {
+  $atts = shortcode_atts([
+    'video_url' => '',
+    'image_id'  => '',
+    'alt'       => '',
+    'class'     => '',
+  ], $atts, 'cryo_video_popup');
+
+  $video_url = trim($atts['video_url']);
+  $image_id  = (int) $atts['image_id'];
+  $alt       = esc_attr($atts['alt']);
+  $extra_cls = $atts['class'] ? ' ' . esc_attr($atts['class']) : '';
+
+  if (!$video_url || !$image_id) {
+    return '<!-- cryo_video_popup: missing video_url or image_id -->';
+  }
+
+  // Normalise YouTube URL → embed URL
+  $embed_url = $video_url;
+  if (preg_match('/(?:youtu\.be\/|youtube\.com\/watch\?v=)([\w-]+)/', $video_url, $m)) {
+    $embed_url = 'https://www.youtube.com/embed/' . $m[1] . '?autoplay=1&rel=0';
+  } elseif (preg_match('/youtube\.com\/embed\/([\w-]+)/', $video_url, $m)) {
+    if (strpos($video_url, 'autoplay') === false) {
+      $embed_url = rtrim($video_url, '&?') . (strpos($video_url, '?') !== false ? '&' : '?') . 'autoplay=1&rel=0';
+    }
+  }
+
+  $img_url = wp_get_attachment_image_url($image_id, 'large');
+  if (!$img_url) {
+    return '<!-- cryo_video_popup: invalid image_id -->';
+  }
+
+  $play_svg = '<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">'
+    . '<circle cx="40" cy="40" r="40" fill="currentColor" fill-opacity="0.85"/>'
+    . '<polygon points="32,24 60,40 32,56" fill="#fff"/>'
+    . '</svg>';
+
+  return '<div class="cryo-videoPopup' . $extra_cls . '" data-cryo-video-popup data-video-url="' . esc_attr($embed_url) . '">'
+    . '<img class="cryo-videoPopup__cover" src="' . esc_url($img_url) . '" alt="' . $alt . '" />'
+    . '<button class="cryo-videoPopup__play" type="button" aria-label="播放影片">' . $play_svg . '</button>'
+    . '</div>';
 });
 
 if (!function_exists('cryo_handle_rtsp_stream_request')) {

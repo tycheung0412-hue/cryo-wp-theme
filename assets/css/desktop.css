@@ -47,6 +47,10 @@
   .cryo-hero__actions {
     width:93px;
     display: flex;
+    height:207px;
+    top: 700px;
+    position: fixed;
+    z-index: 99999 !important;
   }
 
   .cryo-header__inner {
@@ -121,6 +125,8 @@
   .cryo-nav__primaryNav > ul.wp-block-navigation__container:first-of-type,
   nav.cryo-nav__primaryNav > ul:first-of-type {
     display: flex !important;
+    height:64px;
+    padding-top:32px;
   }
 
 /* Keep the primary navigation itself from shrinking to 0 */
@@ -149,18 +155,27 @@
   nav.cryo-nav__primaryNav .current-menu-ancestor > a {
     color: var(--wp--preset--color--accent);
   }
+  .cryo-nav__primaryNav .current-menu-item > .wp-block-navigation-submenu__toggle,
+  .cryo-nav__primaryNav .current-menu-item > .wp-block-navigation__submenu-icon,
+  .cryo-nav__primaryNav .current-menu-ancestor > .wp-block-navigation-submenu__toggle,
+  .cryo-nav__primaryNav .current-menu-ancestor > .wp-block-navigation__submenu-icon,
+  nav.cryo-nav__primaryNav .current-menu-item > .wp-block-navigation-submenu__toggle,
+  nav.cryo-nav__primaryNav .current-menu-item > .wp-block-navigation__submenu-icon,
+  nav.cryo-nav__primaryNav .current-menu-ancestor > .wp-block-navigation-submenu__toggle,
+  nav.cryo-nav__primaryNav .current-menu-ancestor > .wp-block-navigation__submenu-icon {
+    color: var(--wp--preset--color--accent);
+  }
 
-/* Dropdown panel (orange) — force override WP core styles */
+/* Dropdown panel — white with orange shadow */
   .cryo-nav__primaryNav .wp-block-navigation__submenu-container,
   nav.cryo-nav__primaryNav .wp-block-navigation__submenu-container {
-    background: var(--wp--preset--color--accent) !important;
+    background: #fff !important;
     border: 0;
     border-radius: 12px;
     padding: 12px;
     min-width: 360px;
-    box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+    box-shadow: 8px 12px 48px 4px rgba(216, 98, 50,0.15);
     z-index: 300;
-    /* Reset list styles */
     list-style: none !important;
     margin: 0;
   }
@@ -174,13 +189,17 @@
   .cryo-nav__primaryNav .wp-block-navigation__submenu-container .wp-block-navigation-item__content,
   nav.cryo-nav__primaryNav .wp-block-navigation__submenu-container a,
   nav.cryo-nav__primaryNav .wp-block-navigation__submenu-container .wp-block-navigation-item__content {
-    color: #fff !important;
+    color: #AAAAAA !important;
     text-decoration: none;
     font-weight: 600;
+    transition: color 0.2s ease;
   }
   .cryo-nav__primaryNav .wp-block-navigation__submenu-container a:hover,
-  nav.cryo-nav__primaryNav .wp-block-navigation__submenu-container a:hover {
-    text-decoration: underline;
+  .cryo-nav__primaryNav .wp-block-navigation__submenu-container .wp-block-navigation-item__content:hover,
+  nav.cryo-nav__primaryNav .wp-block-navigation__submenu-container a:hover,
+  nav.cryo-nav__primaryNav .wp-block-navigation__submenu-container .wp-block-navigation-item__content:hover {
+    color: #BF4C1F !important;
+    text-decoration: none;
   }
   .cryo-nav__primaryNav .wp-block-navigation__submenu-container .wp-block-navigation-item__content,
   nav.cryo-nav__primaryNav .wp-block-navigation__submenu-container .wp-block-navigation-item__content {
@@ -199,10 +218,19 @@
     width: 28px;
     height: 8px;
     margin-right: 14px;
-    background: #fff;
+    background: #AAAAAA;
     -webkit-mask: var(--cryo-icon-arrow-right-long) no-repeat center / contain;
     mask: var(--cryo-icon-arrow-right-long) no-repeat center / contain;
     vertical-align: middle;
+    transition: background 0.2s ease;
+  }
+  .cryo-nav__primaryNav .wp-block-navigation__submenu-container
+    > .wp-block-navigation-item
+    > .wp-block-navigation-item__content:hover::before,
+  nav.cryo-nav__primaryNav .wp-block-navigation__submenu-container
+    > li
+    > .wp-block-navigation-item__content:hover::before {
+    background: #BF4C1F;
   }
 
 /* Submenu positioning and hover states */
@@ -379,7 +407,6 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transform: translateY(1px);
     cursor: pointer;
     color: inherit;
   }
@@ -389,12 +416,36 @@
   nav.cryo-nav__primaryNav .wp-block-navigation-submenu__toggle svg {
     width: 14px;
     height: 14px;
+    transform: rotate(-90deg);
+    transition: transform 0.2s ease, color 0.2s ease;
   }
   .cryo-nav__primaryNav .wp-block-navigation__submenu-icon svg path,
   nav.cryo-nav__primaryNav .wp-block-navigation__submenu-icon svg path,
   .cryo-nav__primaryNav .wp-block-navigation-submenu__toggle svg path,
   nav.cryo-nav__primaryNav .wp-block-navigation-submenu__toggle svg path {
     stroke: currentColor;
+  }
+  /* Arrow follows text color on hover */
+  .cryo-nav__primaryNav .has-child:hover > .wp-block-navigation-submenu__toggle,
+  .cryo-nav__primaryNav .menu-item-has-children:hover > .wp-block-navigation-submenu__toggle,
+  nav.cryo-nav__primaryNav .has-child:hover > .wp-block-navigation-submenu__toggle,
+  nav.cryo-nav__primaryNav .menu-item-has-children:hover > .wp-block-navigation-submenu__toggle,
+  .cryo-nav__primaryNav .has-child:hover > .wp-block-navigation__submenu-icon,
+  .cryo-nav__primaryNav .menu-item-has-children:hover > .wp-block-navigation__submenu-icon,
+  nav.cryo-nav__primaryNav .has-child:hover > .wp-block-navigation__submenu-icon,
+  nav.cryo-nav__primaryNav .menu-item-has-children:hover > .wp-block-navigation__submenu-icon {
+    color: var(--wp--preset--color--accent);
+  }
+  /* Arrow rotates down on hover */
+  .cryo-nav__primaryNav .has-child:hover > .wp-block-navigation-submenu__toggle svg,
+  .cryo-nav__primaryNav .menu-item-has-children:hover > .wp-block-navigation-submenu__toggle svg,
+  nav.cryo-nav__primaryNav .has-child:hover > .wp-block-navigation-submenu__toggle svg,
+  nav.cryo-nav__primaryNav .menu-item-has-children:hover > .wp-block-navigation-submenu__toggle svg,
+  .cryo-nav__primaryNav .has-child:hover > .wp-block-navigation__submenu-icon svg,
+  .cryo-nav__primaryNav .menu-item-has-children:hover > .wp-block-navigation__submenu-icon svg,
+  nav.cryo-nav__primaryNav .has-child:hover > .wp-block-navigation__submenu-icon svg,
+  nav.cryo-nav__primaryNav .menu-item-has-children:hover > .wp-block-navigation__submenu-icon svg {
+    transform: rotate(0deg);
   }
 
 /* Search icon button (dashicons) */
@@ -731,28 +782,46 @@
 }
 
 @media (min-width: 1024px) {
+  .m-mobile-only {
+    display:none;
+  }
   /* Fallback: if a card is used outside `[cryo_cards]` (no `.cryo-cards__stage` wrapper),
      still respect x/y by translating in-flow. When inside the stage, we additionally
      absolutely position it to avoid reserving layout space. */
   .cryo-cardPos {
-    transform: translate(var(--cryo-card-x), var(--cryo-card-y));
+    /* transform: translate(var(--cryo-card-x), var(--cryo-card-y)); */
+  }
+
+  .cryo-cardPos.home {
+    width: 420px;
   }
 
   .cryo-cards {
     padding: 120px 0 90px;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
-    column-gap: 90px;
-    align-items: start;
+    /* display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 520px); */
+    display:block;
+    width: 100%;
+    /* column-gap: 90px;
+    align-items: start; */
   }
   .cryo-cards__copy {
     padding-top: 96px; /* vertical alignment like Figma */
+    width: 100%;
+    max-width: 100%;
+    padding-bottom: 24px;
+  }
+  .cryo-cards__stage {
+    margin: 0 auto;
+    width: 80%;
   }
   .cryo-cards__stage .cryo-cardPos {
-    position: absolute;
+    /* position: absolute;
     top: 0;
     left: 0;
-    transform: translate(var(--cryo-card-x), var(--cryo-card-y));
+    transform: translate(var(--cryo-card-x), var(--cryo-card-y)); */
+    position: relative;
+    width: 420px;
     will-change: transform;
   }
 }
@@ -769,6 +838,9 @@
 
   .cryo-adv__img {
     object-position: center bottom;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   @supports ((-webkit-mask-image: radial-gradient(#000, transparent)) or (mask-image: radial-gradient(#000, transparent))) {
@@ -779,14 +851,14 @@
         - Key: keep TOP-CENTER within the visible radius while pushing TOP-CORNERS outside it.
         - Do this with a more balanced ellipse (larger Y radius) + a tight feather band near ~100%.
       */
-      -webkit-mask-image: radial-gradient(ellipse 55% 100% at 50% 100%,#000 0 98%,transparent 100%);
+      /* -webkit-mask-image: radial-gradient(ellipse 55% 100% at 50% 100%,#000 0 98%,transparent 100%);
       mask-image: radial-gradient(ellipse 55% 100% at 50% 100%,#000 0 98%,transparent 100%);
       -webkit-mask-repeat: no-repeat;
       mask-repeat: no-repeat;
-      -webkit-mask-size: 100% 100%;
-      mask-size: 100% 100%;
-      -webkit-mask-position: center;
-      mask-position: center;
+      -webkit-mask-size: 100% 100%; */
+      /* mask-size: 100% 100%; */
+      /* -webkit-mask-position: center;
+      mask-position: center; */
     }
   }
 }
@@ -868,6 +940,11 @@
 
   .cryo-testimonial__title {
     font-size: 56px;
+  }
+
+  .cryo-testimonial__nav {
+    align-self: flex-end;
+    margin-top: -72px;
   }
 }
 
@@ -1245,6 +1322,7 @@
   .cryo-keyPoint {
     padding: 48px 32px;
     border-radius: 24px;
+    min-height: 255px;
   }
 
   .cryo-keyPoint__icon {
@@ -1984,7 +2062,7 @@
 
   .cryo-postCard__media {
     display: block;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 16 / 9;
     border-radius: 16px;
     overflow: hidden;
     margin-bottom: 16px;
@@ -2609,5 +2687,15 @@
   .cryo-contactCta__btn {
     padding: 16px 32px;
     font-size: 16px;
+  }
+
+  .cryo-singlePost > .cryo-singlePost__featured,
+  .cryo-singlePost > .cryo-cryo-singlePost__header,
+  .cryo-singlePost > .cryo-singlePost__content {
+    max-width: 900px !important;
+  }
+
+  .is-layout-constrained > .alignwide {
+    max-width: 1320px !important;
   }
 }

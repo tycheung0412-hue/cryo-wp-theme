@@ -3323,9 +3323,9 @@ html[lang^="zh"] .wp-site-blocks {
   box-shadow: 0 4px 16px rgba(195, 87, 44, 0.08);
 }
 
-.cryo-cb101__item[open]::before {
+/* .cryo-cb101__item[open]::before {
   background: var(--wp--preset--color--accent, #C3572C);
-}
+} */
 
 .cryo-cb101__question {
   display: flex;

@@ -397,7 +397,7 @@ body::before {
 .cryo-advSection h6 {
   margin: 0 0 14px;
   color: rgba(0,0,0,0.55);
-  font-size: 20px;
+  font-size: 28px;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -406,7 +406,7 @@ body::before {
 .cryo-advSection h2 {
   margin: 0;
   color: var(--wp--preset--color--accent);
-  font-size: 64px;
+  font-size: 66px;
   font-weight: 900;
   line-height: 1.05;
 }
@@ -415,7 +415,7 @@ body::before {
 .cryo-advSection p {
   margin: 0;
   color: rgba(0,0,0,0.75);
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.9;
 }
 .cryo-cardsSection h2 + p {
@@ -424,7 +424,11 @@ body::before {
 
 .cryo-cards__stage {
   position: relative;
-  min-height: var(--cryo-cards-stage-height, 760px);
+  /* min-height: var(--cryo-cards-stage-height, 760px); */
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .cryo-cardPos {
@@ -786,14 +790,14 @@ body::before {
 .cryo-stat__label {
   margin: 18px 0 10px;
   color: rgba(0,0,0,0.78);
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 400;
   line-height: 1.35;
 }
 .cryo-stat__value {
   margin: 0;
   color: var(--wp--preset--color--accent);
-  font-size: 64px;
+  font-size: 52px;
   font-weight: 900;
   line-height: 1;
   letter-spacing: 0.01em;
@@ -967,7 +971,7 @@ body::before {
 
 .cryo-postCard__title {
   margin: 12px 0 0;
-  color: #000;
+  color: #1A1A1A;
   font-size: 18px;
   font-weight: 700;
   line-height: 1.4;
@@ -1129,7 +1133,7 @@ body::before {
   position: relative;
   border-radius: 16px;
   overflow: hidden;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   background: #eee;
 }
 
@@ -1185,7 +1189,7 @@ body::before {
 .cryo-directorSection {
   width: 100%;
   padding: 64px 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .cryo-director {
@@ -1210,8 +1214,8 @@ body::before {
   left: -15%;
   width: 95%;
   aspect-ratio: 1 / 1;
-  background: url('../images/home-vid-circle-bg.png') center / contain no-repeat;
-  z-index: 0;
+  background: url('../images/home-circle.png') center / contain no-repeat;
+  z-index: -1;
   pointer-events: none;
 }
 
@@ -1260,35 +1264,126 @@ body::before {
 .cryo-director__title {
   margin: 0 0 24px;
   color: var(--wp--preset--color--accent, #C3572C);
-  font-size: 56px;
-  font-weight: 900;
+  font-size: 66px;
+  font-weight: 600;
   line-height: 1.1;
 }
 
 .cryo-director__name {
-  color: #000;
-  font-size: 32px;
-  font-weight: 700;
+  color: #1A1A1A;
+  font-size: 40px;
+  font-weight: 500;
   line-height: 1.3;
   margin-bottom: 12px;
 }
 
 .cryo-director__desc {
-  color: #000;
+  color: #1A1A1A;
   font-size: 18px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.5;
 }
 
-/* Desktop adjustments */
+/* -------------------------------------------------------------------------- */
+/* Video Popup Component — cover image + YouTube lightbox modal               */
+/* -------------------------------------------------------------------------- */
 
-/* Mobile: stack vertically */
+.cryo-videoPopup {
+  position: relative;
+  display: block;
+  cursor: pointer;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+  z-index: 1;
+}
 
-/* Desktop adjustments */
+.cryo-videoPopup__cover {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-/* Mobile: reorder layout inside each slide (keep horizontal slider) */
+.cryo-videoPopup__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--wp--preset--color--accent, #C3572C);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  z-index: 3;
+}
 
-/* Mobile: vertical stacked list (not carousel) */
+.cryo-videoPopup__play:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.cryo-videoPopup__play svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Modal overlay */
+.cryo-videoModal {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.85);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.cryo-videoModal.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.cryo-videoModal__inner {
+  position: relative;
+  width: 90%;
+  max-width: 960px;
+  aspect-ratio: 16 / 9;
+}
+
+.cryo-videoModal__iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 12px;
+}
+
+.cryo-videoModal__close {
+  position: absolute;
+  top: -48px;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 24px;
+  line-height: 40px;
+  text-align: center;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.cryo-videoModal__close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
 
 /* -------------------------------------------------------------------------- */
 /* Intro Section (為什麼儲存臍帶血) - Two-column layout                          */
@@ -1515,9 +1610,9 @@ body::before {
   box-shadow: 0 4px 16px rgba(195, 87, 44, 0.08);
 }
 
-.cryo-cb101__item[open]::before {
+/* .cryo-cb101__item[open]::before {
   background: var(--wp--preset--color--accent, #C3572C);
-}
+} */
 
 .cryo-cb101__question {
   display: flex;
@@ -1635,7 +1730,7 @@ body::before {
 
 .cryo-usages__title {
   margin: 0;
-  color: #000;
+  color: #1A1A1A;
   font-size: 32px;
   font-weight: 800;
   line-height: 1.2;
@@ -1691,7 +1786,7 @@ body::before {
 
 .cryo-usage__title {
   margin: 0 0 8px;
-  color: #000;
+  color: #1A1A1A;
   font-size: 18px;
   font-weight: 700;
   line-height: 1.3;
@@ -1769,7 +1864,7 @@ body::before {
 
 .cryo-feature__title {
   margin: 0 0 12px;
-  color: #000;
+  color: #1A1A1A;
   font-size: 20px;
   font-weight: 700;
   line-height: 1.3;
@@ -1934,7 +2029,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-techCard__title {
   margin: 0 0 12px;
-  color: #000;
+  color: #1A1A1A;
   font-size: 20px;
   font-weight: 700;
   line-height: 1.3;
@@ -2106,7 +2201,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-step__title {
   margin: 0;
-  color: #000;
+  color: #1A1A1A;
   font-size: 24px;
   font-weight: 800;
   line-height: 1.3;
@@ -2177,7 +2272,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
   list-style: none;
   font-size: 17px;
   font-weight: 600;
-  color: #000;
+  color: #1A1A1A;
   line-height: 1.4;
 }
 
@@ -2781,7 +2876,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-partners__heading {
   margin: 0 0 20px;
-  color: #000;
+  color: #1A1A1A;
   font-size: 20px;
   font-weight: 700;
   line-height: 1.3;
@@ -2806,7 +2901,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
   content: "•";
   position: absolute;
   left: 0;
-  color: #000;
+  color: #1A1A1A;
   font-weight: bold;
 }
 
@@ -3009,7 +3104,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-teamMember__name {
   margin: 0 0 8px;
-  color: #000;
+  color: #1A1A1A;
   font-size: 24px;
   font-weight: 900;
   line-height: 1.3;
@@ -3097,6 +3192,80 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-relatedPostsWrap {
   background: #FFF;
+}
+.cryo-relatedPostsSection {
+  padding: 40px 16px 48px;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+.cryo-relatedPostsSection p {
+  display: contents;
+}
+.cryo-relatedPosts__header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.cryo-relatedPosts__title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+.cryo-relatedPosts__viewAll {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 20px;
+  background: #999;
+  color: #fff;
+  border-radius: 24px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.cryo-relatedPosts__viewAll:hover {
+  background: #777;
+  color: #fff;
+  text-decoration: none;
+}
+.cryo-relatedPosts__grid {
+  display: flex;
+  gap: 24px;
+}
+.cryo-relatedPosts__item {
+  flex: 1;
+  min-width: 0;
+}
+.cryo-relatedPosts__item .cryo-postCard {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+}
+.cryo-relatedPosts__item .cryo-postCard__media {
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.cryo-relatedPosts__item .cryo-postCard__img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  display: block;
+}
+.cryo-relatedPosts__item .cryo-postCard__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.cryo-relatedPosts__item .cryo-postCard__title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 0;
+  color: #1a1a1a;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -3777,7 +3946,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
 .cryo-postCard__title {
   font-size: 16px;
   font-weight: 600;
-  color: #000;
+  color: #1A1A1A;
   line-height: 1.5;
   margin: 0;
   transition: color 0.2s ease;
@@ -3883,7 +4052,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
   font-size: 24px;
   font-weight: 700;
   line-height: 1.4;
-  color: #000;
+  color: #1A1A1A;
   margin: 0;
 }
 
@@ -4128,6 +4297,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
   object-fit: cover;
   object-position: center;
   z-index: 0;
+  border-radius: 36px;
 }
 
 /* Container for all 4 blocks */
@@ -5196,8 +5366,8 @@ a.cryo-techCard:hover .cryo-techCard__img {
 }
 
 .cryo-compRow__label {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 18px;
+  /* font-weight: 600; */
   color: #333;
   flex: 1;
   padding-right: 16px;

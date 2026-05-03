@@ -914,6 +914,61 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// Video Popup: cover image click → YouTube embed in a centered modal
+document.addEventListener('DOMContentLoaded', () => {
+  const triggers = Array.from(document.querySelectorAll('[data-cryo-video-popup]'));
+  if (triggers.length === 0) return;
+
+  let modal = document.querySelector('.cryo-videoModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.className = 'cryo-videoModal';
+    modal.innerHTML =
+      '<div class="cryo-videoModal__inner">' +
+        '<button class="cryo-videoModal__close" type="button" aria-label="關閉">&times;</button>' +
+        '<iframe class="cryo-videoModal__iframe" allowfullscreen allow="autoplay; encrypted-media"></iframe>' +
+      '</div>';
+    document.body.appendChild(modal);
+  }
+
+  const iframe = modal.querySelector('.cryo-videoModal__iframe');
+  const closeBtn = modal.querySelector('.cryo-videoModal__close');
+
+  const openModal = (embedUrl) => {
+    iframe.src = embedUrl;
+    modal.classList.add('is-active');
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeModal = () => {
+    modal.classList.remove('is-active');
+    iframe.src = '';
+    document.body.style.overflow = '';
+  };
+
+  triggers.forEach((el) => {
+    const playBtn = el.querySelector('.cryo-videoPopup__play');
+    const handler = (e) => {
+      e.preventDefault();
+      const url = el.getAttribute('data-video-url');
+      if (url) openModal(url);
+    };
+    if (playBtn) playBtn.addEventListener('click', handler);
+    el.addEventListener('click', (e) => {
+      if (e.target.closest('.cryo-videoPopup__play')) return;
+      handler(e);
+    });
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-active')) closeModal();
+  });
+});
+
 // cb101 accordion: single-select + image swap by index
 document.addEventListener('DOMContentLoaded', () => {
   const accordions = Array.from(document.querySelectorAll('.cryo-cb101__accordion'));
