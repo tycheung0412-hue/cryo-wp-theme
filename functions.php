@@ -733,7 +733,10 @@ add_shortcode('cryo_swiper', function ($atts): string {
   $atts = shortcode_atts([
     'ids' => '',
     'interval' => '6500',
+    'class' => '',
   ], (array) $atts, 'cryo_swiper');
+
+  $class = trim((string) ($atts['class'] ?? ''));
 
   $ids = array_filter(array_map('trim', explode(',', (string) $atts['ids'])));
   $slides = [];
@@ -763,7 +766,7 @@ add_shortcode('cryo_swiper', function ($atts): string {
       '<button class="cryo-hero__dot' . ($active ? ' is-active' : '') . '" type="button" data-cryo-hero-dot aria-label="第 ' . ($i + 1) . ' 張"' . ($active ? ' aria-current="true"' : '') . '></button>';
   }
 
-  return '<div class="cryo-hero__viewport" aria-label="首頁橫幅" role="region" data-cryo-hero data-cryo-hero-interval="' . esc_attr((string) $atts['interval']) . '">'
+  return '<div class="cryo-hero__viewport' . ($class !== '' ? ' ' . esc_attr($class) : '') . '" aria-label="首頁橫幅" role="region" data-cryo-hero data-cryo-hero-interval="' . esc_attr((string) $atts['interval']) . '">'
     . '<div class="cryo-hero__track" data-cryo-hero-track>'
     . implode('', $slides)
     . '</div>'
@@ -831,10 +834,11 @@ add_shortcode('cryo_hero', function ($atts, $content = ''): string {
   $atts = shortcode_atts([
     'ids' => '',
     'interval' => '6500',
-    // Show the action buttons overlay (default true)
     'show_actions' => 'true',
+    'class' => '',
   ], (array) $atts, 'cryo_hero');
 
+  $class = trim((string) ($atts['class'] ?? ''));
   $show_actions_raw = strtolower(trim((string) ($atts['show_actions'] ?? 'true')));
   $show_actions = !in_array($show_actions_raw, ['0', 'false', 'no', 'off'], true);
 
@@ -888,7 +892,7 @@ add_shortcode('cryo_hero', function ($atts, $content = ''): string {
       . '</div>';
   }
 
-  return '<section class="cryo-hero">'
+  return '<section class="cryo-hero' . ($class !== '' ? ' ' . esc_attr($class) : '') . '">'
     . '<div class="cryo-hero__viewport" aria-label="首頁橫幅" role="region" data-cryo-hero data-cryo-hero-interval="' . esc_attr((string) $atts['interval']) . '">'
     . '<div class="cryo-hero__track" data-cryo-hero-track>'
     . $slides_html
@@ -1004,16 +1008,21 @@ add_action('wp_enqueue_scripts', function (): void {
 
   $states_css     = $theme_dir . '/assets/css/states.css';
   $main_css       = $theme_dir . '/assets/css/main.css';
+  $animation_css  = $theme_dir . '/assets/css/animation.css';
   $desktop_css    = $theme_dir . '/assets/css/desktop.css';
   $mobile_css     = $theme_dir . '/assets/css/mobile.css';
   $ipcam_css      = $theme_dir . '/assets/css/ipcam-page.css';
   $main_js        = $theme_dir . '/assets/js/main.js';
+  $animation_js   = $theme_dir . '/assets/js/animation.js';
 
   if (file_exists($states_css)) {
     wp_enqueue_style('cryo-states', $theme_uri . '/assets/css/states.css', [], (string) filemtime($states_css));
   }
   if (file_exists($main_css)) {
     wp_enqueue_style('cryo-main-css', $theme_uri . '/assets/css/main.css', [], (string) filemtime($main_css));
+  }
+  if (file_exists($animation_css)) {
+    wp_enqueue_style('cryo-animation', $theme_uri . '/assets/css/animation.css', [], (string) filemtime($animation_css));
   }
   if (file_exists($desktop_css)) {
     wp_enqueue_style('cryo-desktop', $theme_uri . '/assets/css/desktop.css', ['cryo-main-css'], (string) filemtime($desktop_css));
@@ -1047,6 +1056,9 @@ add_action('wp_enqueue_scripts', function (): void {
   
   if (file_exists($main_js)) {
     wp_enqueue_script('cryo-main', $theme_uri . '/assets/js/main.js', [], (string) filemtime($main_js), true);
+  }
+  if (file_exists($animation_js)) {
+    wp_enqueue_script('cryo-animation', $theme_uri . '/assets/js/animation.js', [], (string) filemtime($animation_js), true);
   }
 
   $img_base = $theme_uri . '/assets/images';
@@ -2337,9 +2349,11 @@ add_shortcode('cryo_tech_card', function ($atts): string {
 add_shortcode('cryo_history_carousel', function ($atts, $content = ''): string {
   $atts = shortcode_atts([
     'title' => '我們的過去、現在和未來',
+    'class' => '',
   ], (array) $atts, 'cryo_history_carousel');
 
   $title = trim((string) ($atts['title'] ?? ''));
+  $class = trim((string) ($atts['class'] ?? ''));
 
   // Process child shortcodes
   $slides_html = '';
@@ -2380,7 +2394,7 @@ add_shortcode('cryo_history_carousel', function ($atts, $content = ''): string {
   // Build section HTML
   $title_html = $title !== '' ? '<h2 class="cryo-history__title">' . esc_html($title) . '</h2>' : '';
 
-  return '<section class="cryo-historySection" aria-label="' . esc_attr($title) . '">'
+  return '<section class="cryo-historySection' . ($class !== '' ? ' ' . esc_attr($class) : '') . '" aria-label="' . esc_attr($title) . '">'
     . '<div class="cryo-history">'
     . $title_html
     . '<div class="cryo-history__carousel" data-cryo-history-carousel>'
@@ -3013,7 +3027,13 @@ add_action('rest_api_init', function (): void {
 /**
  * Single-post header — renders the post date and title.
  */
-add_shortcode('cryo_post_header', function (): string {
+add_shortcode('cryo_post_header', function ($atts): string {
+  $atts = shortcode_atts([
+    'class' => '',
+  ], (array) ($atts ?: []), 'cryo_post_header');
+
+  $class = trim((string) ($atts['class'] ?? ''));
+
   $post_id = get_the_ID();
   if (!$post_id) {
     return '';
@@ -3022,7 +3042,7 @@ add_shortcode('cryo_post_header', function (): string {
   $date  = get_the_date('Y年 n月 j日', $post_id);
   $title = get_the_title($post_id);
 
-  return '<div class="cryo-singlePost__header">'
+  return '<div class="cryo-singlePost__header' . ($class !== '' ? ' ' . esc_attr($class) : '') . '">'
     . '<p class="cryo-singlePost__date">' . esc_html($date) . '</p>'
     . '<h1 class="cryo-singlePost__title">' . esc_html($title) . '</h1>'
     . '</div>';
@@ -3049,6 +3069,7 @@ add_shortcode('cryo_related_posts', function ($atts): string {
     'view_all_text' => '查看全部',
     'post_list_url' => '',
     'date_format'   => 'j M Y',
+    'class'         => '',
   ], (array) $atts, 'cryo_related_posts');
 
   $current_id    = get_the_ID();
@@ -3056,6 +3077,7 @@ add_shortcode('cryo_related_posts', function ($atts): string {
   $title         = (string) $atts['title'];
   $view_all_text = (string) $atts['view_all_text'];
   $post_list_url = (string) $atts['post_list_url'];
+  $class         = trim((string) ($atts['class'] ?? ''));
 
   if ($post_list_url === '') {
     $lang = cryo_qtranslate_current_lang();
@@ -3167,7 +3189,7 @@ add_shortcode('cryo_related_posts', function ($atts): string {
     $view_all_btn = '<a class="cryo-relatedPosts__viewAll" href="' . esc_url($post_list_url) . '">' . esc_html($view_all_text) . '</a>';
   }
 
-  return '<section class="cryo-relatedPostsSection" aria-label="' . esc_attr($title) . '">'
+  return '<section class="cryo-relatedPostsSection' . ($class !== '' ? ' ' . esc_attr($class) : '') . '" aria-label="' . esc_attr($title) . '">'
     . '<div class="cryo-relatedPosts">'
     . '<div class="cryo-relatedPosts__header">'
     . '<h2 class="cryo-relatedPosts__title">' . esc_html($title) . '</h2>'
