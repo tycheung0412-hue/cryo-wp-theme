@@ -172,7 +172,7 @@
 }
 
 .cryo-planCard--featured {
-  border-color: var(--wp--preset--color--accent, #C3572C);
+  border-color: var(--wp--preset--color--accent, #BF4C1F);
 }
 
 .cryo-planCard__header {
@@ -184,7 +184,7 @@
   margin: 0 0 12px;
   font-size: 22px;
   font-weight: 700;
-  color: var(--wp--preset--color--accent, #C3572C);
+  color: var(--wp--preset--color--accent, #BF4C1F);
 }
 
 .cryo-planCard__duration {
@@ -202,7 +202,7 @@
 }
 
 .cryo-planCard__durationItem--active {
-  background: var(--wp--preset--color--accent, #C3572C);
+  background: var(--wp--preset--color--accent, #BF4C1F);
   color: #fff;
 }
 
@@ -247,7 +247,7 @@
   content: "•";
   position: absolute;
   left: 0;
-  color: var(--wp--preset--color--accent, #C3572C);
+  color: var(--wp--preset--color--accent, #BF4C1F);
   font-weight: bold;
 }
 
@@ -284,7 +284,7 @@
   font-size: 14px;
   font-weight: 600;
   color: #fff;
-  background: var(--wp--preset--color--accent, #C3572C);
+  background: var(--wp--preset--color--accent, #BF4C1F);
   border-radius: 30px;
   text-decoration: none;
   transition: background 0.2s ease;
@@ -395,11 +395,11 @@
   width: 18.75%;
   font-size: 14px;
   font-weight: 700;
-  color: var(--wp--preset--color--accent, #C3572C);
+  color: var(--wp--preset--color--accent, #BF4C1F);
   background: rgba(195, 87, 44, 0.08);
-  border-left: 2px solid var(--wp--preset--color--accent, #C3572C);
-  border-right: 2px solid var(--wp--preset--color--accent, #C3572C);
-  border-top: 2px solid var(--wp--preset--color--accent, #C3572C);
+  border-left: 2px solid var(--wp--preset--color--accent, #BF4C1F);
+  border-right: 2px solid var(--wp--preset--color--accent, #BF4C1F);
+  border-top: 2px solid var(--wp--preset--color--accent, #BF4C1F);
 }
 
 .cryo-comparison__rowLabel {
@@ -411,13 +411,13 @@
 
 .cryo-comparison__cellHighlight {
   background: rgba(195, 87, 44, 0.04);
-  border-left: 2px solid var(--wp--preset--color--accent, #C3572C);
-  border-right: 2px solid var(--wp--preset--color--accent, #C3572C);
+  border-left: 2px solid var(--wp--preset--color--accent, #BF4C1F);
+  border-right: 2px solid var(--wp--preset--color--accent, #BF4C1F);
   color: #333;
 }
 
 .cryo-comparison__table tbody tr:last-child .cryo-comparison__cellHighlight {
-  border-bottom: 2px solid var(--wp--preset--color--accent, #C3572C);
+  border-bottom: 2px solid var(--wp--preset--color--accent, #BF4C1F);
 }
 
 @media (min-width: 768px) {
@@ -484,7 +484,7 @@
 }
 
 .cryo-accordion__item[open] {
-  border-color: var(--wp--preset--color--accent, #C3572C);
+  border-color: var(--wp--preset--color--accent, #BF4C1F);
 }
 
 .cryo-accordion__header {
@@ -645,7 +645,7 @@
   margin: 0 0 20px;
   font-size: 28px;
   font-weight: 700;
-  color: var(--wp--preset--color--accent, #C3572C);
+  color: var(--wp--preset--color--accent, #BF4C1F);
   line-height: 1.3;
 }
 
@@ -664,7 +664,7 @@
   font-size: 15px;
   font-weight: 600;
   color: #fff;
-  background: var(--wp--preset--color--accent, #C3572C);
+  background: var(--wp--preset--color--accent, #BF4C1F);
   border-radius: 30px;
   text-decoration: none;
   transition: background 0.2s ease;

@@ -70,6 +70,10 @@ if (!function_exists('cryo_qtranslate_language_filter')) {
 
   /**
    * Filter: posts_where — applied only on the public front-end.
+   *
+   * Skips single-item lookups (pages by slug/ID, posts by slug/ID) so that
+   * pages without explicit qTranslate language tags still resolve under /en/.
+   * Only applies to archive/listing queries for post type 'post'.
    */
   function cryo_qtranslate_language_filter(string $where, WP_Query $query): string {
     if (is_admin()) {
@@ -79,7 +83,11 @@ if (!function_exists('cryo_qtranslate_language_filter')) {
     if ($lang === '') {
       return $where;
     }
-    // Only filter 'post' queries (not pages, attachments, nav_menu_item, etc.).
+    // Never filter single-item lookups (page/post by slug or ID).
+    if ($query->get('pagename') || $query->get('page_id') || $query->get('p') || $query->get('name')) {
+      return $where;
+    }
+    // Only filter 'post' queries (not pages, products, nav_menu_item, etc.).
     $post_type = $query->get('post_type');
     if ($post_type !== '' && $post_type !== 'post' && $post_type !== ['post']) {
       return $where;
@@ -88,6 +96,7 @@ if (!function_exists('cryo_qtranslate_language_filter')) {
   }
   add_filter('posts_where', 'cryo_qtranslate_language_filter', 10, 2);
 }
+
 // Enable common theme supports
 add_action('after_setup_theme', function (): void {
   add_theme_support('wp-block-styles');
@@ -1039,6 +1048,32 @@ add_action('wp_enqueue_scripts', function (): void {
   if (file_exists($main_js)) {
     wp_enqueue_script('cryo-main', $theme_uri . '/assets/js/main.js', [], (string) filemtime($main_js), true);
   }
+
+  $img_base = $theme_uri . '/assets/images';
+  $icon_css = <<<CSS
+.cryo-statsGrid > .cryo-stat:nth-child(1) .cryo-stat__icon {
+  background-image: url('{$img_base}/stat-icon-1.png');
+}
+.cryo-statsGrid > .cryo-stat:nth-child(2) .cryo-stat__icon {
+  background-image: url('{$img_base}/stat-icon-2.png');
+}
+.cryo-statsGrid > .cryo-stat:nth-child(3) .cryo-stat__icon {
+  background-image: url('{$img_base}/stat-icon-3.png');
+}
+.cryo-promiseCard:nth-child(1) .cryo-promiseCard__icon {
+  background-image: url('{$img_base}/promise-icon-1.png');
+}
+.cryo-promiseCard:nth-child(2) .cryo-promiseCard__icon {
+  background-image: url('{$img_base}/promise-icon-2.png');
+}
+.cryo-promiseCard:nth-child(3) .cryo-promiseCard__icon {
+  background-image: url('{$img_base}/promise-icon-3.png');
+}
+.cryo-promiseCard:nth-child(4) .cryo-promiseCard__icon {
+  background-image: url('{$img_base}/promise-icon-4.png');
+}
+CSS;
+  wp_add_inline_style('cryo-main-css', $icon_css);
 });
 
 /**
@@ -1130,27 +1165,10 @@ add_action('init', function (): void {
 });
 
 /**
- * Render only ONE of Login / My Account (no unused link in DOM).
- * We do this by filtering the `core/html` block in the header.
+ * Both "My Account" links (desktop + mobile) now point to the external
+ * Salesforce portal and are always shown regardless of WP login state.
+ * No login/account toggle needed.
  */
-add_filter('render_block', function (string $block_content, array $block): string {
-  if (($block['blockName'] ?? null) !== 'core/html') {
-    return $block_content;
-  }
-  if (!str_contains($block_content, 'cryo-nav__login') && !str_contains($block_content, 'cryo-nav__myaccount')) {
-    return $block_content;
-  }
-
-  $logged_in = is_user_logged_in();
-  if ($logged_in) {
-    // Remove login link entirely
-    $block_content = preg_replace('#<a[^>]*class=\"cryo-nav__login\"[^>]*>.*?</a>#s', '', $block_content) ?? $block_content;
-  } else {
-    // Remove my account link entirely
-    $block_content = preg_replace('#<a[^>]*class=\"cryo-nav__myaccount\"[^>]*>.*?</a>#s', '', $block_content) ?? $block_content;
-  }
-  return $block_content;
-}, 20, 2);
 
 /**
  * Locale switcher compatibility (old Uncode2 uses qTranslate-X / qTranslate-XT).
@@ -1263,6 +1281,73 @@ add_filter('render_block', function (string $block_content, array $block): strin
 }, 25, 2);
 
 /**
+ * Footer internationalisation (i18n).
+ *
+ * The footer template uses a `data-cryo-i18n` attribute convention:
+ *   - <span data-cryo-i18n="zh">中文</span><span data-cryo-i18n="en" hidden>English</span>
+ *   - <input placeholder="中文" data-i18n-en-placeholder="English" />
+ *   - <div aria-label="中文" data-i18n-en-aria-label="English">
+ *
+ * When the active qTranslate language is NOT Chinese (zh/cn), this filter
+ * shows the matching language spans and hides the Chinese ones, then swaps
+ * attribute values from data-i18n-{lang}-{attr} into the real attribute.
+ */
+add_filter('render_block', function (string $block_content, array $block): string {
+  if (($block['blockName'] ?? null) !== 'core/html') {
+    return $block_content;
+  }
+  if (!str_contains($block_content, 'data-cryo-i18n') && !str_contains($block_content, 'data-i18n-en-')) {
+    return $block_content;
+  }
+
+  $lang = cryo_qtranslate_current_lang();
+  if ($lang === '' || in_array($lang, ['zh', 'cn'], true)) {
+    return $block_content;
+  }
+
+  // 1) Toggle data-cryo-i18n spans: show target lang, hide zh.
+  //    Remove `hidden` from matching lang spans.
+  $block_content = preg_replace(
+    '/(<[^>]*?\bdata-cryo-i18n="' . preg_quote($lang, '/') . '"[^>]*?)\s+hidden/i',
+    '$1',
+    $block_content
+  ) ?? $block_content;
+
+  //    Add `hidden` to zh/cn spans (the default language).
+  $block_content = preg_replace(
+    '/(<[^>]*?\bdata-cryo-i18n="(?:zh|cn)"(?![^>]*?\bhidden\b)[^>]*?)>/i',
+    '$1 hidden>',
+    $block_content
+  ) ?? $block_content;
+
+  // 2) Swap attribute values from data-i18n-{lang}-{attr} into the real attribute.
+  //    e.g. placeholder="中文" data-i18n-en-placeholder="English" → placeholder="English"
+  //    Two-pass: collect translations, then apply swaps and strip data attrs.
+  $esc_lang = preg_quote($lang, '/');
+  $swaps = [];
+  if (preg_match_all('/\bdata-i18n-' . $esc_lang . '-([a-z][\w-]*?)="([^"]*?)"/i', $block_content, $matches, PREG_SET_ORDER)) {
+    foreach ($matches as $m) {
+      $swaps[$m[1]] = $m[2]; // attr name → translated value
+    }
+  }
+
+  // Strip all data-i18n-{lang}-* attributes (clean up regardless of whether swap succeeds).
+  $block_content = preg_replace('/\s*\bdata-i18n-' . $esc_lang . '-[a-z][\w-]*?="[^"]*?"/i', '', $block_content) ?? $block_content;
+
+  // Apply the attribute value swaps.
+  foreach ($swaps as $attr => $translated) {
+    $block_content = preg_replace(
+      '/\b(' . preg_quote($attr, '/') . ')="[^"]*?"/',
+      '$1="' . esc_attr($translated) . '"',
+      $block_content,
+      1
+    ) ?? $block_content;
+  }
+
+  return $block_content;
+}, 26, 2);
+
+/**
  * Uncode2 compatibility: the old theme renders the announcement marquee from a specific page (ID 3976),
  * and uses ACF fields `hide_marquee` + `marquee_link` to control visibility/link.
  *
@@ -1275,27 +1360,22 @@ if (!function_exists('cryo_get_announcement_config')) {
   function cryo_get_announcement_config(): array {
     $page_id = (int) apply_filters('cryo_marquee_page_id', 3976);
 
-    // 1) Prefer old Uncode2 source (page + ACF) for continuity.
-    if ($page_id > 0 && get_post_status($page_id)) {
-      $hide = null;
-      $link = '';
-
-      if (function_exists('get_field')) {
-        $hide = get_field('hide_marquee', $page_id);
+    // 1) Prefer old Uncode2 source (page + ACF) — but only use it when ACF
+    //    explicitly says "show" AND the page has content.  When ACF hides the
+    //    marquee (or the field is null / page missing), fall through to WP
+    //    options so Settings → General always works as a fallback.
+    if ($page_id > 0 && function_exists('get_field') && get_post_status($page_id)) {
+      $hide = get_field('hide_marquee', $page_id);
+      // ACF field is explicitly set to false → marquee is enabled via ACF.
+      if ($hide === false) {
         $link = (string) (get_field('marquee_link', $page_id) ?? '');
+        $raw  = (string) get_post_field('post_content', $page_id);
+        $text = trim(wp_strip_all_tags(apply_filters('the_content', $raw)));
+        if ($text !== '') {
+          return ['text' => $text, 'link' => $link, 'hidden' => false, 'source' => 'page'];
+        }
       }
-
-      // Match old logic: null/true => hidden
-      $hidden = ($hide === null || (bool) $hide);
-      if ($hidden) {
-        return ['text' => '', 'link' => '', 'hidden' => true, 'source' => 'acf'];
-      }
-
-      $raw = (string) get_post_field('post_content', $page_id);
-      $text = trim(wp_strip_all_tags(apply_filters('the_content', $raw)));
-      if ($text !== '') {
-        return ['text' => $text, 'link' => $link, 'hidden' => false, 'source' => 'page'];
-      }
+      // null or true → ACF page content is not available; fall through.
     }
 
     // 2) Fallback: WP settings-based announcement (editable in wp-admin → Settings → General)
@@ -1324,9 +1404,36 @@ add_filter('body_class', function (array $classes): array {
   return $classes;
 });
 
-// Render the announcement into the Cryo topbar paragraph (so it is not hardcoded in header.html).
+// Render the announcement into the Cryo topbar (dynamic text from WP, marquee animation).
+//
+// When hidden or empty:  collapse the entire topbar group (height: 0, no padding).
+// When active:           inject text into a scrolling marquee wrapper.
 add_filter('render_block', function (string $block_content, array $block): string {
-  if (($block['blockName'] ?? null) !== 'core/paragraph') {
+  $name = $block['blockName'] ?? null;
+
+  // 1) Handle the outer topbar group: collapse it entirely when no announcement.
+  if ($name === 'core/group' && str_contains($block_content, 'cryo-topbar')) {
+    $cfg = cryo_get_announcement_config();
+    $has_text = !empty($cfg['text']) && empty($cfg['hidden']);
+    // When source is 'template' and text is empty, the paragraph still has placeholder text;
+    // treat that as "has announcement" so the template default shows.
+    if ($cfg['source'] === 'template') {
+      $has_text = true;
+    }
+    if (empty($cfg['hidden']) && $has_text) {
+      return $block_content;
+    }
+    // Collapse: add a `hidden` attribute so the bar takes no space.
+    return preg_replace(
+      '/(<div[^>]*\bcryo-topbar\b[^>]*)(>)/s',
+      '$1 hidden$2',
+      $block_content,
+      1
+    ) ?? $block_content;
+  }
+
+  // 2) Handle the inner paragraph: replace text with marquee-wrapped content.
+  if ($name !== 'core/paragraph') {
     return $block_content;
   }
   if (!str_contains($block_content, 'cryo-topbar__text')) {
@@ -1338,22 +1445,34 @@ add_filter('render_block', function (string $block_content, array $block): strin
     return '';
   }
 
-  // If we don't have a dynamic value, keep the template text.
-  if (empty($cfg['text'])) {
-    return $block_content;
+  // Determine the display text (dynamic or keep template placeholder).
+  $text = '';
+  if (!empty($cfg['text'])) {
+    $text = esc_html($cfg['text']);
   }
 
-  $text = esc_html($cfg['text']);
+  if ($text === '') {
+    // No dynamic text — extract the template placeholder for the marquee.
+    if (preg_match('#<p[^>]*>(.*?)</p>#s', $block_content, $pm)) {
+      $text = trim($pm[1]);
+    }
+    if ($text === '') return $block_content;
+  }
+
   $link = trim((string) ($cfg['link'] ?? ''));
   $inner = $text;
   if ($link !== '') {
     $inner = '<a class="cryo-topbar__link" href="' . esc_url($link) . '" target="_blank" rel="noopener noreferrer">' . $text . '</a>';
   }
 
-  // Replace paragraph inner HTML while preserving attributes/classes.
+  $marquee = '<span class="cryo-topbar__marquee">'
+    . '<span class="cryo-topbar__marqueeInner">' . $inner . '</span>'
+    . '<span class="cryo-topbar__marqueeInner" aria-hidden="true">' . $inner . '</span>'
+    . '</span>';
+
   $block_content = preg_replace(
     '#(<p[^>]*class=\"[^\"]*cryo-topbar__text[^\"]*\"[^>]*>)(.*?)(</p>)#s',
-    '$1' . $inner . '$3',
+    '$1' . $marquee . '$3',
     $block_content
   ) ?? $block_content;
 
@@ -2321,7 +2440,7 @@ add_shortcode('cryo_history_slide', function ($atts): string {
     . '<div class="cryo-history__panel">'
     . '<div class="cryo-history__content">'
     . '<h3 class="cryo-history__heading">' . esc_html($heading) . '</h3>'
-    . '<p class="cryo-history__desc">' . esc_html($content) . '</p>'
+    . '<div class="cryo-history__desc">' . wp_kses_post($content) . '</div>'
     . '</div>'
     . '<div class="cryo-history__nav">'
     . '<button class="cryo-history__arrow cryo-history__arrow--prev" type="button" aria-label="上一張" data-cryo-history-prev></button>'
@@ -2914,13 +3033,13 @@ add_shortcode('cryo_post_header', function (): string {
  *
  * Usage (in single.html or post content):
  *   [cryo_related_posts]
- *   [cryo_related_posts count="3" title="相關文章" view_all_text="查看全部" post_list_url="/en/en-cryo_v2-post-list/"]
+ *   [cryo_related_posts count="3" title="相關文章" view_all_text="查看全部"]
  *
  * Attributes:
  *   title          — section heading (default "相關文章")
  *   count          — number of posts to show (default 2)
  *   view_all_text  — button label (default "查看全部")
- *   post_list_url  — URL the "view all" button links to (default "/en/en-cryo_v2-post-list/")
+ *   post_list_url  — URL the "view all" button links to (auto-detected from post-list page)
  *   date_format    — PHP date format for each card (default "j M Y")
  */
 add_shortcode('cryo_related_posts', function ($atts): string {
@@ -2928,7 +3047,7 @@ add_shortcode('cryo_related_posts', function ($atts): string {
     'title'         => '相關文章',
     'count'         => 2,
     'view_all_text' => '查看全部',
-    'post_list_url' => '/en/en-cryo_v2-post-list/',
+    'post_list_url' => '',
     'date_format'   => 'j M Y',
   ], (array) $atts, 'cryo_related_posts');
 
@@ -2937,6 +3056,24 @@ add_shortcode('cryo_related_posts', function ($atts): string {
   $title         = (string) $atts['title'];
   $view_all_text = (string) $atts['view_all_text'];
   $post_list_url = (string) $atts['post_list_url'];
+
+  if ($post_list_url === '') {
+    $lang = cryo_qtranslate_current_lang();
+    $slugs = ['en-cryo_v2-post-list', 'cryo_v2-post-list', 'post-list'];
+    foreach ($slugs as $slug) {
+      $page = get_page_by_path($slug);
+      if ($page) {
+        $post_list_url = get_permalink($page->ID);
+        if ($lang !== '' && function_exists('qtranxf_convertURL')) {
+          $post_list_url = (string) qtranxf_convertURL($post_list_url, $lang, false, true);
+        }
+        break;
+      }
+    }
+    if ($post_list_url === '') {
+      $post_list_url = home_url('/');
+    }
+  }
   $date_format   = (string) $atts['date_format'];
 
   if (!$current_id) {

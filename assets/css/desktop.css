@@ -287,6 +287,7 @@
     position: relative;
     display: inline-flex;
     align-items: center;
+    margin-top: -12px!important;
   }
   .cryo-nav__langBtn {
     width: 40px;
@@ -353,7 +354,8 @@
     color: var(--wp--preset--color--text);
     text-decoration: none;
     font-weight: 500;
-    min-width: 36px;
+    min-width: 96px;
+    margin-top: -12px!important;
   }
   .cryo-nav__myaccount {
     font-size: 16px;
@@ -569,8 +571,11 @@
   .cryo-footer__line--address {
     display: flex!important;
   }
-  .cryo-footer__line span:first-child {
+  .cryo-footer__line span:first-child,
+  .cryo-footer__line span:nth-child(2) {
     min-width: 3.5em;
+    flex-shrink: 0;
+    white-space: nowrap;
   }
   .cryo-footer__line a {
     color: inherit;
@@ -1614,6 +1619,11 @@
   .cryo-history__desc {
     font-size: 16px;
     line-height: 1.9;
+  }
+
+  .cryo-history__content > .cryo-history__desc {
+    max-height:340px;
+    overflow-y: auto;
   }
 
   .cryo-history__nav {

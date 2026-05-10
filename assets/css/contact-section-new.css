@@ -33,7 +33,7 @@
   margin: 0 0 16px;
   font-size: 24px;
   font-weight: 700;
-  color: var(--wp--preset--color--accent, #C3572C);
+  color: var(--wp--preset--color--accent, #BF4C1F);
   line-height: 1.2;
 }
 
@@ -66,7 +66,7 @@
 }
 
 .cryo-contactCard__mapLink:hover {
-  color: var(--wp--preset--color--accent, #C3572C);
+  color: var(--wp--preset--color--accent, #BF4C1F);
 }
 
 .cryo-contactCard__mapLink svg {
@@ -172,9 +172,9 @@
   padding: 5px 14px;
   font-size: 12px;
   font-weight: 500;
-  color: var(--wp--preset--color--accent, #C3572C);
+  color: var(--wp--preset--color--accent, #BF4C1F);
   background: transparent;
-  border: 1px solid var(--wp--preset--color--accent, #C3572C);
+  border: 1px solid var(--wp--preset--color--accent, #BF4C1F);
   border-radius: 20px;
 }
 
@@ -186,7 +186,7 @@
 }
 
 .cryo-contactCard__businessRow a:hover {
-  color: var(--wp--preset--color--accent, #C3572C);
+  color: var(--wp--preset--color--accent, #BF4C1F);
 }
 
 @media (min-width: 768px) {

@@ -9,17 +9,17 @@
       <!-- wp:column {"className":"cryo-footer__col cryo-footer__col--contact"} -->
       <div class="wp-block-column cryo-footer__col cryo-footer__col--contact">
         <!-- wp:html -->
-        <div class="cryo-footer__contact">
+        <div class="cryo-footer__contact" data-cryo-footer-i18n>
           <div class="cryo-footer__line cryo-footer__line--phone">
-            <span>電話:</span>
+            <span data-cryo-i18n="zh">電話:</span><span data-cryo-i18n="en" hidden>Phone:</span>
             <a href="tel:+85221102121">(852) 2110 2121</a>
           </div>
           <div class="cryo-footer__line cryo-footer__line--address">
-            <span>地址:&nbsp;</span>
-            <span>香港新界 將軍澳創新園 先進製造業中心 駿昌街18號505室</span>
+            <span data-cryo-i18n="zh">地址:&nbsp;</span><span data-cryo-i18n="en" hidden>Address:&nbsp;</span>
+            <span data-cryo-i18n="zh">香港新界 將軍澳創新園 先進製造業中心 駿昌街18號505室</span><span data-cryo-i18n="en" hidden>Room 505, Advanced Manufacturing Centre, 18 Chun Cheong Street, Tseung Kwan O Industrial Estate, N.T., Hong Kong</span>
           </div>
           <div class="cryo-footer__line cryo-footer__line--email">
-            <span>電郵:</span>
+            <span data-cryo-i18n="zh">電郵:</span><span data-cryo-i18n="en" hidden>Email:</span>
             <a href="mailto:csd@cryolife.com.hk">csd@cryolife.com.hk</a>
           </div>
         </div>
@@ -72,13 +72,14 @@
       <!-- wp:column {"className":"cryo-footer__col cryo-footer__col--newsletter"} -->
       <div class="wp-block-column cryo-footer__col cryo-footer__col--newsletter">
         <!-- wp:html -->
-        <div class="cryo-footer__newsletter">
-          <p class="cryo-footer__newsletterTitle">立即註冊，以獲取有關我們一系列的活動及最新資訊。</p>
+        <div class="cryo-footer__newsletter" data-cryo-footer-i18n>
+          <p class="cryo-footer__newsletterTitle" data-cryo-i18n="zh">立即註冊，以獲取有關我們一系列的活動及最新資訊。</p>
+          <p class="cryo-footer__newsletterTitle" data-cryo-i18n="en" hidden>Sign up now to receive updates on our events and latest news.</p>
           <div class="cryo-footer__newsletterRow">
-            <input id="cryo-footer-email" class="cryo-footer__newsletterInput" type="email" placeholder="你的電郵地址*" />
+            <input id="cryo-footer-email" class="cryo-footer__newsletterInput" type="email" placeholder="你的電郵地址*" data-i18n-en-placeholder="Your email address*" />
           </div>
           <div class="cryo-footer__newsletterBtnRow">
-            <button class="cryo-footer__newsletterBtn" type="button" aria-label="提交"></button>
+            <button class="cryo-footer__newsletterBtn" type="button" aria-label="提交" data-i18n-en-aria-label="Submit"></button>
           </div>
         </div>
         <!-- /wp:html -->
@@ -93,7 +94,7 @@
     <div class="wp-block-group cryo-footer__bottom">
       <!-- wp:html -->
       <div class="cryo-footer__copyright">© <span class="cryo-footer__year"></span> Cryolife All rights reserved</div>
-      <div class="cryo-footer__certs" aria-label="認證與標章">
+      <div class="cryo-footer__certs" aria-label="認證與標章" data-i18n-en-aria-label="Certifications &amp; Accreditations">
         <!-- wp:shortcode -->
         [cryo_footer_certs filename="Website-Footer_2-1-2-300x41.png" alt="Accreditation logos"]
         <!-- /wp:shortcode -->

@@ -11,7 +11,7 @@
         { "name": "Text", "slug": "text", "color": "#111111" },
         { "name": "Surface", "slug": "surface", "color": "#FFFFFF" },
         { "name": "Topbar", "slug": "topbar", "color": "#F6E9E4" },
-        { "name": "Accent", "slug": "accent", "color": "#C3572C" },
+        { "name": "Accent", "slug": "accent", "color": "#BF4C1F" },
         { "name": "Border", "slug": "border", "color": "#EDEDED" }
       ]
     },

@@ -457,8 +457,10 @@
   }
   /* Keep the label (電話 / 地址 / 電郵) on a single line
      and let the value span take the remaining width and wrap. */
-  .cryo-footer__line span:first-child {
+  .cryo-footer__line span:first-child,
+  .cryo-footer__line span:nth-child(2) {
     min-width: 3.5em;
+    flex-shrink: 0;
     white-space: nowrap;
   }
   .cryo-footer__line--address span:last-child {
@@ -579,7 +581,7 @@
     row-gap: 10px;
     column-gap: 22px;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: flex-start;
   }
   .cryo-footer__legalMobile .cryo-footerMenu__list > li {
     flex: 0 0 auto; /* keep each item only as wide as its text */

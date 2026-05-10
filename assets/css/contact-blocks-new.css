@@ -85,7 +85,7 @@
   margin: 0 0 16px;
   font-size: 26px;
   font-weight: 700;
-  color: var(--wp--preset--color--accent, #C3572C);
+  color: var(--wp--preset--color--accent, #BF4C1F);
   line-height: 1.2;
 }
 
@@ -208,7 +208,7 @@
 }
 
 .cryo-contactBlock__businessRow a:hover {
-  color: var(--wp--preset--color--accent, #C3572C);
+  color: var(--wp--preset--color--accent, #BF4C1F);
 }
 
 /* Responsive: Tablet and up */
