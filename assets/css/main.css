@@ -3018,8 +3018,7 @@ a.cryo-techCard:hover .cryo-techCard__img {
   overflow-wrap: break-word;
 }
 
-/* Navigation inside panel — background must match panel (#F5F1EC)
-   explicitly to prevent stale rules in utilities.css from bleeding through */
+/* Navigation inside panel — background must match panel (#F5F1EC) */
 .cryo-history__nav {
   display: flex;
   gap: 80px;
@@ -4989,14 +4988,18 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-comparison__tableWrap {
   max-width: 100%;
+  overflow: hidden;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  border-radius: 16px;
+  border: 1px solid #eee;
 }
 
 .cryo-comparison__table {
   width: 100%;
   min-width: 600px;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 14px;
 }
 
@@ -5047,6 +5050,11 @@ a.cryo-techCard:hover .cryo-techCard__img {
 
 .cryo-comparison__table tbody tr:last-child .cryo-comparison__cellHighlight {
   border-bottom: 2px solid var(--wp--preset--color--accent, #BF4C1F);
+}
+
+.cryo-comparison__table tbody tr:last-child td,
+.cryo-comparison__table tbody tr:last-child th {
+  border-bottom: none;
 }
 
 /* Pricing FAQ Section */
@@ -5256,11 +5264,15 @@ a.cryo-techCard:hover .cryo-techCard__img {
 /* ========== DESKTOP TABLE ========== */
 .cryo-compDesktop {
   display: none;
+  border-radius: 16px;
+  border: 1px solid #eee;
+  overflow: hidden;
 }
 
 .cryo-compDesktop__table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   background: #fff;
   font-size: 14px;
 }
@@ -5301,14 +5313,18 @@ a.cryo-techCard:hover .cryo-techCard__img {
   background: rgba(195, 87, 44, 0.04);
   color: var(--wp--preset--color--accent, #BF4C1F);
 }
-/* 
-.cryo-compDesktop__table tbody tr:last-child .cryo-compDesktop__highlight {
-  border-bottom: 2px solid var(--wp--preset--color--accent, #BF4C1F);
-} */
+
+.cryo-compDesktop__table tbody tr:last-child td,
+.cryo-compDesktop__table tbody tr:last-child th {
+  border-bottom: none;
+}
 
 /* ========== MOBILE ACCORDION ========== */
 .cryo-compMobile {
   display: block;
+  border-radius: 16px;
+  border: 1px solid #eee;
+  overflow: hidden;
 }
 
 .cryo-compMobile__header {
@@ -5431,6 +5447,10 @@ a.cryo-techCard:hover .cryo-techCard__img {
   background: rgba(195, 87, 44, 0.06);
   color: var(--wp--preset--color--accent, #BF4C1F);
   font-weight: 500;
+}
+
+.cryo-compRow:last-child {
+  border-bottom: none;
 }
 
 /* ============================================

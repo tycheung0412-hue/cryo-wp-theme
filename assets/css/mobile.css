@@ -114,6 +114,7 @@
     height: calc(100% - 124px);
     overflow: auto;
     -webkit-overflow-scrolling: touch;
+    overflow-x: none;
     /* Start content right after the fixed header (WP already offsets for admin bar when logged in). */
     padding-top: calc(var(--cryo-topbar-height, 0px) + var(--cryo-header-height, 72px));
   }
